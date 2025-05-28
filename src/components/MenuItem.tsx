@@ -9,7 +9,6 @@ interface MenuItemProps {
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
-  const [showNutrition, setShowNutrition] = useState(false);
   const restaurant = restaurants.find(r => r.id === item.restaurantId);
 
   return (
@@ -44,7 +43,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
         </div>
 
         {/* Dish Info */}
-        <div className="mb-4 flex-1">
+        <div className="mb-4">
           <h3 className="text-xl font-bold text-gray-800 mb-2">{item.name}</h3>
           <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
         </div>
@@ -61,21 +60,8 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
           ))}
         </div>
 
-        {/* Nutrition Toggle Button */}
-        <button
-          onClick={() => setShowNutrition(!showNutrition)}
-          className="flex items-center justify-between w-full py-2.5 px-4 bg-gray-50 rounded-lg mb-4 hover:bg-gray-100 transition-colors"
-        >
-          <span className="text-sm font-medium text-gray-700">Nutrition Facts</span>
-          {showNutrition ? (
-            <ChevronUp size={18} className="text-gray-500" />
-          ) : (
-            <ChevronDown size={18} className="text-gray-500" />
-          )}
-        </button>
-
         {/* Nutrition Information */}
-        {showNutrition && item.nutrition && (
+        {item.nutrition && (
           <div className="mb-6 p-5 bg-gray-50 rounded-lg">
             <div className="grid grid-cols-2 gap-4">
               <div className="p-3 bg-white rounded-lg">
