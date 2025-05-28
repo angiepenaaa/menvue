@@ -1,4 +1,4 @@
-import { UserPreferences } from '../types';
+import type { UserPreferences } from '../types';
 
 const PREFERENCES_KEY = 'menVue_userPreferences';
 

@@ -1,4 +1,4 @@
-import { UserPreferences } from '../types';
+import type { UserPreferences } from '../types';
 import { loadPreferences } from '../utils/storage';
 
 const defaultPreferences: UserPreferences = {

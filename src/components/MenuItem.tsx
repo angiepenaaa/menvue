@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MenuItem as MenuItemType } from '../types';
+import type { MenuItem as MenuItemType } from '../types';
 import CalorieBadge from './CalorieBadge';
 import { restaurants } from '../data/restaurants';
 import { MapPin, ChevronDown, ChevronUp, Clock } from 'lucide-react';

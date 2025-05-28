@@ -1,5 +1,5 @@
 import React from 'react';
-import { MenuItem, Mood } from '../types';
+import type { MenuItem, Mood } from '../types';
 import MenuList from './MenuList';
 
 interface MoodResultsProps {
@@ -51,4 +51,4 @@ const MoodResults: React.FC<MoodResultsProps> = ({ mood, items, onBack }) => {
   );
 };
 
-export default MoodResults
+export default MoodResults;

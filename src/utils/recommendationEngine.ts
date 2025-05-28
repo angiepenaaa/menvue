@@ -1,4 +1,4 @@
-import { MenuItem, UserPreferences, Mood } from '../types';
+import type { MenuItem, UserPreferences, Mood } from '../types';
 
 const getTimeBasedMealType = (): string => {
   const hour = new Date().getHours();

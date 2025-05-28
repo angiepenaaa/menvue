@@ -1,4 +1,4 @@
-import { Mood } from '../types';
+import type { Mood } from '../types';
 
 export const moods: Mood[] = [
   {
