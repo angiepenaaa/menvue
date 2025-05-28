@@ -229,5 +229,162 @@ export const menuItems: MenuItem[] = [
       sodium: 890
     },
     ingredients: ['romaine lettuce', 'feta cheese', 'kalamata olives', 'red onions', 'tomatoes', 'pepperoncini', 'Greek dressing']
+  },
+
+  // Sweetgreen Items
+  {
+    id: '601',
+    name: 'Harvest Bowl',
+    description: 'Wild rice, kale, sweet potatoes, apples, roasted chicken, goat cheese, almonds with balsamic vinaigrette',
+    calories: 430,
+    price: '$13.95',
+    image: 'https://images.pexels.com/photos/1095550/pexels-photo-1095550.jpeg',
+    tags: ['Bowl', 'High Protein', 'Gluten-Free'],
+    restaurantId: '6',
+    nutrition: {
+      protein: 24,
+      carbs: 48,
+      sugars: 12,
+      totalFat: 22,
+      saturatedFat: 5,
+      fiber: 8,
+      sodium: 540
+    },
+    ingredients: ['wild rice', 'kale', 'roasted sweet potatoes', 'apples', 'roasted chicken', 'goat cheese', 'almonds', 'balsamic vinaigrette'],
+    moodTags: ['Post-Workout', 'Need to Focus', 'Light & Clean']
+  },
+  {
+    id: '602',
+    name: 'Guacamole Greens',
+    description: 'Organic mesclun, avocado, roasted chicken, red onion, tomatoes, tortilla chips with lime cilantro vinaigrette',
+    calories: 470,
+    price: '$12.95',
+    image: 'https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg',
+    tags: ['Salad', 'Avocado', 'High Protein'],
+    restaurantId: '6',
+    nutrition: {
+      protein: 28,
+      carbs: 32,
+      sugars: 6,
+      totalFat: 26,
+      saturatedFat: 4,
+      fiber: 10,
+      sodium: 620
+    },
+    ingredients: ['organic mesclun', 'avocado', 'roasted chicken', 'red onion', 'grape tomatoes', 'tortilla chips', 'lime cilantro vinaigrette'],
+    moodTags: ['Light & Clean', 'Need to Focus']
+  },
+
+  // True Food Kitchen Items
+  {
+    id: '701',
+    name: 'Ancient Grains Bowl',
+    description: 'Miso-glazed sweet potato, turmeric, charred onion, snow pea, grilled portobello, avocado, hemp seed',
+    calories: 480,
+    price: '$14.95',
+    image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg',
+    tags: ['Bowl', 'Vegan', 'Whole Grain'],
+    restaurantId: '7',
+    nutrition: {
+      protein: 16,
+      carbs: 64,
+      sugars: 8,
+      totalFat: 22,
+      saturatedFat: 3,
+      fiber: 12,
+      sodium: 480
+    },
+    ingredients: ['ancient grains', 'sweet potato', 'turmeric', 'charred onion', 'snow pea', 'portobello mushroom', 'avocado', 'hemp seed'],
+    moodTags: ['Feeling Bloated', 'Need to Focus', 'Light & Clean']
+  },
+  {
+    id: '702',
+    name: 'Mediterranean Quinoa Salad',
+    description: 'Persian cucumber, olive, pepper, cherry tomato, quinoa, feta, almond, lemon oregano vinaigrette',
+    calories: 390,
+    price: '$13.95',
+    image: 'https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg',
+    tags: ['Salad', 'Mediterranean', 'Vegetarian'],
+    restaurantId: '7',
+    nutrition: {
+      protein: 14,
+      carbs: 42,
+      sugars: 6,
+      totalFat: 18,
+      saturatedFat: 4,
+      fiber: 8,
+      sodium: 540
+    },
+    ingredients: ['quinoa', 'Persian cucumber', 'olive', 'pepper', 'cherry tomato', 'feta', 'almond', 'lemon oregano vinaigrette'],
+    moodTags: ['Light & Clean', 'Feeling Bloated']
+  },
+
+  // Protein Bar & Kitchen Items
+  {
+    id: '801',
+    name: 'Buffalo Bowl',
+    description: 'Quinoa, chicken, buffalo sauce, celery, carrots, blue cheese, greek yogurt ranch',
+    calories: 450,
+    price: '$12.95',
+    image: 'https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg',
+    tags: ['Bowl', 'High Protein', 'Spicy'],
+    restaurantId: '8',
+    nutrition: {
+      protein: 38,
+      carbs: 42,
+      sugars: 4,
+      totalFat: 18,
+      saturatedFat: 5,
+      fiber: 6,
+      sodium: 680
+    },
+    ingredients: ['quinoa', 'chicken', 'buffalo sauce', 'celery', 'carrots', 'blue cheese', 'greek yogurt ranch'],
+    moodTags: ['Post-Workout', 'Comfort Meal']
+  },
+
+  // Flower Child Items
+  {
+    id: '901',
+    name: 'Mother Earth Bowl',
+    description: 'Ancient grains, sweet potato, portobello mushroom, avocado, cucumber, broccoli pesto, charred onion, leafy greens, red pepper miso vinaigrette',
+    calories: 480,
+    price: '$13.95',
+    image: 'https://images.pexels.com/photos/1640770/pexels-photo-1640770.jpeg',
+    tags: ['Bowl', 'Vegan', 'Gluten-Free'],
+    restaurantId: '9',
+    nutrition: {
+      protein: 14,
+      carbs: 68,
+      sugars: 8,
+      totalFat: 24,
+      saturatedFat: 3,
+      fiber: 12,
+      sodium: 520
+    },
+    ingredients: ['ancient grains', 'sweet potato', 'portobello mushroom', 'avocado', 'cucumber', 'broccoli pesto', 'charred onion', 'leafy greens', 'red pepper miso vinaigrette'],
+    moodTags: ['Feeling Bloated', 'Need to Focus', 'Light & Clean']
+  },
+
+  // Just Salad Items
+  {
+    id: '1001',
+    name: 'Tokyo Supergreens',
+    description: 'Baby spinach, kale, broccoli, edamame, tofu, sesame seeds, ginger sesame vinaigrette',
+    calories: 320,
+    price: '$11.95',
+    image: 'https://images.pexels.com/photos/1059905/pexels-photo-1059905.jpeg',
+    tags: ['Salad', 'Vegan', 'Low Calorie'],
+    restaurantId: '10',
+    nutrition: {
+      protein: 18,
+      carbs: 32,
+      sugars: 6,
+      totalFat: 16,
+      saturatedFat: 2,
+      fiber: 8,
+      sodium: 440
+    },
+    ingredients: ['baby spinach', 'kale', 'broccoli', 'edamame', 'tofu', 'sesame seeds', 'ginger sesame vinaigrette'],
+    moodTags: ['Light & Clean', 'Need to Focus', 'Feeling Bloated']
   }
 ];
