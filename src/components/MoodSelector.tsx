@@ -22,3 +22,5 @@ const MoodSelector: React.FC<MoodSelectorProps> = ({ onMoodSelect }) => {
     </div>
   );
 };
+
+export default MoodSelector

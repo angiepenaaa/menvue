@@ -50,3 +50,5 @@ const MoodResults: React.FC<MoodResultsProps> = ({ mood, items, onBack }) => {
     </div>
   );
 };
+
+export default MoodResults
