@@ -19,7 +19,7 @@ export const restaurants: Restaurant[] = [
     rating: 4.5,
     distance: '1.1 mi',
     deliveryTime: '15-25 min',
-    image: 'https://images.pexels.com/photos/5945754/pexels-photo-5945754.jpeg',
+    image: 'https://images.pexels.com/photos/1352270/pexels-photo-1352270.jpeg',
     location: 'Brandon, FL'
   },
   {
