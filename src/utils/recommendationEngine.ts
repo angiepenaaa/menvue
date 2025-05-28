@@ -1,4 +1,4 @@
-import { MenuItem, UserPreferences } from '../types';
+import { MenuItem, UserPreferences, Mood } from '../types';
 
 const getTimeBasedMealType = (): string => {
   const hour = new Date().getHours();
@@ -57,20 +57,54 @@ const rankItems = (items: MenuItem[], preferences: UserPreferences): MenuItem[] 
   });
 };
 
+const rankByMoodMatch = (items: MenuItem[], mood: Mood): MenuItem[] => {
+  return items.sort((a, b) => {
+    const aMatchCount = mood.tags.filter(tag => 
+      a.tags.some(itemTag => itemTag.toLowerCase().includes(tag.toLowerCase()))
+    ).length;
+    
+    const bMatchCount = mood.tags.filter(tag => 
+      b.tags.some(itemTag => itemTag.toLowerCase().includes(tag.toLowerCase()))
+    ).length;
+
+    return bMatchCount - aMatchCount;
+  });
+};
+
 export const getSmartRecommendations = (
   items: MenuItem[],
   preferences: UserPreferences
 ): MenuItem[] => {
   let recommendations = [...items];
 
-  // Apply filters
   recommendations = filterByDiet(recommendations, preferences.dietType);
   recommendations = filterByCalorieRange(recommendations, preferences.calorieRange);
-  
-  // Prioritize and rank
   recommendations = prioritizeByTimeOfDay(recommendations);
   recommendations = rankItems(recommendations, preferences);
 
-  // Return top 3-5 recommendations
   return recommendations.slice(0, 4);
+};
+
+export const getMoodBasedRecommendations = (
+  items: MenuItem[],
+  mood: Mood,
+  preferences: UserPreferences
+): MenuItem[] => {
+  let recommendations = [...items];
+
+  // Apply basic filters
+  recommendations = filterByDiet(recommendations, preferences.dietType);
+  recommendations = filterByCalorieRange(recommendations, preferences.calorieRange);
+
+  // Apply mood-based ranking
+  recommendations = rankByMoodMatch(recommendations, mood);
+
+  // Filter out items with no mood matches
+  recommendations = recommendations.filter(item => 
+    mood.tags.some(tag => 
+      item.tags.some(itemTag => itemTag.toLowerCase().includes(tag.toLowerCase()))
+    )
+  );
+
+  return recommendations;
 };

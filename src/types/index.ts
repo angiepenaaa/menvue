@@ -25,6 +25,8 @@ export interface MenuItem {
   dietCompatibility?: string[];
   allergens?: string[];
   mealTypes?: string[];
+  moodTags?: string[];
+  location?: string;
 }
 
 export interface Restaurant {
@@ -35,6 +37,7 @@ export interface Restaurant {
   distance: string;
   deliveryTime: string;
   image: string;
+  location?: string;
 }
 
 export type HealthGoal = 'maintain' | 'lose-weight' | 'build-muscle' | 'balanced';
@@ -52,4 +55,13 @@ export interface UserPreferences {
     min: number;
     max: number;
   };
+  location?: string;
+}
+
+export interface Mood {
+  id: string;
+  name: string;
+  emoji: string;
+  tags: string[];
+  tip?: string;
 }

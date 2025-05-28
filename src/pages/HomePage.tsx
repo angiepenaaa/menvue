@@ -4,49 +4,64 @@ import FilterBar from '../components/FilterBar';
 import RestaurantGrid from '../components/RestaurantGrid';
 import MenuList from '../components/MenuList';
 import RecommendationList from '../components/RecommendationList';
+import MoodSelector from '../components/MoodSelector';
+import MoodResults from '../components/MoodResults';
 import { restaurants } from '../data/restaurants';
 import { menuItems } from '../data/menuItems';
 import { userPreferences } from '../data/userPreferences';
 import { filterMenuItemsByCalories, filterMenuItemsByRestaurant, filterMenuItemsBySearch } from '../utils/filterItems';
-import { getSmartRecommendations } from '../utils/recommendationEngine';
+import { getSmartRecommendations, getMoodBasedRecommendations } from '../utils/recommendationEngine';
 import { savePreferences } from '../utils/storage';
+import { Mood } from '../types';
+import { Brain } from 'lucide-react';
 
 const HomePage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeRestaurantId, setActiveRestaurantId] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<MenuItem[]>([]);
+  const [showMoodSelector, setShowMoodSelector] = useState(false);
+  const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
 
-  // Get recommendations on component mount and save preferences
   useEffect(() => {
     const smartRecommendations = getSmartRecommendations(menuItems, userPreferences);
     setRecommendations(smartRecommendations);
     savePreferences(userPreferences);
   }, []);
 
-  // Filter menu items under 500 calories
   const lowCalorieItems = useMemo(() => {
     return filterMenuItemsByCalories(menuItems);
   }, []);
 
-  // Filter by restaurant if one is selected
   const filteredByRestaurant = useMemo(() => {
     if (!activeRestaurantId) return lowCalorieItems;
     return filterMenuItemsByRestaurant(lowCalorieItems, activeRestaurantId);
   }, [lowCalorieItems, activeRestaurantId]);
 
-  // Apply search filter
   const filteredItems = useMemo(() => {
     return filterMenuItemsBySearch(filteredByRestaurant, searchTerm);
   }, [filteredByRestaurant, searchTerm]);
 
-  // Get restaurant names for filter bar
   const restaurantNames = useMemo(() => {
     return restaurants.map(r => ({ id: r.id, name: r.name }));
   }, []);
 
-  // Handle restaurant selection
   const handleSelectRestaurant = (id: string) => {
     setActiveRestaurantId(id);
+    setShowMoodSelector(false);
+    setSelectedMood(null);
+  };
+
+  const handleMoodSelect = (mood: Mood) => {
+    setSelectedMood(mood);
+    const moodBasedItems = getMoodBasedRecommendations(menuItems, mood, userPreferences);
+    setRecommendations(moodBasedItems);
+  };
+
+  const resetMood = () => {
+    setSelectedMood(null);
+    setShowMoodSelector(false);
+    const smartRecommendations = getSmartRecommendations(menuItems, userPreferences);
+    setRecommendations(smartRecommendations);
   };
 
   return (
@@ -59,14 +74,43 @@ const HomePage: React.FC = () => {
       />
       
       <main className="container mx-auto px-4 py-8">
-        {!activeRestaurantId && recommendations.length > 0 && (
+        {!activeRestaurantId && !showMoodSelector && !selectedMood && (
+          <div className="mb-8 flex justify-center">
+            <button
+              onClick={() => setShowMoodSelector(true)}
+              className="flex items-center gap-2 px-6 py-3 bg-white text-emerald-600 rounded-full shadow-sm hover:shadow-md transition-all border border-emerald-100 hover:border-emerald-200"
+            >
+              <Brain size={20} />
+              <span className="font-medium">How are you feeling?</span>
+            </button>
+          </div>
+        )}
+
+        {showMoodSelector && !selectedMood && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-gray-800 text-center mb-8">
+              How are you feeling today?
+            </h2>
+            <MoodSelector onMoodSelect={handleMoodSelect} />
+          </div>
+        )}
+
+        {selectedMood && (
+          <MoodResults
+            mood={selectedMood}
+            items={recommendations}
+            onBack={resetMood}
+          />
+        )}
+
+        {!activeRestaurantId && !selectedMood && recommendations.length > 0 && !showMoodSelector && (
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Your Smart Picks Today</h2>
             <RecommendationList items={recommendations} />
           </div>
         )}
         
-        {!activeRestaurantId ? (
+        {!activeRestaurantId && !selectedMood && !showMoodSelector ? (
           <>
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Restaurants with Low-Calorie Options</h2>
             <RestaurantGrid 
@@ -74,7 +118,7 @@ const HomePage: React.FC = () => {
               onSelectRestaurant={handleSelectRestaurant} 
             />
           </>
-        ) : (
+        ) : activeRestaurantId && !selectedMood && (
           <>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-800">
@@ -98,4 +142,4 @@ const HomePage: React.FC = () => {
   );
 };
 
-export default HomePage
+export default HomePage;
