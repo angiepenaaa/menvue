@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 export interface MenuItem {
   id: string;
   name: string;
@@ -27,6 +29,7 @@ export interface MenuItem {
   mealTypes?: string[];
   moodTags?: string[];
   location?: string;
+  activityMatch?: string[];
 }
 
 export interface Restaurant {
@@ -64,4 +67,25 @@ export interface Mood {
   emoji: string;
   tags: string[];
   tip?: string;
+}
+
+export interface ActivityData {
+  stepsToday: number;
+  sleepHours: number;
+  workoutMinutes: number;
+  heartRateResting?: number;
+  lastUpdated: string;
+}
+
+export interface ActivitySummary {
+  icon: ReactNode;
+  label: string;
+  value: string | number;
+  status: 'low' | 'normal' | 'high';
+}
+
+export interface ActivityRecommendation {
+  type: string;
+  reason: string;
+  tags: string[];
 }

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import type { MenuItem as MenuItemType } from '../types';
 import CalorieBadge from './CalorieBadge';
+import ActivityMatchBadge from './ActivityMatchBadge';
 import { restaurants } from '../data/restaurants';
-import { MapPin, ChevronDown, ChevronUp, Clock } from 'lucide-react';
+import { MapPin, Clock } from 'lucide-react';
 
 interface MenuItemProps {
   item: MenuItemType;
@@ -22,6 +23,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
         <div className="absolute top-4 right-4">
           <CalorieBadge calories={item.calories} />
         </div>
+        {item.activityMatch && <ActivityMatchBadge matches={item.activityMatch} />}
       </div>
       
       <div className="p-6 flex-1 flex flex-col">
@@ -53,7 +55,11 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
           {item.tags.map((tag, index) => (
             <span
               key={index}
-              className="px-3 py-1 bg-gray-50 text-gray-600 text-xs font-medium rounded-full"
+              className={`px-3 py-1 text-xs font-medium rounded-full ${
+                item.activityMatch?.includes(tag)
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : 'bg-gray-50 text-gray-600'
+              }`}
             >
               {tag}
             </span>
@@ -81,30 +87,6 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                 <p className="text-lg font-semibold mt-1">{item.nutrition.fiber}g</p>
               </div>
             </div>
-            
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="text-gray-500 text-xs uppercase tracking-wide">Sugars</span>
-                  <p className="font-medium mt-1">{item.nutrition.sugars}g</p>
-                </div>
-                <div>
-                  <span className="text-gray-500 text-xs uppercase tracking-wide">Saturated Fat</span>
-                  <p className="font-medium mt-1">{item.nutrition.saturatedFat}g</p>
-                </div>
-              </div>
-              <div className="mt-3">
-                <span className="text-gray-500 text-xs uppercase tracking-wide">Sodium</span>
-                <p className="font-medium mt-1">{item.nutrition.sodium}mg</p>
-              </div>
-            </div>
-            
-            {item.ingredients && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <span className="text-gray-500 text-xs uppercase tracking-wide">Ingredients</span>
-                <p className="text-sm mt-2 leading-relaxed">{item.ingredients.join(', ')}</p>
-              </div>
-            )}
           </div>
         )}
         
@@ -121,5 +103,3 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
     </div>
   );
 };
-
-export default MenuItem;
