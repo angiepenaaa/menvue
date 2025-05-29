@@ -15,7 +15,11 @@ import { savePreferences } from '../utils/storage';
 import { Mood } from '../types';
 import { Brain } from 'lucide-react';
 
-const HomePage: React.FC = () => {
+interface HomePageProps {
+  onCartClick: () => void;
+}
+
+const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeRestaurantId, setActiveRestaurantId] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<MenuItem[]>([]);
@@ -29,7 +33,7 @@ const HomePage: React.FC = () => {
   }, []);
 
   const lowCalorieItems = useMemo(() => {
-    return filterMenuItemsByCalories(menuItems);
+    return filterMenuItemsByCalories(menuItems, 500);
   }, []);
 
   const filteredByRestaurant = useMemo(() => {
@@ -66,7 +70,11 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <Header
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        onCartClick={onCartClick}
+      />
       <FilterBar 
         activeRestaurantId={activeRestaurantId}
         setActiveRestaurantId={setActiveRestaurantId}

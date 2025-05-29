@@ -3,7 +3,8 @@ import type { MenuItem as MenuItemType } from '../types';
 import CalorieBadge from './CalorieBadge';
 import ActivityMatchBadge from './ActivityMatchBadge';
 import { restaurants } from '../data/restaurants';
-import { MapPin, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { MapPin, Clock, ChevronDown, ChevronUp, ShoppingCart } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
 interface MenuItemProps {
   item: MenuItemType;
@@ -12,6 +13,7 @@ interface MenuItemProps {
 const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
   const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const restaurant = restaurants.find(r => r.id === item.restaurantId);
+  const { addItem } = useCart();
 
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden h-full flex flex-col transform transition duration-300 hover:shadow-lg border border-gray-100">
@@ -110,7 +112,11 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
           <div>
             <span className="text-2xl font-bold text-gray-900">{item.price}</span>
           </div>
-          <button className="px-6 py-2.5 bg-emerald-600 text-white rounded-full text-sm font-medium hover:bg-emerald-700 transition-colors">
+          <button
+            onClick={() => addItem(item)}
+            className="px-6 py-2.5 bg-emerald-600 text-white rounded-full text-sm font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2"
+          >
+            <ShoppingCart size={16} />
             Add to Cart
           </button>
         </div>

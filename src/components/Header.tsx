@@ -1,12 +1,16 @@
 import React from 'react';
-import { Search, Utensils } from 'lucide-react';
+import { Search, Utensils, ShoppingCart } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
 interface HeaderProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
+  onCartClick: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm }) => {
+const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm, onCartClick }) => {
+  const { totalItems } = useCart();
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-10">
       <div className="container mx-auto px-4 py-4">
@@ -30,8 +34,16 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm }) => {
           </div>
           
           <div className="hidden md:flex items-center space-x-4">
-            <button className="text-gray-600 hover:text-emerald-600 transition-colors">
-              My Orders
+            <button
+              onClick={onCartClick}
+              className="relative text-gray-600 hover:text-emerald-600 transition-colors"
+            >
+              <ShoppingCart size={24} />
+              {totalItems > 0 && (
+                <span className="absolute -top-2 -right-2 bg-emerald-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                  {totalItems}
+                </span>
+              )}
             </button>
             <button className="bg-emerald-600 text-white px-4 py-2 rounded-full hover:bg-emerald-700 transition-colors">
               Sign In
@@ -42,5 +54,3 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm }) => {
     </header>
   );
 };
-
-export default Header;

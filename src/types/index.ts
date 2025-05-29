@@ -26,18 +26,19 @@ export interface MenuItem {
   mood_tags?: string[];
 }
 
-// New types for filtering
-export interface FilterState {
-  sugar: 'any' | 'low' | 'medium' | 'high';
-  fiber: 'any' | 'low' | 'high';
-  prepTime: 'any' | 'under_10' | 'under_20' | 'no_prep';
-  cuisineType: string[];
-  protein: 'any' | 'low' | 'medium' | 'high';
-  carbs: 'any' | 'low' | 'medium' | 'high';
-  fat: 'any' | 'low' | 'medium' | 'high';
-  mealType: string[];
-  isHydrating: boolean;
-  moodTags: string[];
+// New Cart Types
+export interface CartItem extends MenuItem {
+  quantity: number;
 }
 
-// Rest of the existing types...
+export interface CartContextType {
+  items: CartItem[];
+  addItem: (item: MenuItem) => void;
+  removeItem: (itemId: string) => void;
+  updateQuantity: (itemId: string, quantity: number) => void;
+  clearCart: () => void;
+  totalItems: number;
+  subtotal: number;
+}
+
+// Rest of existing types...
