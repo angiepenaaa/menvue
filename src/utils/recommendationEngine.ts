@@ -38,6 +38,52 @@ const prioritizeByTimeOfDay = (items: MenuItem[]): MenuItem[] => {
   });
 };
 
+const getMoodNutrientScore = (item: MenuItem, mood: Mood): number => {
+  let score = 0;
+  
+  // Specific nutrient scoring based on mood
+  switch (mood.id) {
+    case 'stressed':
+      // Higher scores for magnesium-rich foods and omega-3s
+      if (item.tags.some(tag => 
+        tag.toLowerCase().includes('magnesium') ||
+        tag.toLowerCase().includes('omega') ||
+        tag.toLowerCase().includes('nuts') ||
+        tag.toLowerCase().includes('leafy greens')
+      )) score += 3;
+      break;
+      
+    case 'low-energy':
+      // Higher scores for iron-rich and B-vitamin foods
+      if (item.tags.some(tag =>
+        tag.toLowerCase().includes('iron') ||
+        tag.toLowerCase().includes('protein') ||
+        tag.toLowerCase().includes('b-vitamin')
+      )) score += 3;
+      break;
+      
+    case 'focus':
+      // Higher scores for brain-boosting foods
+      if (item.tags.some(tag =>
+        tag.toLowerCase().includes('omega') ||
+        tag.toLowerCase().includes('antioxidant') ||
+        tag.toLowerCase().includes('berries')
+      )) score += 3;
+      break;
+      
+    case 'bloated':
+      // Higher scores for anti-inflammatory and light foods
+      if (item.tags.some(tag =>
+        tag.toLowerCase().includes('light') ||
+        tag.toLowerCase().includes('anti-inflammatory') ||
+        tag.toLowerCase().includes('probiotic')
+      )) score += 3;
+      break;
+  }
+  
+  return score;
+};
+
 const rankItems = (items: MenuItem[], preferences: UserPreferences): MenuItem[] => {
   return items.sort((a, b) => {
     let aScore = 0;
@@ -59,15 +105,17 @@ const rankItems = (items: MenuItem[], preferences: UserPreferences): MenuItem[] 
 
 const rankByMoodMatch = (items: MenuItem[], mood: Mood): MenuItem[] => {
   return items.sort((a, b) => {
-    const aMatchCount = mood.tags.filter(tag => 
-      a.tags.some(itemTag => itemTag.toLowerCase().includes(tag.toLowerCase()))
-    ).length;
+    const aScore = getMoodNutrientScore(a, mood) + 
+      mood.tags.filter(tag => 
+        a.tags.some(itemTag => itemTag.toLowerCase().includes(tag.toLowerCase()))
+      ).length;
     
-    const bMatchCount = mood.tags.filter(tag => 
-      b.tags.some(itemTag => itemTag.toLowerCase().includes(tag.toLowerCase()))
-    ).length;
+    const bScore = getMoodNutrientScore(b, mood) + 
+      mood.tags.filter(tag => 
+        b.tags.some(itemTag => itemTag.toLowerCase().includes(tag.toLowerCase()))
+      ).length;
 
-    return bMatchCount - aMatchCount;
+    return bScore - aScore;
   });
 };
 
@@ -96,14 +144,14 @@ export const getMoodBasedRecommendations = (
   recommendations = filterByDiet(recommendations, preferences.dietType);
   recommendations = filterByCalorieRange(recommendations, preferences.calorieRange);
 
-  // Apply mood-based ranking
+  // Apply mood-based ranking with enhanced scoring
   recommendations = rankByMoodMatch(recommendations, mood);
 
   // Filter out items with no mood matches
   recommendations = recommendations.filter(item => 
     mood.tags.some(tag => 
       item.tags.some(itemTag => itemTag.toLowerCase().includes(tag.toLowerCase()))
-    )
+    ) || getMoodNutrientScore(item, mood) > 0
   );
 
   return recommendations;
