@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import AccountPage from './pages/AccountPage';
+import AccountSettingsPage from './pages/AccountSettingsPage';
 import CartDrawer from './components/CartDrawer';
 import { CartProvider } from './context/CartContext';
 
@@ -14,6 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage onCartClick={() => setIsCartOpen(true)} />} />
           <Route path="/account" element={<AccountPage />} />
+          <Route path="/account/settings" element={<AccountSettingsPage />} />
         </Routes>
         <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       </Router>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { User, Settings, CreditCard, History, Bell, LogOut } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const AccountPage: React.FC = () => {
   const user = {
@@ -10,7 +11,7 @@ const AccountPage: React.FC = () => {
   };
 
   const menuItems = [
-    { icon: <Settings size={20} />, label: 'Account Settings', href: '#' },
+    { icon: <Settings size={20} />, label: 'Account Settings', href: '/account/settings' },
     { icon: <CreditCard size={20} />, label: 'Payment Methods', href: '#' },
     { icon: <History size={20} />, label: 'Order History', href: '#' },
     { icon: <Bell size={20} />, label: 'Notifications', href: '#' }
@@ -59,16 +60,16 @@ const AccountPage: React.FC = () => {
         {/* Menu Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {menuItems.map((item, index) => (
-            <a
+            <Link
               key={index}
-              href={item.href}
+              to={item.href}
               className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex items-center gap-4 hover:shadow-md transition-shadow"
             >
               <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600">
                 {item.icon}
               </div>
               <div className="font-medium text-gray-800">{item.label}</div>
-            </a>
+            </Link>
           ))}
         </div>
 
