@@ -1,6 +1,7 @@
 import React from 'react';
 import { User, Settings, CreditCard, History, Bell, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Header from '../components/Header';
 
 const AccountPage: React.FC = () => {
   const user = {
@@ -18,8 +19,10 @@ const AccountPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
+    <div className="min-h-screen bg-gray-50">
+      <Header showSearch={false} />
+      
+      <div className="container mx-auto px-4 max-w-4xl py-8">
         {/* Welcome Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
           <div className="flex items-center gap-6">

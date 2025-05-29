@@ -11,6 +11,7 @@ import {
   Camera
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Header from '../components/Header';
 
 const AccountSettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('profile');
@@ -30,8 +31,10 @@ const AccountSettingsPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
+    <div className="min-h-screen bg-gray-50">
+      <Header showSearch={false} />
+      
+      <div className="container mx-auto px-4 max-w-4xl py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link to="/account" className="text-gray-600 hover:text-gray-800">
