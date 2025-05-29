@@ -1,6 +1,7 @@
 import React from 'react';
 import type { MenuItem, Mood } from '../types';
 import MenuList from './MenuList';
+import MenuItem from './MenuItem';
 
 interface MoodResultsProps {
   mood: Mood;
