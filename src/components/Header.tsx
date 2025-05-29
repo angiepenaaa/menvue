@@ -33,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {isAccountPage && (
-              <Link to="/" className="text-gray-600 hover:text-emerald-600 transition-colors">
+              <Link to="/\" className="text-gray-600 hover:text-emerald-600 transition-colors">
                 <Home size={24} />
               </Link>
             )}
