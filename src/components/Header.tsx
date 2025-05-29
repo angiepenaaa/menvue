@@ -20,19 +20,31 @@ const Header: React.FC<HeaderProps> = ({
   const location = useLocation();
   const isAccountPage = location.pathname.includes('/account');
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-10">
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {isAccountPage && (
-              <Link to="/\" className="text-gray-600 hover:text-emerald-600 transition-colors">
+              <Link to="/" className="text-gray-600 hover:text-emerald-600 transition-colors">
                 <Home size={24} />
               </Link>
             )}
             <Link to="/" className="flex items-center">
               <Utensils size={24} className="text-emerald-600 mr-2" />
-              <h1 className="text-xl font-bold text-gray-800">menVue</h1>
+              <div>
+                <h1 className="text-xl font-bold text-gray-800">menVue</h1>
+                {!isAccountPage && (
+                  <p className="text-sm text-gray-600">{getGreeting()}, Angie</p>
+                )}
+              </div>
             </Link>
           </div>
           
