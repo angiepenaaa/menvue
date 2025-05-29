@@ -54,3 +54,5 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm, onCartClick 
     </header>
   );
 };
+
+export default Header
