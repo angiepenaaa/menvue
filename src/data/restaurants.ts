@@ -72,5 +72,16 @@ export const restaurants: Restaurant[] = [
     deliveryTime: '20-30 min',
     image: 'https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg',
     location: 'Brandon, FL'
+  },
+  // Add Chick-fil-A
+  {
+    id: '15',
+    name: 'Chick-fil-A',
+    cuisine: 'American',
+    rating: 4.8,
+    distance: '0.5 mi',
+    deliveryTime: '15-25 min',
+    image: 'https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg',
+    location: 'Brandon, FL'
   }
 ];
