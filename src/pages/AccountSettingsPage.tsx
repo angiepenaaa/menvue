@@ -45,31 +45,31 @@ const AccountSettingsPage: React.FC = () => {
           <div className="flex border-b border-gray-100">
             <button
               onClick={() => setActiveTab('profile')}
-              className={\`px-6 py-4 font-medium \${
+              className={`px-6 py-4 font-medium ${
                 activeTab === 'profile'
                   ? 'text-emerald-600 border-b-2 border-emerald-600'
                   : 'text-gray-600 hover:text-gray-800'
-              }\`}
+              }`}
             >
               Profile
             </button>
             <button
               onClick={() => setActiveTab('notifications')}
-              className={\`px-6 py-4 font-medium \${
+              className={`px-6 py-4 font-medium ${
                 activeTab === 'notifications'
                   ? 'text-emerald-600 border-b-2 border-emerald-600'
                   : 'text-gray-600 hover:text-gray-800'
-              }\`}
+              }`}
             >
               Notifications
             </button>
             <button
               onClick={() => setActiveTab('security')}
-              className={\`px-6 py-4 font-medium \${
+              className={`px-6 py-4 font-medium ${
                 activeTab === 'security'
                   ? 'text-emerald-600 border-b-2 border-emerald-600'
                   : 'text-gray-600 hover:text-gray-800'
-              }\`}
+              }`}
             >
               Security
             </button>
@@ -298,6 +298,3 @@ const AccountSettingsPage: React.FC = () => {
 };
 
 export default AccountSettingsPage;
-              }
-  )
-}
