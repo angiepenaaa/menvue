@@ -26,6 +26,13 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
   const [showMoodSelector, setShowMoodSelector] = useState(false);
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good Morning';
+    if (hour < 17) return 'Good Afternoon';
+    return 'Good Evening';
+  };
+
   useEffect(() => {
     const smartRecommendations = getSmartRecommendations(menuItems, userPreferences);
     setRecommendations(smartRecommendations);
@@ -83,14 +90,19 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
       
       <main className="container mx-auto px-4 py-8">
         {!activeRestaurantId && !showMoodSelector && !selectedMood && (
-          <div className="mb-8 flex justify-center">
-            <button
-              onClick={() => setShowMoodSelector(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-white text-emerald-600 rounded-full shadow-sm hover:shadow-md transition-all border border-emerald-100 hover:border-emerald-200"
-            >
-              <Brain size={20} />
-              <span className="font-medium">How are you feeling?</span>
-            </button>
+          <div className="mb-8 space-y-4">
+            <h2 className="text-2xl font-bold text-gray-800 text-center">
+              {getGreeting()}, Angie! 👋
+            </h2>
+            <div className="flex justify-center">
+              <button
+                onClick={() => setShowMoodSelector(true)}
+                className="flex items-center gap-2 px-6 py-3 bg-white text-emerald-600 rounded-full shadow-sm hover:shadow-md transition-all border border-emerald-100 hover:border-emerald-200"
+              >
+                <Brain size={20} />
+                <span className="font-medium">How are you feeling?</span>
+              </button>
+            </div>
           </div>
         )}
 
