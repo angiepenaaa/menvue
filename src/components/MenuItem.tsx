@@ -108,13 +108,13 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
         )}
         
         {/* Price and Action */}
-        <div className="flex items-center justify-between pt-4 mt-auto border-t border-gray-100">
-          <div>
+        <div className="flex items-center flex-wrap gap-4 pt-4 mt-auto border-t border-gray-100">
+          <div className="flex-shrink-0">
             <span className="text-2xl font-bold text-gray-900">{item.price}</span>
           </div>
           <button
             onClick={() => addItem(item)}
-            className="px-6 py-2.5 bg-emerald-600 text-white rounded-full text-sm font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2"
+            className="flex-shrink-0 px-6 py-2.5 bg-emerald-600 text-white rounded-full text-sm font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2 ml-auto"
           >
             <ShoppingCart size={16} />
             Add to Cart
