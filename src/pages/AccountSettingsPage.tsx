@@ -298,3 +298,6 @@ const AccountSettingsPage: React.FC = () => {
 };
 
 export default AccountSettingsPage;
+              }
+  )
+}
