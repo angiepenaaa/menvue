@@ -14,7 +14,7 @@ import { filterMenuItems, filterMenuItemsBySearch } from '../utils/filterItems';
 import { getSmartRecommendations, getMoodBasedRecommendations } from '../utils/recommendationEngine';
 import { savePreferences } from '../utils/storage';
 import { Mood, FilterState } from '../types';
-import { Brain, MapPin, Star, TrendingUp } from 'lucide-react';
+import { Brain, MapPin, Star, TrendingUp, Gauge } from 'lucide-react';
 
 interface HomePageProps {
   onCartClick: () => void;
@@ -108,6 +108,10 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
               <button className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-full whitespace-nowrap">
                 <MapPin size={16} />
                 <span>Nearby Pickup</span>
+              </button>
+              <button className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-full whitespace-nowrap border border-gray-200">
+                <Gauge size={16} />
+                <span>Under 500 Cals</span>
               </button>
               <button className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-full whitespace-nowrap border border-gray-200">
                 <Star size={16} />
