@@ -5,8 +5,12 @@ import {
   Coffee, 
   UtensilsCrossed, 
   Clock,
-  Droplets,
-  Brain
+  Dumbbell,
+  Brain,
+  Heart,
+  Leaf,
+  Timer,
+  Tag
 } from 'lucide-react';
 
 interface FilterPanelProps {
@@ -17,16 +21,36 @@ interface FilterPanelProps {
 const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const cuisineOptions = [
-    'Mexican', 'Mediterranean', 'Asian', 'American', 'Plant-Based'
-  ];
-
   const mealTypes = [
     'Breakfast', 'Lunch', 'Dinner', 'Snack'
   ];
 
-  const moodOptions = [
-    'Energizing', 'Calming', 'Focus', 'Recovery'
+  const healthGoals = [
+    'Build Muscle', 'Lose Weight', 'Maintain Weight', 'Gain Weight'
+  ];
+
+  const dietTypes = [
+    'Vegan', 'Vegetarian', 'Pescatarian', 'Keto', 'Paleo', 'Gluten-Free', 'Dairy-Free'
+  ];
+
+  const macroTags = [
+    'High Protein', 'Low Carb', 'Low Sugar', 'High Fiber', 'Low Fat', 'High Fat', 'Balanced Macros'
+  ];
+
+  const moodTags = [
+    'Post-Workout', 'Feeling Tired', 'Feeling Bloated', 'Need to Focus', 'Comfort Meal', 'Hydrating'
+  ];
+
+  const cuisineTypes = [
+    'Mediterranean', 'Asian', 'Latin', 'American', 'Indian', 'Middle Eastern', 'Plant-Based'
+  ];
+
+  const prepTimes = [
+    'Grab-and-Go', 'Under 10 Minutes', 'Dine-In Recommended'
+  ];
+
+  const specialTags = [
+    'Anti-Inflammatory', 'Gut-Friendly', 'No Added Sugar', 'Low Sodium', 'MenVue Approved'
   ];
 
   const handleChange = (key: keyof FilterState, value: any) => {
@@ -44,6 +68,19 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
     handleChange(key, newArray);
   };
 
+  const clearFilters = () => {
+    onFilterChange({
+      mealType: [],
+      healthGoal: '',
+      dietTypes: [],
+      macroTags: [],
+      moodTags: [],
+      cuisineType: [],
+      prepTime: '',
+      specialTags: [],
+    });
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100">
       {/* Filter Header */}
@@ -55,90 +92,17 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
           <SlidersHorizontal size={20} className="text-emerald-600" />
           <span className="font-semibold text-gray-800">Filter Meals</span>
         </div>
-        <span className="text-sm text-gray-500">
-          {Object.values(filters).flat().filter(Boolean).length} active
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-500">
+            {Object.values(filters).flat().filter(Boolean).length} active
+          </span>
+        </div>
       </button>
 
       {/* Filter Content */}
       {isOpen && (
         <div className="p-6 border-t border-gray-100 space-y-6">
-          {/* Macronutrient Filters */}
-          <div className="space-y-4">
-            <h3 className="font-medium text-gray-800">Macronutrients</h3>
-            
-            {/* Sugar */}
-            <div className="flex flex-col gap-2">
-              <label className="text-sm text-gray-600">Sugar Content</label>
-              <select
-                value={filters.sugar}
-                onChange={(e) => handleChange('sugar', e.target.value)}
-                className="rounded-lg border border-gray-200 px-3 py-2"
-              >
-                <option value="any">Any</option>
-                <option value="low">Low (≤5g)</option>
-                <option value="medium">Medium (6-15g)</option>
-                <option value="high">High (>15g)</option>
-              </select>
-            </div>
-
-            {/* Fiber */}
-            <div className="flex flex-col gap-2">
-              <label className="text-sm text-gray-600">Fiber Content</label>
-              <select
-                value={filters.fiber}
-                onChange={(e) => handleChange('fiber', e.target.value)}
-                className="rounded-lg border border-gray-200 px-3 py-2"
-              >
-                <option value="any">Any</option>
-                <option value="low">Low (≤3g)</option>
-                <option value="high">High (>3g)</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Prep Time */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Clock size={18} className="text-gray-500" />
-              <h3 className="font-medium text-gray-800">Prep Time</h3>
-            </div>
-            <select
-              value={filters.prepTime}
-              onChange={(e) => handleChange('prepTime', e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2"
-            >
-              <option value="any">Any Time</option>
-              <option value="under_10">Under 10 minutes</option>
-              <option value="under_20">Under 20 minutes</option>
-              <option value="no_prep">No Prep Needed</option>
-            </select>
-          </div>
-
-          {/* Cuisine Types */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <UtensilsCrossed size={18} className="text-gray-500" />
-              <h3 className="font-medium text-gray-800">Cuisine Type</h3>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {cuisineOptions.map((cuisine) => (
-                <button
-                  key={cuisine}
-                  onClick={() => handleArrayToggle('cuisineType', cuisine)}
-                  className={`px-3 py-1 rounded-full text-sm ${
-                    filters.cuisineType.includes(cuisine)
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {cuisine}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Meal Types */}
+          {/* Meal Type */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <Coffee size={18} className="text-gray-500" />
@@ -161,24 +125,73 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
             </div>
           </div>
 
-          {/* Hydrating Toggle */}
-          <div className="flex items-center justify-between">
+          {/* Health Goals */}
+          <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <Droplets size={18} className="text-gray-500" />
-              <span className="font-medium text-gray-800">Hydrating Meals</span>
+              <Dumbbell size={18} className="text-gray-500" />
+              <h3 className="font-medium text-gray-800">Health Goal</h3>
             </div>
-            <button
-              onClick={() => handleChange('isHydrating', !filters.isHydrating)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                filters.isHydrating ? 'bg-emerald-600' : 'bg-gray-200'
-              }`}
-            >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                  filters.isHydrating ? 'translate-x-6' : 'translate-x-1'
-                }`}
-              />
-            </button>
+            <div className="flex flex-wrap gap-2">
+              {healthGoals.map((goal) => (
+                <button
+                  key={goal}
+                  onClick={() => handleChange('healthGoal', goal)}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    filters.healthGoal === goal
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {goal}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Diet Types */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Leaf size={18} className="text-gray-500" />
+              <h3 className="font-medium text-gray-800">Diet Type</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {dietTypes.map((diet) => (
+                <button
+                  key={diet}
+                  onClick={() => handleArrayToggle('dietTypes', diet)}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    filters.dietTypes.includes(diet)
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {diet}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Macro Tags */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Heart size={18} className="text-gray-500" />
+              <h3 className="font-medium text-gray-800">Macros</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {macroTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => handleArrayToggle('macroTags', tag)}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    filters.macroTags.includes(tag)
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Mood Tags */}
@@ -188,7 +201,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
               <h3 className="font-medium text-gray-800">Mood Match</h3>
             </div>
             <div className="flex flex-wrap gap-2">
-              {moodOptions.map((mood) => (
+              {moodTags.map((mood) => (
                 <button
                   key={mood}
                   onClick={() => handleArrayToggle('moodTags', mood)}
@@ -204,24 +217,85 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
             </div>
           </div>
 
-          {/* Reset Button */}
-          <button
-            onClick={() => onFilterChange({
-              sugar: 'any',
-              fiber: 'any',
-              prepTime: 'any',
-              cuisineType: [],
-              protein: 'any',
-              carbs: 'any',
-              fat: 'any',
-              mealType: [],
-              isHydrating: false,
-              moodTags: []
-            })}
-            className="w-full py-2 text-emerald-600 hover:text-emerald-700 font-medium"
-          >
-            Reset Filters
-          </button>
+          {/* Cuisine Types */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <UtensilsCrossed size={18} className="text-gray-500" />
+              <h3 className="font-medium text-gray-800">Cuisine Type</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {cuisineTypes.map((cuisine) => (
+                <button
+                  key={cuisine}
+                  onClick={() => handleArrayToggle('cuisineType', cuisine)}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    filters.cuisineType.includes(cuisine)
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {cuisine}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Prep Time */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Timer size={18} className="text-gray-500" />
+              <h3 className="font-medium text-gray-800">Prep Time</h3>
+            </div>
+            <select
+              value={filters.prepTime}
+              onChange={(e) => handleChange('prepTime', e.target.value)}
+              className="w-full rounded-lg border border-gray-200 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+            >
+              <option value="">Any Time</option>
+              {prepTimes.map((time) => (
+                <option key={time} value={time}>{time}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Special Tags */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Tag size={18} className="text-gray-500" />
+              <h3 className="font-medium text-gray-800">Special Tags</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {specialTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => handleArrayToggle('specialTags', tag)}
+                  className={`px-3 py-1 rounded-full text-sm ${
+                    filters.specialTags.includes(tag)
+                      ? 'bg-emerald-100 text-emerald-700'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-between pt-4 border-t border-gray-100">
+            <button
+              onClick={clearFilters}
+              className="text-gray-600 hover:text-gray-800 font-medium"
+            >
+              Clear All
+            </button>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+            >
+              Apply Filters
+            </button>
+          </div>
         </div>
       )}
     </div>

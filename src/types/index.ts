@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-// Existing types...
+// Menu Item Types
 export interface MenuItem {
   id: string;
   name: string;
@@ -24,9 +24,28 @@ export interface MenuItem {
   meal_type?: string;
   is_hydrating?: boolean;
   mood_tags?: string[];
+  health_goals?: string[];
+  diet_types?: string[];
+  macro_profile?: string[];
 }
 
-// New Cart Types
+// Filter Types
+export interface FilterState {
+  mealType: string[];
+  healthGoal: string;
+  dietTypes: string[];
+  macroTags: string[];
+  moodTags: string[];
+  cuisineType: string[];
+  prepTime: string;
+  specialTags: string[];
+  minProtein?: number;
+  maxCarbs?: number;
+  minFiber?: number;
+  maxSugar?: number;
+}
+
+// Cart Types
 export interface CartItem extends MenuItem {
   quantity: number;
 }
@@ -41,4 +60,44 @@ export interface CartContextType {
   subtotal: number;
 }
 
-// Rest of existing types...
+// Activity and Recommendation Types
+export interface ActivityData {
+  stepsToday: number;
+  sleepHours: number;
+  workoutMinutes: number;
+  heartRateResting?: number;
+  lastUpdated: string;
+}
+
+export interface ActivityRecommendation {
+  type: string;
+  reason: string;
+  tags: string[];
+}
+
+export interface Mood {
+  id: string;
+  name: string;
+  emoji: string;
+  tags: string[];
+  tip: string;
+}
+
+export interface Restaurant {
+  id: string;
+  name: string;
+  cuisine: string;
+  rating: number;
+  distance: string;
+  deliveryTime: string;
+  image: string;
+  location: string;
+}
+
+export interface UserPreferences {
+  healthGoal: string;
+  dietType: string;
+  allergens: string[];
+  mealType: string;
+  calorieRange: string;
+}
