@@ -1,8 +1,6 @@
 import type { MenuItem } from '../types';
 
 export const menuItems: MenuItem[] = [
-  // Existing items...
-  
   // Clean Eats Kitchen
   {
     id: '1101',
@@ -160,6 +158,122 @@ export const menuItems: MenuItem[] = [
       saturatedFat: 3,
       fiber: 6,
       sodium: 580
+    }
+  },
+
+  // Chick-fil-A Items
+  {
+    id: '1501',
+    name: 'Grilled Chicken Sandwich',
+    description: 'Grilled chicken breast, lettuce, tomato on a toasted multigrain bun',
+    calories: 380,
+    price: '$5.99',
+    image: 'https://images.pexels.com/photos/1352270/pexels-photo-1352270.jpeg',
+    tags: ['Grilled', 'High Protein', 'Sandwich'],
+    restaurantId: '15',
+    nutrition: {
+      protein: 28,
+      carbs: 41,
+      sugars: 9,
+      totalFat: 12,
+      saturatedFat: 2.5,
+      fiber: 3,
+      sodium: 680
+    }
+  },
+  {
+    id: '1502',
+    name: 'Grilled Chicken Cool Wrap',
+    description: 'Grilled chicken, lettuce, red cabbage, carrots in a flaxseed flour flat bread',
+    calories: 350,
+    price: '$7.29',
+    image: 'https://images.pexels.com/photos/1618906/pexels-photo-1618906.jpeg',
+    tags: ['Wrap', 'High Protein', 'Low Fat'],
+    restaurantId: '15',
+    nutrition: {
+      protein: 42,
+      carbs: 29,
+      sugars: 3,
+      totalFat: 13,
+      saturatedFat: 3.5,
+      fiber: 15,
+      sodium: 660
+    }
+  },
+  {
+    id: '1503',
+    name: 'Market Salad',
+    description: 'Grilled chicken breast, mixed greens, blue cheese, apples, strawberries, blueberries',
+    calories: 340,
+    price: '$9.69',
+    image: 'https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg',
+    tags: ['Salad', 'High Protein', 'Antioxidants'],
+    restaurantId: '15',
+    nutrition: {
+      protein: 27,
+      carbs: 26,
+      sugars: 16,
+      totalFat: 14,
+      saturatedFat: 3,
+      fiber: 6,
+      sodium: 520
+    }
+  },
+  {
+    id: '1504',
+    name: 'Grilled Chicken Nuggets (8 ct)',
+    description: 'Eight piece grilled chicken nuggets, perfect for protein-focused meals',
+    calories: 130,
+    price: '$5.89',
+    image: 'https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg',
+    tags: ['Grilled', 'High Protein', 'Low Carb'],
+    restaurantId: '15',
+    nutrition: {
+      protein: 25,
+      carbs: 2,
+      sugars: 0,
+      totalFat: 3,
+      saturatedFat: 0.5,
+      fiber: 0,
+      sodium: 440
+    }
+  },
+  {
+    id: '1505',
+    name: 'Grilled Chicken Club',
+    description: 'Grilled chicken, Colby Jack cheese, bacon, lettuce, tomato',
+    calories: 440,
+    price: '$7.99',
+    image: 'https://images.pexels.com/photos/1647163/pexels-photo-1647163.jpeg',
+    tags: ['Sandwich', 'High Protein', 'Club'],
+    restaurantId: '15',
+    nutrition: {
+      protein: 42,
+      carbs: 39,
+      sugars: 7,
+      totalFat: 18,
+      saturatedFat: 7,
+      fiber: 3,
+      sodium: 680
+    }
+  },
+  {
+    id: '1506',
+    name: 'Spicy Southwest Salad',
+    description: 'Grilled chicken, mixed greens, black beans, corn, tomatoes, peppers',
+    calories: 450,
+    price: '$9.69',
+    image: 'https://images.pexels.com/photos/1352270/pexels-photo-1352270.jpeg',
+    tags: ['Salad', 'Spicy', 'High Protein'],
+    restaurantId: '15',
+    nutrition: {
+      protein: 32,
+      carbs: 42,
+      sugars: 9,
+      totalFat: 19,
+      saturatedFat: 6,
+      fiber: 8,
+      sodium: 590
     }
   }
 ];
