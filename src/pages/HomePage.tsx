@@ -26,6 +26,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
   const [recommendations, setRecommendations] = useState<MenuItem[]>([]);
   const [showMoodSelector, setShowMoodSelector] = useState(false);
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
+  const [showUnder500, setShowUnder500] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     mealType: [],
     healthGoal: '',
@@ -56,8 +57,11 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
     if (activeRestaurantId) {
       items = items.filter(item => item.restaurantId === activeRestaurantId);
     }
+    if (showUnder500) {
+      items = items.filter(item => item.calories <= 500);
+    }
     return filterMenuItemsBySearch(items, searchTerm);
-  }, [filters, activeRestaurantId, searchTerm]);
+  }, [filters, activeRestaurantId, searchTerm, showUnder500]);
 
   const restaurantNames = useMemo(() => {
     return restaurants.map(r => ({ id: r.id, name: r.name }));
@@ -109,7 +113,12 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
                 <MapPin size={16} />
                 <span>Nearby Pickup</span>
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-full whitespace-nowrap border border-gray-200">
+              <button 
+                onClick={() => setShowUnder500(!showUnder500)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap border border-gray-200 ${
+                  showUnder500 ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700'
+                }`}
+              >
                 <Gauge size={16} />
                 <span>Under 500 Cals</span>
               </button>
