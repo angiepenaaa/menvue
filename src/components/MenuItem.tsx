@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import type { MenuItem as MenuItemType } from '../types';
 import { MapPin, Clock, Plus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
