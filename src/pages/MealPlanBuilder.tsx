@@ -103,7 +103,7 @@ const MealPlanBuilder: React.FC = () => {
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-2xl p-8 mb-8 text-white">
           <h1 className="text-3xl font-bold mb-3">Custom Meal Plan Builder</h1>
-          <p className="text-emerald-50 text-lg">Design your perfect week of clean eating</p>
+          <p className="text-emerald-50 text-lg">No time? No problem. We planned your clean week.</p>
         </div>
         
         {/* Plan Configuration */}
