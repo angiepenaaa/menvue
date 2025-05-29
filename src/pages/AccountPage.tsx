@@ -3,7 +3,7 @@ import { User, Settings, CreditCard, History, Bell, LogOut } from 'lucide-react'
 
 const AccountPage: React.FC = () => {
   const user = {
-    name: 'Sarah Johnson',
+    name: 'Angie Pena',
     email: 'sarah.j@example.com',
     joinDate: 'March 2024',
     avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg'
