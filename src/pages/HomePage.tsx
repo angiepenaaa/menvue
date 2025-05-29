@@ -97,7 +97,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
               {greeting}, Angie! 👋
             </h2>
-            <p className="text-gray-600">Find healthy options under 500 calories near you</p>
+            <p className="text-gray-600">Menus That Leave You Feeling Good</p>
           </div>
         )}
 
