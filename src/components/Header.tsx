@@ -1,6 +1,7 @@
 import React from 'react';
-import { Search, Utensils, ShoppingCart } from 'lucide-react';
+import { Search, Utensils, ShoppingCart, User } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   searchTerm: string;
@@ -15,10 +16,10 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm, onCartClick 
     <header className="bg-white shadow-sm sticky top-0 z-10">
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center">
+          <Link to="/" className="flex items-center">
             <Utensils size={24} className="text-emerald-600 mr-2" />
             <h1 className="text-xl font-bold text-gray-800">menVue</h1>
-          </div>
+          </Link>
           
           <div className="relative flex-1 max-w-md">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -34,6 +35,12 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm, onCartClick 
           </div>
           
           <div className="hidden md:flex items-center space-x-4">
+            <Link
+              to="/account"
+              className="text-gray-600 hover:text-emerald-600 transition-colors"
+            >
+              <User size={24} />
+            </Link>
             <button
               onClick={onCartClick}
               className="relative text-gray-600 hover:text-emerald-600 transition-colors"
@@ -55,4 +62,4 @@ const Header: React.FC<HeaderProps> = ({ searchTerm, setSearchTerm, onCartClick 
   );
 };
 
-export default Header
+export default Header;
