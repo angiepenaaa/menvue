@@ -106,3 +106,5 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
     </div>
   );
 };
+
+export default CartDrawer
