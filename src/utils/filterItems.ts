@@ -108,13 +108,13 @@ export const filterMenuItemsByCalories = (
   maxCalories: number
 ): MenuItem[] => {
   if (!maxCalories) return items;
-  return items.filter((item) => item.nutrition.calories <= maxCalories);
+  return items.filter((item) => item.calories <= maxCalories);
 };
 
 export const filterMenuItemsByRestaurant = (
   items: MenuItem[],
-  restaurantId: string
+  restaurantId: string | null
 ): MenuItem[] => {
   if (!restaurantId) return items;
-  return items.filter((item) => item.restaurant_id === restaurantId);
+  return items.filter((item) => item.restaurantId === restaurantId);
 };
