@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { MenuItem as MenuItemType } from '../types';
 import CalorieBadge from './CalorieBadge';
 import ActivityMatchBadge from './ActivityMatchBadge';
 import { restaurants } from '../data/restaurants';
-import { MapPin, Clock } from 'lucide-react';
+import { MapPin, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface MenuItemProps {
   item: MenuItemType;
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
+  const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const restaurant = restaurants.find(r => r.id === item.restaurantId);
 
   return (
@@ -68,25 +69,39 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
 
         {/* Nutrition Information */}
         {item.nutrition && (
-          <div className="mb-6 p-5 bg-gray-50 rounded-lg">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-white rounded-lg">
-                <span className="text-gray-500 text-xs uppercase tracking-wide">Protein</span>
-                <p className="text-lg font-semibold mt-1">{item.nutrition.protein}g</p>
+          <div className="mb-6">
+            <button
+              onClick={() => setIsNutritionOpen(!isNutritionOpen)}
+              className="w-full flex items-center justify-between py-3 px-4 bg-gray-50 rounded-lg text-left transition-colors hover:bg-gray-100"
+            >
+              <span className="font-semibold text-gray-800">Nutrition Facts</span>
+              {isNutritionOpen ? (
+                <ChevronUp className="text-gray-500" size={20} />
+              ) : (
+                <ChevronDown className="text-gray-500" size={20} />
+              )}
+            </button>
+            
+            {isNutritionOpen && (
+              <div className="mt-4 grid grid-cols-2 gap-4">
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <span className="text-gray-500 text-xs uppercase tracking-wide">Protein</span>
+                  <p className="text-lg font-semibold mt-1">{item.nutrition.protein}g</p>
+                </div>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <span className="text-gray-500 text-xs uppercase tracking-wide">Carbs</span>
+                  <p className="text-lg font-semibold mt-1">{item.nutrition.carbs}g</p>
+                </div>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <span className="text-gray-500 text-xs uppercase tracking-wide">Total Fat</span>
+                  <p className="text-lg font-semibold mt-1">{item.nutrition.totalFat}g</p>
+                </div>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <span className="text-gray-500 text-xs uppercase tracking-wide">Fiber</span>
+                  <p className="text-lg font-semibold mt-1">{item.nutrition.fiber}g</p>
+                </div>
               </div>
-              <div className="p-3 bg-white rounded-lg">
-                <span className="text-gray-500 text-xs uppercase tracking-wide">Carbs</span>
-                <p className="text-lg font-semibold mt-1">{item.nutrition.carbs}g</p>
-              </div>
-              <div className="p-3 bg-white rounded-lg">
-                <span className="text-gray-500 text-xs uppercase tracking-wide">Total Fat</span>
-                <p className="text-lg font-semibold mt-1">{item.nutrition.totalFat}g</p>
-              </div>
-              <div className="p-3 bg-white rounded-lg">
-                <span className="text-gray-500 text-xs uppercase tracking-wide">Fiber</span>
-                <p className="text-lg font-semibold mt-1">{item.nutrition.fiber}g</p>
-              </div>
-            </div>
+            )}
           </div>
         )}
         
@@ -104,4 +119,4 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
   );
 };
 
-export default MenuItem
+export default MenuItem;
