@@ -102,3 +102,19 @@ export const filterMenuItemsBySearch = (
       item.tags.some(tag => tag.toLowerCase().includes(lowercaseSearch))
   );
 };
+
+export const filterMenuItemsByCalories = (
+  items: MenuItem[],
+  maxCalories: number
+): MenuItem[] => {
+  if (!maxCalories) return items;
+  return items.filter((item) => item.nutrition.calories <= maxCalories);
+};
+
+export const filterMenuItemsByRestaurant = (
+  items: MenuItem[],
+  restaurantId: string
+): MenuItem[] => {
+  if (!restaurantId) return items;
+  return items.filter((item) => item.restaurant_id === restaurantId);
+};
