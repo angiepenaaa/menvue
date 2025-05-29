@@ -275,5 +275,121 @@ export const menuItems: MenuItem[] = [
       fiber: 8,
       sodium: 590
     }
+  },
+
+  // CAVA Menu Items
+  {
+    id: '1601',
+    name: 'Grilled Chicken Bowl',
+    description: 'RightRice, grilled chicken, hummus, tzatziki, feta, cucumber, tomatoes',
+    calories: 480,
+    price: '$13.99',
+    image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg',
+    tags: ['Bowl', 'High Protein', 'Mediterranean'],
+    restaurantId: '16',
+    nutrition: {
+      protein: 38,
+      carbs: 45,
+      sugars: 6,
+      totalFat: 22,
+      saturatedFat: 5,
+      fiber: 8,
+      sodium: 890
+    }
+  },
+  {
+    id: '1602',
+    name: 'Falafel & Hummus Bowl',
+    description: 'Falafel, hummus, quinoa, mixed greens, cucumber, tomatoes, tahini',
+    calories: 420,
+    price: '$12.99',
+    image: 'https://images.pexels.com/photos/1095550/pexels-photo-1095550.jpeg',
+    tags: ['Bowl', 'Vegetarian', 'Mediterranean'],
+    restaurantId: '16',
+    nutrition: {
+      protein: 18,
+      carbs: 58,
+      sugars: 8,
+      totalFat: 19,
+      saturatedFat: 3,
+      fiber: 12,
+      sodium: 780
+    }
+  },
+  {
+    id: '1603',
+    name: 'Salmon & Avocado Bowl',
+    description: 'Grilled salmon, brown rice, avocado, mixed greens, pickled onions',
+    calories: 490,
+    price: '$15.99',
+    image: 'https://images.pexels.com/photos/1410235/pexels-photo-1410235.jpeg',
+    tags: ['Bowl', 'High Protein', 'Omega-3'],
+    restaurantId: '16',
+    nutrition: {
+      protein: 34,
+      carbs: 42,
+      sugars: 4,
+      totalFat: 26,
+      saturatedFat: 4,
+      fiber: 9,
+      sodium: 720
+    }
+  },
+  {
+    id: '1604',
+    name: 'Mediterranean Salad',
+    description: 'Mixed greens, feta, olives, cucumber, tomatoes, red onion, Greek vinaigrette',
+    calories: 320,
+    price: '$11.99',
+    image: 'https://images.pexels.com/photos/1211887/pexels-photo-1211887.jpeg',
+    tags: ['Salad', 'Vegetarian', 'Low Calorie'],
+    restaurantId: '16',
+    nutrition: {
+      protein: 12,
+      carbs: 24,
+      sugars: 6,
+      totalFat: 22,
+      saturatedFat: 6,
+      fiber: 5,
+      sodium: 680
+    }
+  },
+  {
+    id: '1605',
+    name: 'Harissa Chicken Bowl',
+    description: 'Harissa-spiced chicken, quinoa, roasted vegetables, hummus, tahini',
+    calories: 470,
+    price: '$14.99',
+    image: 'https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg',
+    tags: ['Bowl', 'Spicy', 'High Protein'],
+    restaurantId: '16',
+    nutrition: {
+      protein: 36,
+      carbs: 48,
+      sugars: 5,
+      totalFat: 20,
+      saturatedFat: 4,
+      fiber: 7,
+      sodium: 850
+    }
+  },
+  {
+    id: '1606',
+    name: 'Cauliflower Quinoa Bowl',
+    description: 'Roasted cauliflower, quinoa, hummus, mixed greens, tahini',
+    calories: 380,
+    price: '$12.99',
+    image: 'https://images.pexels.com/photos/1213710/pexels-photo-1213710.jpeg',
+    tags: ['Bowl', 'Vegan', 'Low Calorie'],
+    restaurantId: '16',
+    nutrition: {
+      protein: 14,
+      carbs: 52,
+      sugars: 7,
+      totalFat: 18,
+      saturatedFat: 2,
+      fiber: 10,
+      sodium: 640
+    }
   }
 ];
