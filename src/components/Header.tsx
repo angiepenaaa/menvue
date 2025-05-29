@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Utensils, ShoppingCart, User, Home } from 'lucide-react';
+import { Search, Utensils, ShoppingCart, User, Home, MapPin } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -20,20 +20,13 @@ const Header: React.FC<HeaderProps> = ({
   const location = useLocation();
   const isAccountPage = location.pathname.includes('/account');
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
-    return 'Good Evening';
-  };
-
   return (
     <header className="bg-white shadow-sm sticky top-0 z-10">
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {isAccountPage && (
-              <Link to="/\" className="text-gray-600 hover:text-emerald-600 transition-colors">
+              <Link to="/" className="text-gray-600 hover:text-emerald-600 transition-colors">
                 <Home size={24} />
               </Link>
             )}
@@ -41,9 +34,10 @@ const Header: React.FC<HeaderProps> = ({
               <Utensils size={24} className="text-emerald-600 mr-2" />
               <div>
                 <h1 className="text-xl font-bold text-gray-800">menVue</h1>
-                {!isAccountPage && (
-                  <p className="text-sm text-gray-600">{getGreeting()}, Angie</p>
-                )}
+                <div className="flex items-center text-sm text-gray-600">
+                  <MapPin size={14} className="mr-1" />
+                  <span>Brandon, FL</span>
+                </div>
               </div>
             </Link>
           </div>
