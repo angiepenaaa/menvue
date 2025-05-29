@@ -6,7 +6,7 @@ const AccountPage: React.FC = () => {
     name: 'Angie Pena',
     email: 'sarah.j@example.com',
     joinDate: 'March 2024',
-    avatar: 'https://images.pexels.com/photos/775358/pexels-photo-775358.jpeg'
+    avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
   };
 
   const menuItems = [
