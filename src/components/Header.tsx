@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Utensils, ShoppingCart, User, Home, MapPin } from 'lucide-react';
+import { Search, ShoppingCart, User, Home, MapPin, Salad } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -26,12 +26,12 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {isAccountPage && (
-              <Link to="/\" className="text-gray-600 hover:text-emerald-600 transition-colors">
+              <Link to="/" className="text-gray-600 hover:text-emerald-600 transition-colors">
                 <Home size={24} />
               </Link>
             )}
             <Link to="/" className="flex items-center">
-              <Utensils size={24} className="text-emerald-600 mr-2" />
+              <Salad size={28} className="text-emerald-600 mr-2" />
               <div>
                 <h1 className="text-xl font-bold text-gray-800">menVue</h1>
                 <div className="flex items-center text-sm text-gray-600">
