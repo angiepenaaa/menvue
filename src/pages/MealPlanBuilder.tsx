@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { format, addDays } from 'date-fns';
-import { Repeat, Dumbbell, Scale, ChevronLeft, ChevronRight, Save } from 'lucide-react';
+import { 
+  Repeat, 
+  Dumbbell, 
+  Scale, 
+  ChevronLeft, 
+  ChevronRight, 
+  Save,
+  Utensils,
+  Calendar,
+  Flame,
+  Heart
+} from 'lucide-react';
 import Header from '../components/Header';
 import { menuItems } from '../data/menuItems';
 import { restaurants } from '../data/restaurants';
@@ -79,73 +90,66 @@ const MealPlanBuilder: React.FC = () => {
     return restaurants.find(r => r.id === id)?.name || 'Restaurant';
   };
 
+  const goalDescriptions = {
+    'lose-weight': 'Focus on low-calorie, high-fiber meals to support your weight loss journey',
+    'maintain': 'Balanced meals to maintain your current weight and energy levels',
+    'build-muscle': 'Protein-rich meals to support muscle growth and recovery'
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header showSearch={false} />
       
       <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Custom Meal Plan Builder</h1>
+        <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-2xl p-8 mb-8 text-white">
+          <h1 className="text-3xl font-bold mb-3">Custom Meal Plan Builder</h1>
+          <p className="text-emerald-50 text-lg">Design your perfect week of clean eating</p>
+        </div>
         
         {/* Plan Configuration */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+          <div className="p-6 space-y-6">
             {/* Health Goal Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                What's your health goal?
-              </label>
-              <div className="grid grid-cols-3 gap-3">
-                <button
-                  onClick={() => {
-                    setGoal('lose-weight');
-                    regeneratePlan();
-                  }}
-                  className={`p-4 rounded-lg flex flex-col items-center gap-2 border transition-all ${
-                    goal === 'lose-weight'
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                      : 'border-gray-200 hover:border-emerald-200'
-                  }`}
-                >
-                  <Scale size={24} />
-                  <span className="text-sm font-medium">Lose Weight</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setGoal('maintain');
-                    regeneratePlan();
-                  }}
-                  className={`p-4 rounded-lg flex flex-col items-center gap-2 border transition-all ${
-                    goal === 'maintain'
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                      : 'border-gray-200 hover:border-emerald-200'
-                  }`}
-                >
-                  <Scale size={24} />
-                  <span className="text-sm font-medium">Maintain</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setGoal('build-muscle');
-                    regeneratePlan();
-                  }}
-                  className={`p-4 rounded-lg flex flex-col items-center gap-2 border transition-all ${
-                    goal === 'build-muscle'
-                      ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                      : 'border-gray-200 hover:border-emerald-200'
-                  }`}
-                >
-                  <Dumbbell size={24} />
-                  <span className="text-sm font-medium">Build Muscle</span>
-                </button>
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <Heart className="text-emerald-600" />
+                Choose Your Goal
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { id: 'lose-weight', icon: Scale, label: 'Lose Weight' },
+                  { id: 'maintain', icon: Heart, label: 'Maintain' },
+                  { id: 'build-muscle', icon: Dumbbell, label: 'Build Muscle' }
+                ].map(({ id, icon: Icon, label }) => (
+                  <button
+                    key={id}
+                    onClick={() => {
+                      setGoal(id as HealthGoal);
+                      regeneratePlan();
+                    }}
+                    className={`p-6 rounded-xl flex flex-col items-center gap-3 border-2 transition-all ${
+                      goal === id
+                        ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                        : 'border-gray-100 hover:border-emerald-200'
+                    }`}
+                  >
+                    <Icon size={28} className={goal === id ? 'text-emerald-600' : 'text-gray-400'} />
+                    <span className="font-medium">{label}</span>
+                  </button>
+                ))}
               </div>
+              <p className="mt-4 text-gray-600 bg-gray-50 p-4 rounded-lg">
+                {goalDescriptions[goal]}
+              </p>
             </div>
 
             {/* Duration Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <Calendar className="text-emerald-600" />
                 Plan Duration
-              </label>
-              <div className="grid grid-cols-3 gap-3">
+              </h3>
+              <div className="grid grid-cols-3 gap-4">
                 {[3, 5, 7].map((days) => (
                   <button
                     key={days}
@@ -156,13 +160,14 @@ const MealPlanBuilder: React.FC = () => {
                         dinner: getFilteredMeal(goal)
                       })));
                     }}
-                    className={`p-4 rounded-lg border transition-all ${
+                    className={`p-4 rounded-xl border-2 transition-all ${
                       duration === days
                         ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
-                        : 'border-gray-200 hover:border-emerald-200'
+                        : 'border-gray-100 hover:border-emerald-200'
                     }`}
                   >
-                    <span className="font-medium">{days} Days</span>
+                    <div className="text-2xl font-bold mb-1">{days}</div>
+                    <div className="text-sm">Days</div>
                   </button>
                 ))}
               </div>
@@ -171,94 +176,99 @@ const MealPlanBuilder: React.FC = () => {
         </div>
 
         {/* Day Navigation */}
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={() => setCurrentDay(day => Math.max(1, day - 1))}
-            disabled={currentDay === 1}
-            className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronLeft size={24} />
-          </button>
-          <h2 className="text-xl font-semibold text-gray-800">
-            Day {currentDay} of {duration}
-          </h2>
-          <button
-            onClick={() => setCurrentDay(day => Math.min(duration, day + 1))}
-            disabled={currentDay === duration}
-            className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ChevronRight size={24} />
-          </button>
-        </div>
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={() => setCurrentDay(day => Math.max(1, day - 1))}
+              disabled={currentDay === 1}
+              className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-gray-800">
+                Day {currentDay}
+              </h2>
+              <p className="text-gray-500">of {duration}</p>
+            </div>
+            <button
+              onClick={() => setCurrentDay(day => Math.min(duration, day + 1))}
+              disabled={currentDay === duration}
+              className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronRight size={24} />
+            </button>
+          </div>
 
-        {/* Meal Display */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {['lunch', 'dinner'].map((mealType) => {
-            const meal = weekPlan[currentDay - 1][mealType as keyof DayPlan];
-            return (
-              <div key={mealType} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-800 capitalize">{mealType}</h3>
-                    <button
-                      onClick={() => handleSwap(currentDay - 1, mealType as 'lunch' | 'dinner')}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                    >
-                      <Repeat size={20} className="text-gray-600" />
-                    </button>
-                  </div>
-
-                  {meal && (
-                    <>
-                      <div className="aspect-video rounded-lg overflow-hidden mb-4">
-                        <img
-                          src={meal.image}
-                          alt={meal.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <h4 className="font-medium text-gray-800 mb-1">{meal.name}</h4>
-                      <p className="text-sm text-gray-500 mb-4">
-                        {getRestaurantName(meal.restaurantId)}
-                      </p>
-                      <div className="grid grid-cols-4 gap-2">
-                        <div className="text-center p-2 bg-gray-50 rounded-lg">
-                          <div className="text-sm text-gray-500">Cal</div>
-                          <div className="font-semibold">{meal.calories}</div>
-                        </div>
-                        <div className="text-center p-2 bg-gray-50 rounded-lg">
-                          <div className="text-sm text-gray-500">Protein</div>
-                          <div className="font-semibold">{meal.nutrition.protein}g</div>
-                        </div>
-                        <div className="text-center p-2 bg-gray-50 rounded-lg">
-                          <div className="text-sm text-gray-500">Carbs</div>
-                          <div className="font-semibold">{meal.nutrition.carbs}g</div>
-                        </div>
-                        <div className="text-center p-2 bg-gray-50 rounded-lg">
-                          <div className="text-sm text-gray-500">Fat</div>
-                          <div className="font-semibold">{meal.nutrition.totalFat}g</div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Daily Totals */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Daily Totals</h3>
-          <div className="grid grid-cols-4 gap-4">
+          {/* Daily Stats */}
+          <div className="grid grid-cols-4 gap-4 mb-8">
             {Object.entries(calculateDayMacros(weekPlan[currentDay - 1])).map(([key, value]) => (
-              <div key={key} className="text-center p-4 bg-emerald-50 rounded-lg">
-                <div className="text-sm text-emerald-600 font-medium capitalize">{key}</div>
+              <div key={key} className="bg-emerald-50 rounded-xl p-4 text-center">
+                <div className="text-sm text-emerald-600 font-medium capitalize mb-1">{key}</div>
                 <div className="text-2xl font-bold text-emerald-700">
                   {key === 'calories' ? value : `${value}g`}
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Meals Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {['lunch', 'dinner'].map((mealType) => {
+              const meal = weekPlan[currentDay - 1][mealType as keyof DayPlan];
+              return (
+                <div key={mealType} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Utensils size={20} className="text-emerald-600" />
+                        <h3 className="text-lg font-semibold text-gray-800 capitalize">{mealType}</h3>
+                      </div>
+                      <button
+                        onClick={() => handleSwap(currentDay - 1, mealType as 'lunch' | 'dinner')}
+                        className="p-2 hover:bg-emerald-50 rounded-full transition-colors text-emerald-600"
+                      >
+                        <Repeat size={20} />
+                      </button>
+                    </div>
+
+                    {meal && (
+                      <>
+                        <div className="aspect-video rounded-xl overflow-hidden mb-4">
+                          <img
+                            src={meal.image}
+                            alt={meal.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <h4 className="font-medium text-gray-800 mb-1">{meal.name}</h4>
+                        <p className="text-sm text-emerald-600 mb-4">
+                          {getRestaurantName(meal.restaurantId)}
+                        </p>
+                        <div className="grid grid-cols-4 gap-2">
+                          <div className="text-center p-2 bg-gray-50 rounded-lg">
+                            <div className="text-xs text-gray-500">Cal</div>
+                            <div className="font-semibold">{meal.calories}</div>
+                          </div>
+                          <div className="text-center p-2 bg-gray-50 rounded-lg">
+                            <div className="text-xs text-gray-500">Protein</div>
+                            <div className="font-semibold">{meal.nutrition.protein}g</div>
+                          </div>
+                          <div className="text-center p-2 bg-gray-50 rounded-lg">
+                            <div className="text-xs text-gray-500">Carbs</div>
+                            <div className="font-semibold">{meal.nutrition.carbs}g</div>
+                          </div>
+                          <div className="text-center p-2 bg-gray-50 rounded-lg">
+                            <div className="text-xs text-gray-500">Fat</div>
+                            <div className="font-semibold">{meal.nutrition.totalFat}g</div>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -266,13 +276,14 @@ const MealPlanBuilder: React.FC = () => {
         <div className="flex justify-end gap-4">
           <button
             onClick={regeneratePlan}
-            className="px-6 py-2 text-emerald-600 font-medium hover:bg-emerald-50 rounded-lg transition-colors"
+            className="px-6 py-3 text-emerald-600 font-medium hover:bg-emerald-50 rounded-xl transition-colors flex items-center gap-2"
           >
+            <Repeat size={20} />
             Regenerate Plan
           </button>
           <button
             onClick={() => alert('Plan saved!')}
-            className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2"
+            className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors flex items-center gap-2"
           >
             <Save size={20} />
             Save Plan
