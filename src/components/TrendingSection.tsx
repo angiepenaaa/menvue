@@ -1,9 +1,34 @@
 import React from 'react';
-import { TrendingUp, Share2, BookmarkPlus, Eye, ArrowRight } from 'lucide-react';
+import { 
+  TrendingUp, 
+  Share2, 
+  BookmarkPlus, 
+  Eye, 
+  ArrowRight,
+  RefreshCw,
+  Dumbbell,
+  Timer,
+  BarChart3
+} from 'lucide-react';
 import { trendingItems, trendingCategories, trendingHashtags } from '../data/trendingData';
 import { formatNumber } from '../utils/formatNumber';
 
 const TrendingSection: React.FC = () => {
+  const getCategoryIcon = (id: string) => {
+    switch (id) {
+      case 'viral-swaps':
+        return <RefreshCw className="w-6 h-6 text-emerald-600" />;
+      case 'protein-packed':
+        return <Dumbbell className="w-6 h-6 text-emerald-600" />;
+      case 'quick-prep':
+        return <Timer className="w-6 h-6 text-emerald-600" />;
+      case 'macro-friendly':
+        return <BarChart3 className="w-6 h-6 text-emerald-600" />;
+      default:
+        return <TrendingUp className="w-6 h-6 text-emerald-600" />;
+    }
+  };
+
   return (
     <div className="space-y-12">
       {/* Header */}
@@ -21,8 +46,8 @@ const TrendingSection: React.FC = () => {
           >
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="relative">
-              <div className="text-5xl mb-6 transform group-hover:scale-110 transition-transform duration-500">
-                {category.icon}
+              <div className="mb-6 transform group-hover:scale-110 transition-transform duration-500">
+                {getCategoryIcon(category.id)}
               </div>
               <h3 className="font-semibold text-gray-800 text-lg mb-3">{category.name}</h3>
               <p className="text-gray-500 leading-relaxed">{category.description}</p>

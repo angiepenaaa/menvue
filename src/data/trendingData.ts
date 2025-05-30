@@ -29,26 +29,22 @@ export const trendingCategories = [
   {
     id: 'viral-swaps',
     name: 'Viral Food Swaps',
-    description: 'Trending healthy alternatives to popular dishes',
-    icon: '🔄'
+    description: 'Trending healthy alternatives to popular dishes'
   },
   {
     id: 'protein-packed',
     name: 'Protein-Packed',
-    description: 'High-protein meals under 500 calories',
-    icon: '💪'
+    description: 'High-protein meals under 500 calories'
   },
   {
     id: 'quick-prep',
     name: 'Quick & Clean',
-    description: '15-minute healthy meals',
-    icon: '⚡'
+    description: '15-minute healthy meals'
   },
   {
     id: 'macro-friendly',
     name: 'Macro-Friendly',
-    description: 'Perfect macros for your goals',
-    icon: '📊'
+    description: 'Perfect macros for your goals'
   }
 ];
 
