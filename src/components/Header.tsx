@@ -46,14 +46,9 @@ const Header: React.FC<HeaderProps> = ({
       <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            {isAccountPage && (
-              <Link to="/\" className="text-gray-600 hover:text-emerald-600 transition-colors">
-                <Home size={24} />
-              </Link>
-            )}
             <Link to="/" className="flex items-center">
               <div className="bg-emerald-600 text-white p-2 rounded-lg mr-3">
-                <Utensils size={24} />
+                <Home size={24} />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-800">menVue</h1>
