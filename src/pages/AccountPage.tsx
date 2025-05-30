@@ -87,27 +87,48 @@ const AccountPage: React.FC = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center gap-2">
-              <Clock className="text-emerald-600" size={20} />
-              <div className="text-emerald-600 font-semibold">Total Meals Tracked</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-emerald-50 rounded-xl">
+                <Clock className="w-6 h-6 text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="text-sm text-gray-500">Total Meals</h3>
+                <p className="text-2xl font-bold text-gray-800">156</p>
+              </div>
             </div>
-            <div className="text-3xl font-bold mt-2">156</div>
+            <div className="h-2 bg-emerald-100 rounded-full overflow-hidden">
+              <div className="h-full bg-emerald-500 rounded-full w-3/4" />
+            </div>
           </div>
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center gap-2">
-              <Award className="text-emerald-600" size={20} />
-              <div className="text-emerald-600 font-semibold">Healthy Streak</div>
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-yellow-50 rounded-xl">
+                <Award className="w-6 h-6 text-yellow-600" />
+              </div>
+              <div>
+                <h3 className="text-sm text-gray-500">Healthy Streak</h3>
+                <p className="text-2xl font-bold text-gray-800">14 days</p>
+              </div>
             </div>
-            <div className="text-3xl font-bold mt-2">14 days</div>
+            <div className="h-2 bg-yellow-100 rounded-full overflow-hidden">
+              <div className="h-full bg-yellow-500 rounded-full w-1/2" />
+            </div>
           </div>
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-            <div className="flex items-center gap-2">
-              <Timer className="text-emerald-600" size={20} />
-              <div className="text-emerald-600 font-semibold">Calories Saved</div>
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 bg-purple-50 rounded-xl">
+                <Timer className="w-6 h-6 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-sm text-gray-500">Calories Saved</h3>
+                <p className="text-2xl font-bold text-gray-800">4,800</p>
+              </div>
             </div>
-            <div className="text-3xl font-bold mt-2">4,800</div>
+            <div className="h-2 bg-purple-100 rounded-full overflow-hidden">
+              <div className="h-full bg-purple-500 rounded-full w-4/5" />
+            </div>
           </div>
         </div>
 
