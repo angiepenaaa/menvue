@@ -1,6 +1,6 @@
 import React from 'react';
 import { Restaurant } from '../types';
-import { Star, Clock, MapPin } from 'lucide-react';
+import { Star, Clock, MapPin, Award } from 'lucide-react';
 
 interface RestaurantCardProps {
   restaurant: Restaurant;
@@ -11,6 +11,7 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onClick }) 
   // Generate array of 5 stars for rating
   const fullStars = Math.floor(restaurant.rating);
   const hasHalfStar = restaurant.rating % 1 >= 0.5;
+  const isTopRated = restaurant.rating >= 4.7;
 
   return (
     <div 
@@ -27,6 +28,12 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onClick }) 
           <MapPin size={12} className="mr-1 text-emerald-600" />
           {restaurant.distance}
         </div>
+        {isTopRated && (
+          <div className="absolute top-3 left-3 bg-yellow-400 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+            <Award size={14} />
+            <span>Top Rated</span>
+          </div>
+        )}
       </div>
       <div className="p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-1">{restaurant.name}</h3>
