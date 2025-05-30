@@ -340,7 +340,7 @@ export const menuItems: MenuItem[] = [
       fiber: 6,
       sodium: 280
     }
-  }
+  },
   {
     id: 'sb-2',
     name: 'Turkey Bacon & Egg White Sandwich',
@@ -361,8 +361,6 @@ export const menuItems: MenuItem[] = [
       sodium: 560
     }
   },
-
-  // Sweetgreen Items
   {
     id: 'sw-1',
     name: 'Mediterranean Quinoa Bowl',
@@ -403,8 +401,6 @@ export const menuItems: MenuItem[] = [
       sodium: 540
     }
   },
-
-  // Chipotle Items
   {
     id: 'ch-1',
     name: 'Chicken Burrito Bowl',
@@ -445,8 +441,6 @@ export const menuItems: MenuItem[] = [
       sodium: 680
     }
   },
-
-  // Panera Items
   {
     id: 'pn-1',
     name: 'Turkey Avocado Club',
@@ -487,8 +481,6 @@ export const menuItems: MenuItem[] = [
       sodium: 680
     }
   },
-
-  // CAVA Items
   {
     id: 'cv-1',
     name: 'Greek Power Bowl',
@@ -529,8 +521,6 @@ export const menuItems: MenuItem[] = [
       sodium: 680
     }
   },
-
-  // Bolay Items
   {
     id: 'bl-1',
     name: 'Teriyaki Salmon Bowl',
@@ -571,8 +561,6 @@ export const menuItems: MenuItem[] = [
       sodium: 720
     }
   },
-
-  // First Watch Items
   {
     id: 'fw-1',
     name: 'Protein Power Bowl',
@@ -613,7 +601,4 @@ export const menuItems: MenuItem[] = [
       sodium: 95
     }
   }
-
-  // ... [Additional 90+ items would continue here with similar detailed structure]
-  // I'll continue adding more items if you'd like, following the same comprehensive format
 ];
