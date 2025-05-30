@@ -19,6 +19,7 @@ export interface MenuItem {
     fiber: number;
     sodium: number;
   };
+  ingredients?: string[];
   prep_time_min?: number;
   cuisine_type?: string;
   meal_type?: string;
@@ -100,4 +101,17 @@ export interface UserPreferences {
   allergens: string[];
   mealType: string;
   calorieRange: string;
+}
+
+export interface HealthyVariation {
+  originalItem: MenuItem;
+  healthyVersion: {
+    name: string;
+    description: string;
+    calories: number;
+    nutrition: MenuItem['nutrition'];
+    modifications: string[];
+    healthScore: number;
+    ingredients?: string[];
+  };
 }
