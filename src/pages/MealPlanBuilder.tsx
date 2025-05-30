@@ -17,7 +17,9 @@ import {
   Apple,
   Download,
   Info,
-  ChevronDown
+  ChevronDown,
+  Edit3,
+  Filter
 } from 'lucide-react';
 import Header from '../components/Header';
 import { menuItems } from '../data/menuItems';
@@ -33,10 +35,18 @@ interface DayPlan {
   snack: typeof menuItems[0] | null;
 }
 
+interface MealCustomization {
+  size: 'Small' | 'Regular' | 'Large';
+  notes: string;
+  healthyFilter: boolean;
+}
+
 const MealPlanBuilder: React.FC = () => {
   const [goal, setGoal] = useState<HealthGoal>('maintain');
   const [duration, setDuration] = useState<PlanDuration>(5);
   const [currentDay, setCurrentDay] = useState(1);
+  const [customizations, setCustomizations] = useState<Record<string, MealCustomization>>({});
+  const [showCustomizeModal, setShowCustomizeModal] = useState<string | null>(null);
   const [weekPlan, setWeekPlan] = useState<DayPlan[]>(() => {
     return Array(duration).fill(null).map(() => ({
       lunch: getFilteredMeal(goal),
@@ -46,10 +56,24 @@ const MealPlanBuilder: React.FC = () => {
     }));
   });
   const [showIngredients, setShowIngredients] = useState<string | null>(null);
-  const [portions, setPortions] = useState<Record<string, number>>({});
+
+  const getDefaultCustomization = (): MealCustomization => ({
+    size: 'Regular',
+    notes: '',
+    healthyFilter: false
+  });
+
+  const getMealCustomization = (mealId: string): MealCustomization => {
+    return customizations[mealId] || getDefaultCustomization();
+  };
 
   function getFilteredMeal(healthGoal: HealthGoal) {
     const filteredItems = menuItems.filter(item => {
+      const customization = customizations[item.id];
+      if (customization?.healthyFilter && item.calories > 500) {
+        return false;
+      }
+      
       switch (healthGoal) {
         case 'build-muscle':
           return item.nutrition.protein >= 25 && item.calories >= 400;
@@ -94,32 +118,40 @@ const MealPlanBuilder: React.FC = () => {
     const dinner = day.dinner?.nutrition || { protein: 0, carbs: 0, totalFat: 0, calories: 0 };
     const breakfast = day.breakfast?.nutrition || { protein: 0, carbs: 0, totalFat: 0, calories: 0 };
     const snack = day.snack?.nutrition || { protein: 0, carbs: 0, totalFat: 0, calories: 0 };
-    const portionMultiplier = (mealId: string) => portions[mealId] || 1;
+    
+    const getSizeMultiplier = (mealId: string) => {
+      const size = getMealCustomization(mealId).size;
+      switch (size) {
+        case 'Small': return 0.75;
+        case 'Large': return 1.25;
+        default: return 1;
+      }
+    };
     
     return {
       protein: (
-        lunch.protein * portionMultiplier(day.lunch?.id || '') +
-        dinner.protein * portionMultiplier(day.dinner?.id || '') +
-        breakfast.protein * portionMultiplier(day.breakfast?.id || '') +
-        snack.protein * portionMultiplier(day.snack?.id || '')
+        lunch.protein * getSizeMultiplier(day.lunch?.id || '') +
+        dinner.protein * getSizeMultiplier(day.dinner?.id || '') +
+        breakfast.protein * getSizeMultiplier(day.breakfast?.id || '') +
+        snack.protein * getSizeMultiplier(day.snack?.id || '')
       ),
       carbs: (
-        lunch.carbs * portionMultiplier(day.lunch?.id || '') +
-        dinner.carbs * portionMultiplier(day.dinner?.id || '') +
-        breakfast.carbs * portionMultiplier(day.breakfast?.id || '') +
-        snack.carbs * portionMultiplier(day.snack?.id || '')
+        lunch.carbs * getSizeMultiplier(day.lunch?.id || '') +
+        dinner.carbs * getSizeMultiplier(day.dinner?.id || '') +
+        breakfast.carbs * getSizeMultiplier(day.breakfast?.id || '') +
+        snack.carbs * getSizeMultiplier(day.snack?.id || '')
       ),
       fat: (
-        lunch.totalFat * portionMultiplier(day.lunch?.id || '') +
-        dinner.totalFat * portionMultiplier(day.dinner?.id || '') +
-        breakfast.totalFat * portionMultiplier(day.breakfast?.id || '') +
-        snack.totalFat * portionMultiplier(day.snack?.id || '')
+        lunch.totalFat * getSizeMultiplier(day.lunch?.id || '') +
+        dinner.totalFat * getSizeMultiplier(day.dinner?.id || '') +
+        breakfast.totalFat * getSizeMultiplier(day.breakfast?.id || '') +
+        snack.totalFat * getSizeMultiplier(day.snack?.id || '')
       ),
       calories: (
-        (day.lunch?.calories || 0) * portionMultiplier(day.lunch?.id || '') +
-        (day.dinner?.calories || 0) * portionMultiplier(day.dinner?.id || '') +
-        (day.breakfast?.calories || 0) * portionMultiplier(day.breakfast?.id || '') +
-        (day.snack?.calories || 0) * portionMultiplier(day.snack?.id || '')
+        (day.lunch?.calories || 0) * getSizeMultiplier(day.lunch?.id || '') +
+        (day.dinner?.calories || 0) * getSizeMultiplier(day.dinner?.id || '') +
+        (day.breakfast?.calories || 0) * getSizeMultiplier(day.breakfast?.id || '') +
+        (day.snack?.calories || 0) * getSizeMultiplier(day.snack?.id || '')
       )
     };
   };
@@ -334,25 +366,30 @@ const MealPlanBuilder: React.FC = () => {
                         </div>
                         
                         {/* Portion Size Selector */}
-                        <div className="mb-4">
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Portion Size
-                          </label>
-                          <div className="flex gap-2">
-                            {[0.5, 1, 1.5].map((size) => (
-                              <button
-                                key={size}
-                                onClick={() => setPortions(prev => ({ ...prev, [meal.id]: size }))}
-                                className={`px-3 py-1 rounded-lg text-sm ${
-                                  portions[meal.id] === size
-                                    ? 'bg-emerald-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
-                              >
-                                {size}×
-                              </button>
-                            ))}
-                          </div>
+                        <div className="flex items-center justify-between mb-4">
+                          <select
+                            value={getMealCustomization(meal.id).size}
+                            onChange={(e) => setCustomizations(prev => ({
+                              ...prev,
+                              [meal.id]: {
+                                ...getMealCustomization(meal.id),
+                                size: e.target.value as MealCustomization['size']
+                              }
+                            }))}
+                            className="px-3 py-1.5 rounded-lg text-sm bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-emerald-500"
+                          >
+                            <option value="Small">Small</option>
+                            <option value="Regular">Regular</option>
+                            <option value="Large">Large</option>
+                          </select>
+                          
+                          <button
+                            onClick={() => setShowCustomizeModal(meal.id)}
+                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                          >
+                            <Edit3 size={16} />
+                            Customize
+                          </button>
                         </div>
 
                         {/* Dietary Tags */}
@@ -372,28 +409,36 @@ const MealPlanBuilder: React.FC = () => {
                           <div className="text-center p-2 bg-gray-50 rounded-lg">
                             <div className="text-xs text-gray-500">Cal</div>
                             <div className="font-semibold">
-                              {Math.round(meal.calories * (portions[meal.id] || 1))}
+                              {Math.round(meal.calories * (getMealCustomization(meal.id).size === 'Small' ? 0.75 : getMealCustomization(meal.id).size === 'Large' ? 1.25 : 1))}
                             </div>
                           </div>
                           <div className="text-center p-2 bg-gray-50 rounded-lg">
                             <div className="text-xs text-gray-500">Protein</div>
                             <div className="font-semibold">
-                              {Math.round(meal.nutrition.protein * (portions[meal.id] || 1))}g
+                              {Math.round(meal.nutrition.protein * (getMealCustomization(meal.id).size === 'Small' ? 0.75 : getMealCustomization(meal.id).size === 'Large' ? 1.25 : 1))}g
                             </div>
                           </div>
                           <div className="text-center p-2 bg-gray-50 rounded-lg">
                             <div className="text-xs text-gray-500">Carbs</div>
                             <div className="font-semibold">
-                              {Math.round(meal.nutrition.carbs * (portions[meal.id] || 1))}g
+                              {Math.round(meal.nutrition.carbs * (getMealCustomization(meal.id).size === 'Small' ? 0.75 : getMealCustomization(meal.id).size === 'Large' ? 1.25 : 1))}g
                             </div>
                           </div>
                           <div className="text-center p-2 bg-gray-50 rounded-lg">
                             <div className="text-xs text-gray-500">Fat</div>
                             <div className="font-semibold">
-                              {Math.round(meal.nutrition.totalFat * (portions[meal.id] || 1))}g
+                              {Math.round(meal.nutrition.totalFat * (getMealCustomization(meal.id).size === 'Small' ? 0.75 : getMealCustomization(meal.id).size === 'Large' ? 1.25 : 1))}g
                             </div>
                           </div>
                         </div>
+                        
+                        {/* Special Instructions */}
+                        {getMealCustomization(meal.id).notes && (
+                          <div className="mt-4 p-3 bg-gray-50 rounded-lg text-sm text-gray-600">
+                            <div className="font-medium text-gray-700 mb-1">Special Instructions:</div>
+                            {getMealCustomization(meal.id).notes}
+                          </div>
+                        )}
 
                         {/* View Ingredients Button */}
                         <button
@@ -411,6 +456,79 @@ const MealPlanBuilder: React.FC = () => {
             })}
           </div>
         </div>
+
+        {/* Customize Modal */}
+        {showCustomizeModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800">Customize Meal</h3>
+                  <button
+                    onClick={() => setShowCustomizeModal(null)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <ChevronDown size={24} />
+                  </button>
+                </div>
+                
+                <div className="space-y-6">
+                  {/* Healthy Filter Toggle */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Filter size={20} className="text-emerald-600" />
+                      <div>
+                        <div className="font-medium text-gray-800">Healthy Filter</div>
+                        <div className="text-sm text-gray-500">Only show options under 500 calories</div>
+                      </div>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={getMealCustomization(showCustomizeModal).healthyFilter}
+                        onChange={(e) => setCustomizations(prev => ({
+                          ...prev,
+                          [showCustomizeModal]: {
+                            ...getMealCustomization(showCustomizeModal),
+                            healthyFilter: e.target.checked
+                          }
+                        }))}
+                        className="sr-only peer"
+                      />
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                    </label>
+                  </div>
+                  
+                  {/* Special Instructions */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Special Instructions
+                    </label>
+                    <textarea
+                      value={getMealCustomization(showCustomizeModal).notes}
+                      onChange={(e) => setCustomizations(prev => ({
+                        ...prev,
+                        [showCustomizeModal]: {
+                          ...getMealCustomization(showCustomizeModal),
+                          notes: e.target.value
+                        }
+                      }))}
+                      placeholder="E.g., No mayo, sauce on the side..."
+                      className="w-full h-32 px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+                    />
+                  </div>
+                  
+                  <button
+                    onClick={() => setShowCustomizeModal(null)}
+                    className="w-full py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Fixed Bottom Bar */}
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 flex justify-between items-center">
