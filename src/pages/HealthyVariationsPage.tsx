@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Leaf, Search, Filter, TrendingUp, Loader2 } from 'lucide-react';
+import { Leaf, Search, Filter, TrendingUp, Loader2, Sparkles, Brain } from 'lucide-react';
 import Header from '../components/Header';
 import VariationCard from '../components/VariationCard';
 import { healthyVariations } from '../data/healthyVariations';
@@ -36,9 +36,12 @@ const HealthyVariationsPage: React.FC = () => {
         {/* Hero Section */}
         <div className="relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 rounded-2xl overflow-hidden">
           <div className="relative z-10 px-8 py-12 md:px-12 md:py-16">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
-              AI-Powered Healthy Food Swaps
-            </h1>
+            <div className="flex items-center gap-3 mb-4">
+              <Brain className="w-8 h-8 text-white" />
+              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+                AI-Powered Healthy Food Swaps
+              </h1>
+            </div>
             <p className="text-emerald-50 text-lg md:text-xl max-w-2xl leading-relaxed opacity-90">
               Discover healthier versions of your favorite menu items, powered by AI and crafted by nutrition experts.
             </p>
@@ -101,9 +104,18 @@ const HealthyVariationsPage: React.FC = () => {
         )}
 
         {aiSuggestion && (
-          <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">AI-Generated Suggestion</h3>
-            <p className="text-gray-600 whitespace-pre-line">{aiSuggestion}</p>
+          <div className="mb-8 bg-gradient-to-r from-emerald-50 to-white rounded-xl shadow-sm border border-emerald-100">
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-emerald-100 rounded-lg">
+                  <Sparkles className="w-5 h-5 text-emerald-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800">AI-Generated Suggestion</h3>
+              </div>
+              <div className="prose prose-emerald max-w-none">
+                <p className="text-gray-600 whitespace-pre-line">{aiSuggestion}</p>
+              </div>
+            </div>
           </div>
         )}
 
