@@ -20,11 +20,6 @@ export interface MenuItem {
     fiber: number;
     sodium: number;
   };
-  rating?: {
-    score: number;
-    count: number;
-    reviews: Review[];
-  };
   prep_time_min?: number;
   cuisine_type?: string;
   meal_type?: string;
@@ -42,20 +37,57 @@ export interface MenuItem {
   };
 }
 
-export interface Review {
-  id: string;
-  userId: string;
-  username: string;
-  rating: number;
-  comment: string;
-  date: string;
-  helpful: number;
-  userImage?: string;
+export interface CartItem extends MenuItem {
+  quantity: number;
+  removedIngredients: string[];
 }
 
-export interface Coordinates {
-  lat: number;
-  lon: number;
+export interface CartContextType {
+  items: CartItem[];
+  addItem: (item: MenuItem, removedIngredients?: string[]) => void;
+  removeItem: (itemId: string) => void;
+  updateQuantity: (itemId: string, quantity: number) => void;
+  clearCart: () => void;
+  totalItems: number;
+  subtotal: number;
+}
+
+// Rest of the types remain unchanged
+export interface FilterState {
+  mealType: string[];
+  healthGoal: string;
+  dietTypes: string[];
+  macroTags: string[];
+  moodTags: string[];
+  cuisineType: string[];
+  prepTime: string;
+  specialTags: string[];
+  minProtein?: number;
+  maxCarbs?: number;
+  minFiber?: number;
+  maxSugar?: number;
+}
+
+export interface ActivityData {
+  stepsToday: number;
+  sleepHours: number;
+  workoutMinutes: number;
+  heartRateResting?: number;
+  lastUpdated: string;
+}
+
+export interface ActivityRecommendation {
+  type: string;
+  reason: string;
+  tags: string[];
+}
+
+export interface Mood {
+  id: string;
+  name: string;
+  emoji: string;
+  tags: string[];
+  tip: string;
 }
 
 export interface Restaurant {
@@ -67,5 +99,25 @@ export interface Restaurant {
   deliveryTime: string;
   image: string;
   location: string;
-  coordinates: Coordinates;
+}
+
+export interface UserPreferences {
+  healthGoal: string;
+  dietType: string;
+  allergens: string[];
+  mealType: string;
+  calorieRange: string;
+}
+
+export interface HealthyVariation {
+  originalItem: MenuItem;
+  healthyVersion: {
+    name: string;
+    description: string;
+    calories: number;
+    nutrition: MenuItem['nutrition'];
+    modifications: string[];
+    healthScore: number;
+    ingredients?: string[];
+  };
 }
