@@ -16,7 +16,7 @@ import { filterMenuItems, filterMenuItemsBySearch } from '../utils/filterItems';
 import { getSmartRecommendations, getMoodBasedRecommendations } from '../utils/recommendationEngine';
 import { savePreferences } from '../utils/storage';
 import { Mood, FilterState } from '../types';
-import { Brain, MapPin, Gauge, TrendingUp } from 'lucide-react';
+import { Brain, MapPin, Gauge, TrendingUp, ArrowLeft } from 'lucide-react';
 
 interface HomePageProps {
   onCartClick: () => void;
@@ -98,6 +98,14 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
     setRecommendations(smartRecommendations);
   };
 
+  const resetView = () => {
+    setShowTrending(false);
+    setShowMoodSelector(false);
+    setSelectedMood(null);
+    setShowNearbyPickup(false);
+    setActiveRestaurantId(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header
@@ -107,6 +115,17 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
       />
       
       <main className="container mx-auto px-4 py-8">
+        {/* Show back button when in Trending, Mood, or Restaurant view */}
+        {(showTrending || showMoodSelector || selectedMood || activeRestaurantId || showNearbyPickup) && (
+          <button
+            onClick={resetView}
+            className="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+          >
+            <ArrowLeft size={20} />
+            <span>Back to Home</span>
+          </button>
+        )}
+
         {/* Welcome Section */}
         {!activeRestaurantId && !showMoodSelector && !selectedMood && !showTrending && !showNearbyPickup && (
           <div className="mb-8">
