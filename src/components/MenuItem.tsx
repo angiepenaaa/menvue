@@ -125,113 +125,117 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
       {/* Details Modal */}
       {showDetails && (
         <div className="fixed inset-0 z-50 overflow-y-auto" onClick={() => setShowDetails(false)}>
-          <div className="min-h-screen px-4 text-center">
+          <div className="min-h-screen px-4 py-8 flex items-center justify-center">
             <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
             
             <div 
-              className="inline-block w-full max-w-2xl my-8 p-6 text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl"
+              className="relative bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden"
               onClick={e => e.stopPropagation()}
             >
-              <div className="absolute top-4 right-4">
+              <div className="absolute top-4 right-4 z-10">
                 <button
                   onClick={() => setShowDetails(false)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-2 bg-white/90 backdrop-blur-sm hover:bg-gray-100 rounded-full transition-colors"
                 >
                   <X size={20} className="text-gray-500" />
                 </button>
               </div>
 
-              <div className="relative h-72 -mx-6 -mt-6 mb-6">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover rounded-t-2xl"
-                />
-                <div className="absolute top-4 right-4">
-                  <CalorieBadge calories={item.calories} />
+              <div className="max-h-[90vh] overflow-y-auto">
+                <div className="relative h-72">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-4 right-4">
+                    <CalorieBadge calories={item.calories} />
+                  </div>
                 </div>
-              </div>
 
-              <div className="mb-6">
-                <h4 className="text-emerald-600 font-semibold text-sm tracking-wide uppercase mb-2">
-                  {restaurant?.name}
-                </h4>
-                <h2 className="text-2xl font-bold text-gray-800 mb-3">{item.name}</h2>
-                <p className="text-gray-600 leading-relaxed">{item.description}</p>
-              </div>
+                <div className="p-6">
+                  <div className="mb-6">
+                    <h4 className="text-emerald-600 font-semibold text-sm tracking-wide uppercase mb-2">
+                      {restaurant?.name}
+                    </h4>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-3">{item.name}</h2>
+                    <p className="text-gray-600 leading-relaxed">{item.description}</p>
+                  </div>
 
-              {/* Ingredients Customization */}
-              <div className="mb-8">
-                <h3 className="font-semibold text-gray-800 mb-4">Customize Ingredients</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {item.ingredients?.map((ingredient) => (
-                    <button
-                      key={ingredient}
-                      onClick={() => toggleIngredient(ingredient)}
-                      className={`flex items-center justify-between p-3 rounded-lg border ${
-                        removedIngredients.includes(ingredient)
-                          ? 'border-red-200 bg-red-50'
-                          : 'border-emerald-200 bg-emerald-50'
-                      }`}
-                    >
-                      <span className={removedIngredients.includes(ingredient) ? 'line-through text-gray-500' : ''}>
-                        {ingredient}
-                      </span>
-                      {removedIngredients.includes(ingredient) ? (
-                        <X size={16} className="text-red-500" />
-                      ) : (
-                        <Check size={16} className="text-emerald-500" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-8">
-                <h3 className="font-semibold text-gray-800 mb-4">Dietary Tags</h3>
-                <div className="flex flex-wrap gap-2">
-                  {item.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className={`px-3 py-1 text-sm font-medium rounded-full ${
-                        item.activityMatch?.includes(tag)
-                          ? 'bg-emerald-100 text-emerald-700'
-                          : 'bg-gray-50 text-gray-600'
-                      }`}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              <div className="mb-8">
-                <h3 className="font-semibold text-gray-800 mb-4">Nutrition Information</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {nutritionMetrics.map(({ icon, label, value }) => (
-                    <div key={label} className="bg-gray-50 rounded-xl p-4">
-                      <div className="flex items-center gap-2 text-gray-500 mb-1">
-                        {icon}
-                        <span className="text-sm">{label}</span>
-                      </div>
-                      <div className="text-xl font-semibold text-gray-800">{value}</div>
+                  {/* Ingredients Customization */}
+                  <div className="mb-8">
+                    <h3 className="font-semibold text-gray-800 mb-4">Customize Ingredients</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      {item.ingredients?.map((ingredient) => (
+                        <button
+                          key={ingredient}
+                          onClick={() => toggleIngredient(ingredient)}
+                          className={`flex items-center justify-between p-3 rounded-lg border ${
+                            removedIngredients.includes(ingredient)
+                              ? 'border-red-200 bg-red-50'
+                              : 'border-emerald-200 bg-emerald-50'
+                          }`}
+                        >
+                          <span className={removedIngredients.includes(ingredient) ? 'line-through text-gray-500' : ''}>
+                            {ingredient}
+                          </span>
+                          {removedIngredients.includes(ingredient) ? (
+                            <X size={16} className="text-red-500" />
+                          ) : (
+                            <Check size={16} className="text-emerald-500" />
+                          )}
+                        </button>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
 
-              <div className="flex items-center justify-between pt-6 border-t border-gray-100">
-                <div>
-                  <span className="text-3xl font-bold text-gray-900">{item.price}</span>
+                  <div className="mb-8">
+                    <h3 className="font-semibold text-gray-800 mb-4">Dietary Tags</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {item.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className={`px-3 py-1 text-sm font-medium rounded-full ${
+                            item.activityMatch?.includes(tag)
+                              ? 'bg-emerald-100 text-emerald-700'
+                              : 'bg-gray-50 text-gray-600'
+                          }`}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mb-8">
+                    <h3 className="font-semibold text-gray-800 mb-4">Nutrition Information</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {nutritionMetrics.map(({ icon, label, value }) => (
+                        <div key={label} className="bg-gray-50 rounded-xl p-4">
+                          <div className="flex items-center gap-2 text-gray-500 mb-1">
+                            {icon}
+                            <span className="text-sm">{label}</span>
+                          </div>
+                          <div className="text-xl font-semibold text-gray-800">{value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-6 border-t border-gray-100">
+                    <div>
+                      <span className="text-3xl font-bold text-gray-900">{item.price}</span>
+                    </div>
+                    <button
+                      onClick={handleAddToCart}
+                      className="px-8 py-3 bg-emerald-600 text-white rounded-full font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2"
+                    >
+                      <ShoppingCart size={18} />
+                      Add to Cart
+                      {removedIngredients.length > 0 && ` (${removedIngredients.length} customizations)`}
+                    </button>
+                  </div>
                 </div>
-                <button
-                  onClick={handleAddToCart}
-                  className="px-8 py-3 bg-emerald-600 text-white rounded-full font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2"
-                >
-                  <ShoppingCart size={18} />
-                  Add to Cart
-                  {removedIngredients.length > 0 && ` (${removedIngredients.length} customizations)`}
-                </button>
               </div>
             </div>
           </div>
