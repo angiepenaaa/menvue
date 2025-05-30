@@ -124,11 +124,14 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
 
         {/* Welcome Section */}
         {!activeRestaurantId && !showMoodSelector && !selectedMood && !showTrending && !showNearbyPickup && (
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              {greeting}, Angie!
-            </h2>
-            <p className="text-gray-600 italic">Match Me with a Clean Meal</p>
+          <div className="mb-8 bg-gradient-to-r from-emerald-50/50 to-transparent rounded-2xl p-6">
+            <div className="relative">
+              <div className="w-1 h-8 bg-emerald-500 absolute -left-6 top-1/2 -translate-y-1/2 rounded-r-full" />
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                {greeting}, Angie!
+              </h2>
+              <p className="text-gray-600 italic">Match Me with a Clean Meal</p>
+            </div>
           </div>
         )}
 
