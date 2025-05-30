@@ -6,7 +6,11 @@ import AccountPage from './pages/AccountPage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
 import MealPlanBuilder from './pages/MealPlanBuilder';
 import CartDrawer from './components/CartDrawer';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
 
 function BottomNav() {
   const location = useLocation();
@@ -53,20 +57,61 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   return (
-    <CartProvider>
-      <Router>
-        <div className="pb-20"> {/* Add padding to account for fixed bottom nav */}
+    <AuthProvider>
+      <CartProvider>
+        <Router>
           <Routes>
-            <Route path="/" element={<HomePage onCartClick={() => setIsCartOpen(true)} />} />
-            <Route path="/account" element={<AccountPage />} />
-            <Route path="/account/settings" element={<AccountSettingsPage />} />
-            <Route path="/meal-plan" element={<MealPlanBuilder />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <div className="pb-20">
+                    <HomePage onCartClick={() => setIsCartOpen(true)} />
+                    <BottomNav />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account"
+              element={
+                <ProtectedRoute>
+                  <div className="pb-20">
+                    <AccountPage />
+                    <BottomNav />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account/settings"
+              element={
+                <ProtectedRoute>
+                  <div className="pb-20">
+                    <AccountSettingsPage />
+                    <BottomNav />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/meal-plan"
+              element={
+                <ProtectedRoute>
+                  <div className="pb-20">
+                    <MealPlanBuilder />
+                    <BottomNav />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
           </Routes>
-          <BottomNav />
-        </div>
-        <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-      </Router>
-    </CartProvider>
+          <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+        </Router>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 
