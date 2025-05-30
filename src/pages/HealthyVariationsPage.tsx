@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Leaf, Search, Filter, TrendingUp, Loader2, Sparkles, Brain, MessageSquare } from 'lucide-react';
+import { Leaf, Search, Filter, TrendingUp, Loader2, Sparkles, Brain, MessageSquare, ChevronRight } from 'lucide-react';
 import Header from '../components/Header';
 import VariationCard from '../components/VariationCard';
 import { healthyVariations } from '../data/healthyVariations';
@@ -52,35 +52,54 @@ const HealthyVariationsPage: React.FC = () => {
       
       <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
-        <div className="relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 rounded-2xl overflow-hidden">
-          <div className="relative z-10 px-8 py-12 md:px-12 md:py-16">
-            <div className="flex items-center gap-3 mb-4">
-              <Brain className="w-8 h-8 text-white" />
-              <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-                AI-Powered Healthy Food Swaps
-              </h1>
+        <div className="relative bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-3xl overflow-hidden mb-12">
+          <div className="relative z-10 px-8 py-16 md:px-12">
+            <div className="max-w-3xl">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
+                  <Brain className="w-8 h-8 text-white" />
+                </div>
+                <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+                  AI-Powered Menu Variations
+                </h1>
+              </div>
+              <p className="text-emerald-50 text-xl md:text-2xl leading-relaxed opacity-90 mb-8">
+                Transform your favorite dishes into healthier versions while preserving their delicious taste.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white">
+                  <Sparkles size={18} />
+                  <span>Smart Recommendations</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white">
+                  <Leaf size={18} />
+                  <span>Healthier Options</span>
+                </div>
+                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white">
+                  <MessageSquare size={18} />
+                  <span>Personalized Advice</span>
+                </div>
+              </div>
             </div>
-            <p className="text-emerald-50 text-lg md:text-xl max-w-2xl leading-relaxed opacity-90">
-              Discover healthier versions of your favorite menu items, powered by AI and crafted by nutrition experts.
-            </p>
           </div>
-          
-          {/* Decorative Elements */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl transform translate-x-1/3 -translate-y-1/3"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-400/20 rounded-full blur-2xl transform -translate-x-1/3 translate-y-1/3"></div>
         </div>
 
         {/* AI Advisor Section */}
-        <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-emerald-100 rounded-lg">
-                <MessageSquare className="w-5 h-5 text-emerald-600" />
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-12">
+          <div className="p-8">
+            <div className="flex items-center gap-4 mb-8">
+              <div className="p-3 bg-emerald-100 rounded-xl">
+                <MessageSquare className="w-6 h-6 text-emerald-600" />
               </div>
-              <h2 className="text-xl font-semibold text-gray-800">AI Nutrition Advisor</h2>
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">AI Nutrition Advisor</h2>
+                <p className="text-gray-600 mt-1">Get personalized menu recommendations based on your needs</p>
+              </div>
             </div>
             
-            <form onSubmit={handleAiAdvisor} className="space-y-4">
+            <form onSubmit={handleAiAdvisor} className="space-y-6">
               <div>
                 <label htmlFor="query" className="block text-sm font-medium text-gray-700 mb-2">
                   Describe your dietary needs and preferences
@@ -90,36 +109,39 @@ const HealthyVariationsPage: React.FC = () => {
                   value={userQuery}
                   onChange={(e) => setUserQuery(e.target.value)}
                   placeholder="Example: I need high-protein, low-carb options that are vegetarian and around 400 calories..."
-                  className="w-full h-32 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+                  className="w-full h-32 px-6 py-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none text-gray-700 placeholder-gray-400"
                 />
               </div>
               <button
                 type="submit"
                 disabled={isAdvisorLoading || !userQuery.trim()}
-                className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="w-full sm:w-auto px-8 py-4 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 font-medium"
               >
                 {isAdvisorLoading ? (
                   <>
-                    <Loader2 className="animate-spin\" size={18} />
+                    <Loader2 className="animate-spin" size={20} />
                     <span>Generating suggestions...</span>
                   </>
                 ) : (
                   <>
-                    <Sparkles size={18} />
+                    <Sparkles size={20} />
                     <span>Get Personalized Suggestions</span>
+                    <ChevronRight size={20} />
                   </>
                 )}
               </button>
             </form>
 
             {aiResponse && (
-              <div className="mt-6 bg-emerald-50 rounded-xl p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Brain className="w-5 h-5 text-emerald-600" />
-                  <h3 className="font-semibold text-emerald-800">AI Recommendations</h3>
+              <div className="mt-8 bg-gradient-to-br from-emerald-50 to-white rounded-2xl p-8 border border-emerald-100">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 bg-emerald-100 rounded-lg">
+                    <Brain className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-emerald-800">AI Recommendations</h3>
                 </div>
                 <div className="prose prose-emerald max-w-none">
-                  <p className="text-emerald-700 whitespace-pre-line">{aiResponse}</p>
+                  <p className="text-emerald-700 whitespace-pre-line leading-relaxed">{aiResponse}</p>
                 </div>
               </div>
             )}
@@ -127,8 +149,8 @@ const HealthyVariationsPage: React.FC = () => {
         </div>
 
         {/* Search and Filters */}
-        <div className="mt-8 mb-12">
-          <div className="flex gap-3">
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 mb-12">
+          <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
               <input
@@ -136,33 +158,21 @@ const HealthyVariationsPage: React.FC = () => {
                 placeholder="Search for menu items..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 h-12 rounded-xl border-0 bg-white shadow-sm ring-1 ring-gray-200 focus:ring-2 focus:ring-emerald-500 transition-shadow"
+                className="w-full pl-12 pr-4 h-12 rounded-xl border-0 bg-gray-50 focus:ring-2 focus:ring-emerald-500 transition-shadow"
               />
             </div>
-            <button className="h-12 px-6 bg-white rounded-xl text-gray-700 hover:bg-gray-50 flex items-center gap-2 ring-1 ring-gray-200 transition-colors">
+            <button className="h-12 px-6 bg-gray-50 rounded-xl text-gray-700 hover:bg-gray-100 flex items-center gap-2 transition-colors">
               <Filter size={18} />
               <span className="font-medium">Filters</span>
-            </button>
-          </div>
-
-          {/* Quick Filters */}
-          <div className="flex gap-3 mt-4">
-            <button className="h-10 px-5 bg-emerald-600 text-white rounded-lg flex items-center gap-2 hover:bg-emerald-700 transition-colors shadow-sm">
-              <Leaf size={16} />
-              <span className="font-medium">All Swaps</span>
-            </button>
-            <button className="h-10 px-5 bg-white text-gray-700 rounded-lg flex items-center gap-2 ring-1 ring-gray-200 hover:bg-gray-50 transition-colors">
-              <TrendingUp size={16} />
-              <span className="font-medium">Most Popular</span>
             </button>
           </div>
         </div>
 
         {/* Section Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <div className="flex-1">
-            <h2 className="text-xl font-semibold text-gray-800">Available Swaps</h2>
-            <p className="text-gray-500 mt-1">Find healthier alternatives to your favorite dishes</p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800">Available Variations</h2>
+            <p className="text-gray-600 mt-1">Discover healthier alternatives to your favorite dishes</p>
           </div>
           <div className="text-sm text-gray-500">
             Showing {filteredVariations.length} results
