@@ -3,7 +3,7 @@ import type { MenuItem as MenuItemType } from '../types';
 import CalorieBadge from './CalorieBadge';
 import ActivityMatchBadge from './ActivityMatchBadge';
 import { restaurants } from '../data/restaurants';
-import { MapPin, Clock, ChevronDown, ChevronUp, ShoppingCart, X, Leaf, Scale, Flame, Apple, Wheat, Salad as Salt } from 'lucide-react';
+import { MapPin, Clock, ChevronDown, ChevronUp, ShoppingCart, X, Leaf, Scale, Flame, Apple, Wheat, Salad as Salt, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 interface MenuItemProps {
@@ -13,6 +13,7 @@ interface MenuItemProps {
 const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
   const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [removedIngredients, setRemovedIngredients] = useState<string[]>([]);
   const restaurant = restaurants.find(r => r.id === item.restaurantId);
   const { addItem } = useCart();
 
@@ -24,6 +25,20 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
     { icon: <Wheat size={16} />, label: 'Fiber', value: `${item.nutrition.fiber}g` },
     { icon: <Salt size={16} />, label: 'Sodium', value: `${item.nutrition.sodium}mg` }
   ];
+
+  const toggleIngredient = (ingredient: string) => {
+    setRemovedIngredients(current =>
+      current.includes(ingredient)
+        ? current.filter(i => i !== ingredient)
+        : [...current, ingredient]
+    );
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addItem(item, removedIngredients);
+    setShowDetails(false);
+  };
 
   return (
     <>
@@ -96,7 +111,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                addItem(item);
+                addItem(item, removedIngredients);
               }}
               className="flex-shrink-0 px-6 py-2.5 bg-emerald-600 text-white rounded-full text-sm font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2 ml-auto"
             >
@@ -145,6 +160,33 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                 <p className="text-gray-600 leading-relaxed">{item.description}</p>
               </div>
 
+              {/* Ingredients Customization */}
+              <div className="mb-8">
+                <h3 className="font-semibold text-gray-800 mb-4">Customize Ingredients</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {item.ingredients?.map((ingredient) => (
+                    <button
+                      key={ingredient}
+                      onClick={() => toggleIngredient(ingredient)}
+                      className={`flex items-center justify-between p-3 rounded-lg border ${
+                        removedIngredients.includes(ingredient)
+                          ? 'border-red-200 bg-red-50'
+                          : 'border-emerald-200 bg-emerald-50'
+                      }`}
+                    >
+                      <span className={removedIngredients.includes(ingredient) ? 'line-through text-gray-500' : ''}>
+                        {ingredient}
+                      </span>
+                      {removedIngredients.includes(ingredient) ? (
+                        <X size={16} className="text-red-500" />
+                      ) : (
+                        <Check size={16} className="text-emerald-500" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="mb-8">
                 <h3 className="font-semibold text-gray-800 mb-4">Dietary Tags</h3>
                 <div className="flex flex-wrap gap-2">
@@ -183,15 +225,12 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                   <span className="text-3xl font-bold text-gray-900">{item.price}</span>
                 </div>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    addItem(item);
-                    setShowDetails(false);
-                  }}
+                  onClick={handleAddToCart}
                   className="px-8 py-3 bg-emerald-600 text-white rounded-full font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2"
                 >
                   <ShoppingCart size={18} />
                   Add to Cart
+                  {removedIngredients.length > 0 && ` (${removedIngredients.length} customizations)`}
                 </button>
               </div>
             </div>
