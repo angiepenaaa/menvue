@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Home, User, CalendarRange, ShoppingCart } from 'lucide-react';
+import { Home, User, CalendarRange, ShoppingCart, Leaf } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import AccountPage from './pages/AccountPage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
 import MealPlanBuilder from './pages/MealPlanBuilder';
+import HealthyVariationsPage from './pages/HealthyVariationsPage';
 import CartDrawer from './components/CartDrawer';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -37,6 +38,15 @@ function BottomNav() {
           >
             <CalendarRange size={24} />
             <span className="text-xs mt-1">Meal Plan</span>
+          </Link>
+          <Link
+            to="/variations"
+            className={`flex flex-col items-center p-2 ${
+              isActive('/variations') ? 'text-emerald-600' : 'text-gray-600'
+            }`}
+          >
+            <Leaf size={24} />
+            <span className="text-xs mt-1">Variations</span>
           </Link>
           <Link
             to="/account"
@@ -102,6 +112,17 @@ function App() {
                 <ProtectedRoute>
                   <div className="pb-20">
                     <MealPlanBuilder />
+                    <BottomNav />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/variations"
+              element={
+                <ProtectedRoute>
+                  <div className="pb-20">
+                    <HealthyVariationsPage />
                     <BottomNav />
                   </div>
                 </ProtectedRoute>
