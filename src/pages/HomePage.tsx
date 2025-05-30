@@ -8,6 +8,7 @@ import MoodSelector from '../components/MoodSelector';
 import MoodResults from '../components/MoodResults';
 import FilterPanel from '../components/FilterPanel';
 import TrendingSection from '../components/TrendingSection';
+import NearbyPickupSection from '../components/NearbyPickupSection';
 import { restaurants } from '../data/restaurants';
 import { menuItems } from '../data/menuItems';
 import { userPreferences } from '../data/userPreferences';
@@ -29,6 +30,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
   const [showUnder500, setShowUnder500] = useState(false);
   const [showTrending, setShowTrending] = useState(false);
+  const [showNearbyPickup, setShowNearbyPickup] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     mealType: [],
     healthGoal: '',
@@ -106,7 +108,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
       
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
-        {!activeRestaurantId && !showMoodSelector && !selectedMood && !showTrending && (
+        {!activeRestaurantId && !showMoodSelector && !selectedMood && !showTrending && !showNearbyPickup && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
               {greeting}, Angie! 👋
@@ -119,7 +121,19 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         {!activeRestaurantId && !showMoodSelector && !selectedMood && !showTrending && (
           <div className="mb-8">
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-              <button className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-full whitespace-nowrap">
+              <button 
+                onClick={() => {
+                  setShowNearbyPickup(!showNearbyPickup);
+                  setShowTrending(false);
+                  setShowMoodSelector(false);
+                  setSelectedMood(null);
+                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap border ${
+                  showNearbyPickup
+                    ? 'bg-emerald-600 text-white border-emerald-600'
+                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                }`}
+              >
                 <MapPin size={16} />
                 <span>Nearby Pickup</span>
               </button>
@@ -139,6 +153,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
                   setShowTrending(!showTrending);
                   setShowMoodSelector(false);
                   setSelectedMood(null);
+                  setShowNearbyPickup(false);
                 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap border ${
                   showTrending 
@@ -153,6 +168,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
                 onClick={() => {
                   setShowMoodSelector(true);
                   setShowTrending(false);
+                  setShowNearbyPickup(false);
                 }}
                 className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-full whitespace-nowrap border border-gray-200 hover:bg-gray-50"
               >
@@ -164,13 +180,15 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         )}
 
         {/* Filters Panel */}
-        {!showMoodSelector && !selectedMood && !showTrending && (
+        {!showMoodSelector && !selectedMood && !showTrending && !showNearbyPickup && (
           <div className="mb-8">
             <FilterPanel filters={filters} onFilterChange={setFilters} />
           </div>
         )}
 
-        {showTrending ? (
+        {showNearbyPickup ? (
+          <NearbyPickupSection onSelectRestaurant={setActiveRestaurantId} />
+        ) : showTrending ? (
           <TrendingSection />
         ) : showMoodSelector && !selectedMood ? (
           <div className="mb-12">
