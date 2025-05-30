@@ -15,13 +15,21 @@ import {
   Sparkles,
   Zap,
   ChevronRight,
-  RefreshCw
+  RefreshCw,
+  ChevronDown,
+  ChevronUp,
+  Scale,
+  Flame,
+  Apple,
+  Leaf
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import RewardsCard from '../components/RewardsCard';
 
 const AccountPage: React.FC = () => {
+  const [expandedStat, setExpandedStat] = React.useState<string | null>(null);
+
   const user = {
     name: 'Angie Pena',
     email: 'sarah.j@example.com',
@@ -155,25 +163,133 @@ const AccountPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <div className="text-sm text-gray-500 mb-1">Avg. Calories</div>
-                <div className="text-xl font-bold text-gray-800">425</div>
-                <div className="text-xs text-emerald-600 mt-1">-15% vs last week</div>
+              <div className="bg-gray-50 rounded-xl p-4">
+                <button 
+                  onClick={() => setExpandedStat(expandedStat === 'calories' ? null : 'calories')}
+                  className="w-full flex flex-col items-center"
+                >
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                    <Flame size={16} />
+                    <span>Avg. Calories</span>
+                    {expandedStat === 'calories' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </div>
+                  <div className="text-xl font-bold text-gray-800">425</div>
+                  <div className="text-xs text-emerald-600 mt-1">-15% vs last week</div>
+                </button>
+                {expandedStat === 'calories' && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Breakfast</span>
+                        <span className="font-medium">280 cal</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Lunch</span>
+                        <span className="font-medium">450 cal</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Dinner</span>
+                        <span className="font-medium">545 cal</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <div className="text-sm text-gray-500 mb-1">Protein/day</div>
-                <div className="text-xl font-bold text-gray-800">65g</div>
-                <div className="text-xs text-emerald-600 mt-1">+8% vs goal</div>
+              <div className="bg-gray-50 rounded-xl p-4">
+                <button 
+                  onClick={() => setExpandedStat(expandedStat === 'protein' ? null : 'protein')}
+                  className="w-full flex flex-col items-center"
+                >
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                    <Scale size={16} />
+                    <span>Protein/day</span>
+                    {expandedStat === 'protein' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </div>
+                  <div className="text-xl font-bold text-gray-800">65g</div>
+                  <div className="text-xs text-emerald-600 mt-1">+8% vs goal</div>
+                </button>
+                {expandedStat === 'protein' && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Animal</span>
+                        <span className="font-medium">45g</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Plant-based</span>
+                        <span className="font-medium">20g</span>
+                      </div>
+                      <div className="flex justify-between text-sm text-emerald-600">
+                        <span>Daily Goal</span>
+                        <span>60g</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <div className="text-sm text-gray-500 mb-1">Clean Meals</div>
-                <div className="text-xl font-bold text-gray-800">89%</div>
-                <div className="text-xs text-emerald-600 mt-1">Top 5% of users</div>
+              <div className="bg-gray-50 rounded-xl p-4">
+                <button 
+                  onClick={() => setExpandedStat(expandedStat === 'meals' ? null : 'meals')}
+                  className="w-full flex flex-col items-center"
+                >
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                    <Apple size={16} />
+                    <span>Clean Meals</span>
+                    {expandedStat === 'meals' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </div>
+                  <div className="text-xl font-bold text-gray-800">89%</div>
+                  <div className="text-xs text-emerald-600 mt-1">Top 5% of users</div>
+                </button>
+                {expandedStat === 'meals' && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Last 7 days</span>
+                        <span className="font-medium">92%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Last 30 days</span>
+                        <span className="font-medium">87%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">All time</span>
+                        <span className="font-medium">85%</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <div className="text-sm text-gray-500 mb-1">Points/meal</div>
-                <div className="text-xl font-bold text-gray-800">125</div>
-                <div className="text-xs text-emerald-600 mt-1">2x multiplier</div>
+              <div className="bg-gray-50 rounded-xl p-4">
+                <button 
+                  onClick={() => setExpandedStat(expandedStat === 'points' ? null : 'points')}
+                  className="w-full flex flex-col items-center"
+                >
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
+                    <Leaf size={16} />
+                    <span>Points/meal</span>
+                    {expandedStat === 'points' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </div>
+                  <div className="text-xl font-bold text-gray-800">125</div>
+                  <div className="text-xs text-emerald-600 mt-1">2x multiplier</div>
+                </button>
+                {expandedStat === 'points' && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Base Points</span>
+                        <span className="font-medium">50</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Streak Bonus</span>
+                        <span className="font-medium">25</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-500">Gold Multiplier</span>
+                        <span className="font-medium">50</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
