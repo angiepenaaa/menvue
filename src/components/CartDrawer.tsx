@@ -44,7 +44,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
               <div className="space-y-6">
                 {items.map((item) => (
                   <div
-                    key={item.id}
+                    key={`${item.id}-${item.removedIngredients.join('-')}`}
                     className="flex gap-4 border-b border-gray-100 pb-6"
                   >
                     <img
@@ -55,6 +55,16 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                     <div className="flex-1">
                       <h3 className="font-medium text-gray-800">{item.name}</h3>
                       <p className="text-sm text-gray-500">{item.price}</p>
+                      
+                      {/* Customizations */}
+                      {item.removedIngredients.length > 0 && (
+                        <div className="mt-2 text-sm text-red-500">
+                          <p className="font-medium">Removed ingredients:</p>
+                          <p className="line-through">
+                            {item.removedIngredients.join(', ')}
+                          </p>
+                        </div>
+                      )}
                       
                       <div className="mt-2 flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -107,4 +117,4 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default CartDrawer
+export default CartDrawer;
