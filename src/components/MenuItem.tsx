@@ -3,20 +3,7 @@ import type { MenuItem as MenuItemType } from '../types';
 import CalorieBadge from './CalorieBadge';
 import ActivityMatchBadge from './ActivityMatchBadge';
 import { restaurants } from '../data/restaurants';
-import { 
-  MapPin, 
-  Clock, 
-  ChevronDown, 
-  ChevronUp, 
-  ShoppingCart,
-  X,
-  Leaf,
-  Scale,
-  Flame,
-  Apple,
-  Wheat,
-  Salt
-} from 'lucide-react';
+import { MapPin, Clock, ChevronDown, ChevronUp, ShoppingCart, X, Leaf, Scale, Flame, Apple, Wheat, Salad as Salt } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 interface MenuItemProps {
