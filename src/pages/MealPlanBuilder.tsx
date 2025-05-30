@@ -584,5 +584,3 @@ const MealPlanBuilder: React.FC = () => {
 };
 
 export default MealPlanBuilder;
-
-export default MealPlanBuilder
