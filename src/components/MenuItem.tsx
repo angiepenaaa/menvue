@@ -124,24 +124,24 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
 
       {/* Details Modal */}
       {showDetails && (
-        <div className="fixed inset-0 z-50 overflow-y-auto" onClick={() => setShowDetails(false)}>
-          <div className="min-h-screen px-4 py-8 flex items-center justify-center">
-            <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" />
-            
+        <div className="fixed inset-0 z-50 overflow-hidden" onClick={() => setShowDetails(false)}>
+          <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
+          
+          <div className="fixed inset-0 pointer-events-none flex items-center justify-center p-4">
             <div 
-              className="relative bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden"
+              className="pointer-events-auto bg-white w-full max-w-2xl rounded-2xl shadow-xl"
               onClick={e => e.stopPropagation()}
             >
-              <div className="absolute top-4 right-4 z-10">
-                <button
-                  onClick={() => setShowDetails(false)}
-                  className="p-2 bg-white/90 backdrop-blur-sm hover:bg-gray-100 rounded-full transition-colors"
-                >
-                  <X size={20} className="text-gray-500" />
-                </button>
-              </div>
+              <div className="relative max-h-[85vh] overflow-y-auto">
+                <div className="sticky top-0 z-10 flex justify-end p-4 bg-white/80 backdrop-blur-sm">
+                  <button
+                    onClick={() => setShowDetails(false)}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <X size={20} className="text-gray-500" />
+                  </button>
+                </div>
 
-              <div className="max-h-[90vh] overflow-y-auto">
                 <div className="relative h-72">
                   <img
                     src={item.image}
@@ -222,7 +222,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-6 border-t border-gray-100">
+                  <div className="sticky bottom-0 flex items-center justify-between pt-6 pb-4 bg-white border-t border-gray-100">
                     <div>
                       <span className="text-3xl font-bold text-gray-900">{item.price}</span>
                     </div>
