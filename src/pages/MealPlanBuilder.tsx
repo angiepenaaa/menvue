@@ -19,7 +19,11 @@ import {
   Info,
   ChevronDown,
   Edit3,
-  Filter
+  Filter,
+  Lock,
+  Share2,
+  X,
+  Edit
 } from 'lucide-react';
 import Header from '../components/Header';
 import { menuItems } from '../data/menuItems';
@@ -33,6 +37,7 @@ interface DayPlan {
   dinner: typeof menuItems[0] | null;
   breakfast: typeof menuItems[0] | null;
   snack: typeof menuItems[0] | null;
+  isLocked?: boolean;
 }
 
 interface MealCustomization {
@@ -52,10 +57,16 @@ const MealPlanBuilder: React.FC = () => {
       lunch: getFilteredMeal(goal),
       dinner: getFilteredMeal(goal),
       breakfast: getFilteredMeal(goal),
-      snack: getFilteredMeal(goal)
+      snack: getFilteredMeal(goal),
+      isLocked: false
     }));
   });
   const [showIngredients, setShowIngredients] = useState<string | null>(null);
+
+  const handleEditDay = (idx: number) => {
+    // Implementation for editing a day
+    alert(`Editing day ${idx + 1}`);
+  };
 
   const getDefaultCustomization = (): MealCustomization => ({
     size: 'Regular',
@@ -109,7 +120,8 @@ const MealPlanBuilder: React.FC = () => {
       lunch: getFilteredMeal(goal),
       dinner: getFilteredMeal(goal),
       breakfast: getFilteredMeal(goal),
-      snack: getFilteredMeal(goal)
+      snack: getFilteredMeal(goal),
+      isLocked: false
     })));
   };
 
@@ -176,10 +188,12 @@ const MealPlanBuilder: React.FC = () => {
           <div className="relative">
             <div className="w-1 h-8 bg-emerald-500 absolute -left-6 top-1/2 -translate-y-1/2 rounded-r-full" />
             <div className="flex items-center gap-3 mb-2">
-              <Calendar className="w-6 h-6 text-emerald-600" />
-              <h1 className="text-2xl font-bold text-gray-800">Custom Meal Plan Builder</h1>
+              <Calendar className="w-7 h-7 text-emerald-600" />
+              <h1 className="text-3xl font-bold text-gray-800">Custom Meal Plan Builder</h1>
             </div>
-            <p className="text-gray-600">No time? No problem. We planned your clean week.</p>
+            <p className="text-lg text-gray-600 mt-2">
+              Busy week ahead? Let MenVue plan your restaurant meals so you don't have to think.
+            </p>
           </div>
         </div>
         
@@ -272,28 +286,43 @@ const MealPlanBuilder: React.FC = () => {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8 max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-gray-800">Your Meal Plan</h2>
-            <button 
-              onClick={() => regeneratePlan()}
-              className="px-4 py-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors flex items-center gap-2"
-            >
-              <Repeat size={18} />
-              Re-plan Day
-            </button>
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => regeneratePlan()}
+                className="px-4 py-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <Repeat size={18} />
+                Re-plan Day
+              </button>
+              <button
+                onClick={() => alert('Day locked!')}
+                className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2"
+              >
+                <Lock size={18} />
+                Lock in This Day
+              </button>
+            </div>
           </div>
           
           {/* Day Stepper */}
-          <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
+          <div className="flex gap-2 mb-8 overflow-x-auto pb-2 relative">
+            <div className="absolute left-0 right-0 top-1/2 h-1 bg-gray-100 -translate-y-1/2 -z-10" />
             {Array.from({ length: duration }).map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentDay(idx + 1)}
-                className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center font-medium transition-all ${
+                className={`flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center font-medium transition-all relative ${
                   currentDay === idx + 1
                     ? 'bg-emerald-600 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {idx + 1}
+                <span className="text-lg">{idx + 1}</span>
+                {weekPlan[idx].isLocked && (
+                  <div className="absolute -top-2 -right-2 w-5 h-5 bg-emerald-100 rounded-full flex items-center justify-center">
+                    <Lock size={12} className="text-emerald-600" />
+                  </div>
+                )}
               </button>
             ))}
           </div>
@@ -457,6 +486,72 @@ const MealPlanBuilder: React.FC = () => {
           </div>
         </div>
 
+        {/* Fixed Bottom Bar */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 flex justify-between items-center">
+          <div className="container mx-auto max-w-5xl flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => alert('Shopping list downloaded!')}
+                className="px-6 py-3 text-emerald-600 font-medium hover:bg-emerald-50 rounded-xl transition-colors flex items-center gap-2"
+              >
+                <Download size={20} />
+                Download Shopping List
+              </button>
+              <button
+                onClick={() => alert('Plan shared!')}
+                className="px-6 py-3 text-emerald-600 font-medium hover:bg-emerald-50 rounded-xl transition-colors flex items-center gap-2"
+              >
+                <Share2 size={20} />
+                Share Plan
+              </button>
+            </div>
+            <button
+              onClick={() => alert('Plan saved!')}
+              className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors flex items-center gap-2"
+            >
+              <Save size={20} />
+              Save Weekly Plan
+            </button>
+          </div>
+        </div>
+
+        {/* Weekly Summary Modal */}
+        <div className="fixed bottom-20 right-4 p-4 bg-white rounded-2xl shadow-lg border border-gray-100 w-80">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-gray-800">Plan My Week</h3>
+            <button className="text-gray-400 hover:text-gray-600">
+              <X size={20} />
+            </button>
+          </div>
+          <div className="space-y-3">
+            {weekPlan.map((day, idx) => (
+              <div
+                key={idx}
+                className={`p-3 rounded-lg flex items-center justify-between ${
+                  day.isLocked ? 'bg-gray-50' : 'bg-white border border-gray-100'
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-gray-700">Day {idx + 1}</span>
+                  {day.isLocked && (
+                    <Lock size={14} className="text-emerald-600" />
+                  )}
+                </div>
+                {day.isLocked ? (
+                  <button
+                    onClick={() => handleEditDay(idx)}
+                    className="text-emerald-600 hover:text-emerald-700"
+                  >
+                    <Edit size={16} />
+                  </button>
+                ) : (
+                  <span className="text-sm text-gray-500">Not planned</span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Customize Modal */}
         {showCustomizeModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
@@ -530,26 +625,6 @@ const MealPlanBuilder: React.FC = () => {
           </div>
         )}
 
-        {/* Fixed Bottom Bar */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 flex justify-between items-center">
-          <div className="container mx-auto max-w-5xl flex justify-between items-center">
-            <button
-              onClick={() => alert('Shopping list downloaded!')}
-              className="px-6 py-3 text-emerald-600 font-medium hover:bg-emerald-50 rounded-xl transition-colors flex items-center gap-2"
-            >
-              <Download size={20} />
-              Download Shopping List
-            </button>
-            <button
-              onClick={() => alert('Plan saved!')}
-              className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors flex items-center gap-2"
-            >
-              <Save size={20} />
-              Save Plan
-            </button>
-          </div>
-        </div>
-
         {/* Ingredients Modal */}
         {showIngredients && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
@@ -567,20 +642,4 @@ const MealPlanBuilder: React.FC = () => {
                 <div className="prose prose-sm max-w-none">
                   <h4 className="font-medium text-gray-700">Ingredients</h4>
                   <ul className="list-disc pl-4 mb-4">
-                    {weekPlan[currentDay - 1][showIngredients]?.ingredients?.map((ingredient, idx) => (
-                      <li key={idx} className="text-gray-600">{ingredient}</li>
-                    ))}
-                  </ul>
-                  <h4 className="font-medium text-gray-700">Preparation</h4>
-                  <p className="text-gray-600">{weekPlan[currentDay - 1][showIngredients]?.description}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default MealPlanBuilder;
+                    {weekPlan[currentDay - 1][showIngredients]

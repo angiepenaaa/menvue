@@ -15,6 +15,7 @@ export interface Restaurant {
   isOpen: boolean;
   reviewCount: number;
   actualDistance?: number;
+  isLocked?: boolean;
 }
 
 // ... rest of the types remain unchanged
