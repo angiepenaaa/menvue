@@ -2,6 +2,7 @@ import React from 'react';
 import { Search, ShoppingCart, User, Home, MapPin, Utensils } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Link, useLocation } from 'react-router-dom';
+import { useGeolocation } from '../hooks/useGeolocation';
 
 interface HeaderProps {
   searchTerm?: string;
@@ -19,6 +20,26 @@ const Header: React.FC<HeaderProps> = ({
   const { totalItems } = useCart();
   const location = useLocation();
   const isAccountPage = location.pathname.includes('/account');
+  const { location: userLocation, loading } = useGeolocation();
+
+  // Get city name from coordinates using reverse geocoding
+  const [cityName, setCityName] = React.useState('Brandon, FL');
+
+  React.useEffect(() => {
+    if (userLocation) {
+      fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${userLocation.latitude}&lon=${userLocation.longitude}&limit=1&appid=${import.meta.env.VITE_OPENWEATHER_API_KEY}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data[0]) {
+            setCityName(`${data[0].name}, ${data[0].state}`);
+          }
+        })
+        .catch(() => {
+          // Fallback to default location if geocoding fails
+          setCityName('Brandon, FL');
+        });
+    }
+  }, [userLocation]);
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-10">
@@ -26,7 +47,7 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             {isAccountPage && (
-              <Link to="/\" className="text-gray-600 hover:text-emerald-600 transition-colors">
+              <Link to="/" className="text-gray-600 hover:text-emerald-600 transition-colors">
                 <Home size={24} />
               </Link>
             )}
@@ -38,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({
                 <h1 className="text-xl font-bold text-gray-800">menVue</h1>
                 <div className="flex items-center text-sm text-gray-600">
                   <MapPin size={14} className="mr-1" />
-                  <span>Brandon, FL</span>
+                  <span>{loading ? 'Locating...' : cityName}</span>
                 </div>
               </div>
             </Link>

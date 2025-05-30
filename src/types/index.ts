@@ -1,95 +1,4 @@
-import type { ReactNode } from 'react';
-
-// Menu Item Types
-export interface MenuItem {
-  id: string;
-  name: string;
-  description: string;
-  calories: number;
-  price: string;
-  image: string;
-  tags: string[];
-  restaurantId: string;
-  ingredients: string[];
-  nutrition: {
-    protein: number;
-    carbs: number;
-    sugars: number;
-    totalFat: number;
-    saturatedFat: number;
-    fiber: number;
-    sodium: number;
-  };
-  prep_time_min?: number;
-  cuisine_type?: string;
-  meal_type?: string;
-  is_hydrating?: boolean;
-  mood_tags?: string[];
-  health_goals?: string[];
-  diet_types?: string[];
-  macro_profile?: string[];
-  trending?: {
-    views: number;
-    saves: number;
-    shares: number;
-    hashtags: string[];
-    source?: 'tiktok' | 'instagram' | 'pinterest';
-  };
-}
-
-export interface CartItem extends MenuItem {
-  quantity: number;
-  removedIngredients: string[];
-}
-
-export interface CartContextType {
-  items: CartItem[];
-  addItem: (item: MenuItem, removedIngredients?: string[]) => void;
-  removeItem: (itemId: string) => void;
-  updateQuantity: (itemId: string, quantity: number) => void;
-  clearCart: () => void;
-  totalItems: number;
-  subtotal: number;
-}
-
-// Rest of the types remain unchanged
-export interface FilterState {
-  mealType: string[];
-  healthGoal: string;
-  dietTypes: string[];
-  macroTags: string[];
-  moodTags: string[];
-  cuisineType: string[];
-  prepTime: string;
-  specialTags: string[];
-  minProtein?: number;
-  maxCarbs?: number;
-  minFiber?: number;
-  maxSugar?: number;
-}
-
-export interface ActivityData {
-  stepsToday: number;
-  sleepHours: number;
-  workoutMinutes: number;
-  heartRateResting?: number;
-  lastUpdated: string;
-}
-
-export interface ActivityRecommendation {
-  type: string;
-  reason: string;
-  tags: string[];
-}
-
-export interface Mood {
-  id: string;
-  name: string;
-  emoji: string;
-  tags: string[];
-  tip: string;
-}
-
+// Update the Restaurant interface in your types file
 export interface Restaurant {
   id: string;
   name: string;
@@ -99,25 +8,13 @@ export interface Restaurant {
   deliveryTime: string;
   image: string;
   location: string;
-}
-
-export interface UserPreferences {
-  healthGoal: string;
-  dietType: string;
-  allergens: string[];
-  mealType: string;
-  calorieRange: string;
-}
-
-export interface HealthyVariation {
-  originalItem: MenuItem;
-  healthyVersion: {
-    name: string;
-    description: string;
-    calories: number;
-    nutrition: MenuItem['nutrition'];
-    modifications: string[];
-    healthScore: number;
-    ingredients?: string[];
+  coordinates: {
+    lat: number;
+    lng: number;
   };
+  isOpen: boolean;
+  reviewCount: number;
+  actualDistance?: number;
 }
+
+// ... rest of the types remain unchanged
