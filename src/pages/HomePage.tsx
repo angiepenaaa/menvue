@@ -15,7 +15,7 @@ import { filterMenuItems, filterMenuItemsBySearch } from '../utils/filterItems';
 import { getSmartRecommendations, getMoodBasedRecommendations } from '../utils/recommendationEngine';
 import { savePreferences } from '../utils/storage';
 import { Mood, FilterState } from '../types';
-import { Brain, MapPin, Star, TrendingUp, Gauge } from 'lucide-react';
+import { Brain, MapPin, Gauge, TrendingUp } from 'lucide-react';
 
 interface HomePageProps {
   onCartClick: () => void;
@@ -56,12 +56,18 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
 
   const filteredItems = useMemo(() => {
     let items = filterMenuItems(menuItems, filters);
+    
+    // Apply restaurant filter
     if (activeRestaurantId) {
       items = items.filter(item => item.restaurantId === activeRestaurantId);
     }
+    
+    // Apply calorie filter
     if (showUnder500) {
       items = items.filter(item => item.calories <= 500);
     }
+    
+    // Apply search filter
     return filterMenuItemsBySearch(items, searchTerm);
   }, [filters, activeRestaurantId, searchTerm, showUnder500]);
 
@@ -85,6 +91,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
   const resetMood = () => {
     setSelectedMood(null);
     setShowMoodSelector(false);
+    setShowTrending(false);
     const smartRecommendations = getSmartRecommendations(menuItems, userPreferences);
     setRecommendations(smartRecommendations);
   };
@@ -109,7 +116,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         )}
 
         {/* Quick Filters */}
-        {!activeRestaurantId && !showMoodSelector && !selectedMood && (
+        {!activeRestaurantId && !showMoodSelector && !selectedMood && !showTrending && (
           <div className="mb-8">
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
               <button className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-full whitespace-nowrap">
@@ -118,17 +125,25 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
               </button>
               <button 
                 onClick={() => setShowUnder500(!showUnder500)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap border border-gray-200 ${
-                  showUnder500 ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700'
+                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap border ${
+                  showUnder500 
+                    ? 'bg-emerald-600 text-white border-emerald-600' 
+                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                 }`}
               >
                 <Gauge size={16} />
                 <span>Under 500 Cals</span>
               </button>
               <button
-                onClick={() => setShowTrending(!showTrending)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap border border-gray-200 ${
-                  showTrending ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700'
+                onClick={() => {
+                  setShowTrending(!showTrending);
+                  setShowMoodSelector(false);
+                  setSelectedMood(null);
+                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap border ${
+                  showTrending 
+                    ? 'bg-emerald-600 text-white border-emerald-600' 
+                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                 }`}
               >
                 <TrendingUp size={16} />
@@ -139,7 +154,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
                   setShowMoodSelector(true);
                   setShowTrending(false);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-full whitespace-nowrap border border-gray-200"
+                className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-full whitespace-nowrap border border-gray-200 hover:bg-gray-50"
               >
                 <Brain size={16} />
                 <span>Mood Match</span>
