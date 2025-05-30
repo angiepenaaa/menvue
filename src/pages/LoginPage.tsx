@@ -18,8 +18,12 @@ const LoginPage: React.FC = () => {
       setLoading(true);
       await signIn(email, password);
       navigate('/');
-    } catch (err) {
-      setError('Failed to sign in. Please check your credentials.');
+    } catch (err: any) {
+      if (err?.message?.includes('Email not confirmed')) {
+        setError('Please check your email for a confirmation link to activate your account.');
+      } else {
+        setError('Failed to sign in. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }
