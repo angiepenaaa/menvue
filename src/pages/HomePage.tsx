@@ -7,6 +7,7 @@ import RecommendationList from '../components/RecommendationList';
 import MoodSelector from '../components/MoodSelector';
 import MoodResults from '../components/MoodResults';
 import FilterPanel from '../components/FilterPanel';
+import TrendingSection from '../components/TrendingSection';
 import { restaurants } from '../data/restaurants';
 import { menuItems } from '../data/menuItems';
 import { userPreferences } from '../data/userPreferences';
@@ -27,6 +28,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
   const [showMoodSelector, setShowMoodSelector] = useState(false);
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
   const [showUnder500, setShowUnder500] = useState(false);
+  const [showTrending, setShowTrending] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
     mealType: [],
     healthGoal: '',
@@ -71,6 +73,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
     setActiveRestaurantId(id);
     setShowMoodSelector(false);
     setSelectedMood(null);
+    setShowTrending(false);
   };
 
   const handleMoodSelect = (mood: Mood) => {
@@ -96,7 +99,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
       
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
-        {!activeRestaurantId && !showMoodSelector && !selectedMood && (
+        {!activeRestaurantId && !showMoodSelector && !selectedMood && !showTrending && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
               {greeting}, Angie! 👋
@@ -122,16 +125,20 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
                 <Gauge size={16} />
                 <span>Under 500 Cals</span>
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-full whitespace-nowrap border border-gray-200">
-                <Star size={16} />
-                <span>Top Rated</span>
-              </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-full whitespace-nowrap border border-gray-200">
+              <button
+                onClick={() => setShowTrending(!showTrending)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap border border-gray-200 ${
+                  showTrending ? 'bg-emerald-600 text-white' : 'bg-white text-gray-700'
+                }`}
+              >
                 <TrendingUp size={16} />
                 <span>Trending</span>
               </button>
               <button
-                onClick={() => setShowMoodSelector(true)}
+                onClick={() => {
+                  setShowMoodSelector(true);
+                  setShowTrending(false);
+                }}
                 className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-full whitespace-nowrap border border-gray-200"
               >
                 <Brain size={16} />
@@ -142,30 +149,28 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         )}
 
         {/* Filters Panel */}
-        {!showMoodSelector && !selectedMood && (
+        {!showMoodSelector && !selectedMood && !showTrending && (
           <div className="mb-8">
             <FilterPanel filters={filters} onFilterChange={setFilters} />
           </div>
         )}
 
-        {showMoodSelector && !selectedMood && (
+        {showTrending ? (
+          <TrendingSection />
+        ) : showMoodSelector && !selectedMood ? (
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-8">
               How are you feeling today?
             </h2>
             <MoodSelector onMoodSelect={handleMoodSelect} />
           </div>
-        )}
-
-        {selectedMood && (
+        ) : selectedMood ? (
           <MoodResults
             mood={selectedMood}
             items={recommendations}
             onBack={resetMood}
           />
-        )}
-
-        {!activeRestaurantId && !selectedMood && !showMoodSelector && (
+        ) : !activeRestaurantId ? (
           <>
             {recommendations.length > 0 && (
               <div className="mb-12">
@@ -180,9 +185,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
               onSelectRestaurant={handleSelectRestaurant} 
             />
           </>
-        )}
-
-        {activeRestaurantId && !selectedMood && (
+        ) : (
           <>
             <div className="flex items-center justify-between mb-6">
               <div>
