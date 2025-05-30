@@ -28,6 +28,13 @@ export interface MenuItem {
   health_goals?: string[];
   diet_types?: string[];
   macro_profile?: string[];
+  trending?: {
+    views: number;
+    saves: number;
+    shares: number;
+    hashtags: string[];
+    source?: 'tiktok' | 'instagram' | 'pinterest';
+  };
 }
 
 // Filter Types
