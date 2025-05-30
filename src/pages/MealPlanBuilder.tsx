@@ -11,7 +11,13 @@ import {
   Calendar,
   Flame,
   Heart,
-  Sparkles
+  Sparkles,
+  Clock,
+  Coffee,
+  Apple,
+  Download,
+  Info,
+  ChevronDown
 } from 'lucide-react';
 import Header from '../components/Header';
 import { menuItems } from '../data/menuItems';
@@ -23,6 +29,8 @@ type PlanDuration = 3 | 5 | 7;
 interface DayPlan {
   lunch: typeof menuItems[0] | null;
   dinner: typeof menuItems[0] | null;
+  breakfast: typeof menuItems[0] | null;
+  snack: typeof menuItems[0] | null;
 }
 
 const MealPlanBuilder: React.FC = () => {
@@ -32,9 +40,13 @@ const MealPlanBuilder: React.FC = () => {
   const [weekPlan, setWeekPlan] = useState<DayPlan[]>(() => {
     return Array(duration).fill(null).map(() => ({
       lunch: getFilteredMeal(goal),
-      dinner: getFilteredMeal(goal)
+      dinner: getFilteredMeal(goal),
+      breakfast: getFilteredMeal(goal),
+      snack: getFilteredMeal(goal)
     }));
   });
+  const [showIngredients, setShowIngredients] = useState<string | null>(null);
+  const [portions, setPortions] = useState<Record<string, number>>({});
 
   function getFilteredMeal(healthGoal: HealthGoal) {
     const filteredItems = menuItems.filter(item => {
@@ -71,19 +83,44 @@ const MealPlanBuilder: React.FC = () => {
   const regeneratePlan = () => {
     setWeekPlan(Array(duration).fill(null).map(() => ({
       lunch: getFilteredMeal(goal),
-      dinner: getFilteredMeal(goal)
+      dinner: getFilteredMeal(goal),
+      breakfast: getFilteredMeal(goal),
+      snack: getFilteredMeal(goal)
     })));
   };
 
   const calculateDayMacros = (day: DayPlan) => {
     const lunch = day.lunch?.nutrition || { protein: 0, carbs: 0, totalFat: 0, calories: 0 };
     const dinner = day.dinner?.nutrition || { protein: 0, carbs: 0, totalFat: 0, calories: 0 };
+    const breakfast = day.breakfast?.nutrition || { protein: 0, carbs: 0, totalFat: 0, calories: 0 };
+    const snack = day.snack?.nutrition || { protein: 0, carbs: 0, totalFat: 0, calories: 0 };
+    const portionMultiplier = (mealId: string) => portions[mealId] || 1;
     
     return {
-      protein: lunch.protein + dinner.protein,
-      carbs: lunch.carbs + dinner.carbs,
-      fat: lunch.totalFat + dinner.totalFat,
-      calories: (day.lunch?.calories || 0) + (day.dinner?.calories || 0)
+      protein: (
+        lunch.protein * portionMultiplier(day.lunch?.id || '') +
+        dinner.protein * portionMultiplier(day.dinner?.id || '') +
+        breakfast.protein * portionMultiplier(day.breakfast?.id || '') +
+        snack.protein * portionMultiplier(day.snack?.id || '')
+      ),
+      carbs: (
+        lunch.carbs * portionMultiplier(day.lunch?.id || '') +
+        dinner.carbs * portionMultiplier(day.dinner?.id || '') +
+        breakfast.carbs * portionMultiplier(day.breakfast?.id || '') +
+        snack.carbs * portionMultiplier(day.snack?.id || '')
+      ),
+      fat: (
+        lunch.totalFat * portionMultiplier(day.lunch?.id || '') +
+        dinner.totalFat * portionMultiplier(day.dinner?.id || '') +
+        breakfast.totalFat * portionMultiplier(day.breakfast?.id || '') +
+        snack.totalFat * portionMultiplier(day.snack?.id || '')
+      ),
+      calories: (
+        (day.lunch?.calories || 0) * portionMultiplier(day.lunch?.id || '') +
+        (day.dinner?.calories || 0) * portionMultiplier(day.dinner?.id || '') +
+        (day.breakfast?.calories || 0) * portionMultiplier(day.breakfast?.id || '') +
+        (day.snack?.calories || 0) * portionMultiplier(day.snack?.id || '')
+      )
     };
   };
 
@@ -201,27 +238,32 @@ const MealPlanBuilder: React.FC = () => {
 
         {/* Day Navigation */}
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8 max-w-5xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <button
-              onClick={() => setCurrentDay(day => Math.max(1, day - 1))}
-              disabled={currentDay === 1}
-              className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-gray-800">Your Meal Plan</h2>
+            <button 
+              onClick={() => regeneratePlan()}
+              className="px-4 py-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors flex items-center gap-2"
             >
-              <ChevronLeft size={24} />
+              <Repeat size={18} />
+              Re-plan Day
             </button>
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-800">
-                Day {currentDay}
-              </h2>
-              <p className="text-gray-500">of {duration}</p>
-            </div>
-            <button
-              onClick={() => setCurrentDay(day => Math.min(duration, day + 1))}
-              disabled={currentDay === duration}
-              className="p-2 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ChevronRight size={24} />
-            </button>
+          </div>
+          
+          {/* Day Stepper */}
+          <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
+            {Array.from({ length: duration }).map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentDay(idx + 1)}
+                className={`flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center font-medium transition-all ${
+                  currentDay === idx + 1
+                    ? 'bg-emerald-600 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {idx + 1}
+              </button>
+            ))}
           </div>
 
           {/* Daily Stats */}
@@ -238,22 +280,35 @@ const MealPlanBuilder: React.FC = () => {
 
           {/* Meals Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {['lunch', 'dinner'].map((mealType) => {
+            {['breakfast', 'lunch', 'dinner', 'snack'].map((mealType) => {
               const meal = weekPlan[currentDay - 1][mealType as keyof DayPlan];
+              const mealIcons = {
+                breakfast: <Coffee size={20} />,
+                lunch: <Utensils size={20} />,
+                dinner: <Utensils size={20} />,
+                snack: <Apple size={20} />
+              };
               return (
                 <div key={mealType} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-2">
-                        <Utensils size={20} className="text-emerald-600" />
+                        <div className="text-emerald-600">
+                          {mealIcons[mealType as keyof typeof mealIcons]}
+                        </div>
                         <h3 className="text-lg font-semibold text-gray-800 capitalize">{mealType}</h3>
                       </div>
-                      <button
-                        onClick={() => handleSwap(currentDay - 1, mealType as 'lunch' | 'dinner')}
-                        className="p-2 hover:bg-emerald-50 rounded-full transition-colors text-emerald-600"
-                      >
-                        <Repeat size={20} />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleSwap(currentDay - 1, mealType as keyof DayPlan)}
+                          className="p-2 hover:bg-emerald-50 rounded-full transition-colors text-emerald-600 group relative"
+                        >
+                          <Repeat size={20} />
+                          <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                            Swap Meal
+                          </span>
+                        </button>
+                      </div>
                     </div>
 
                     {meal && (
@@ -265,28 +320,89 @@ const MealPlanBuilder: React.FC = () => {
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <h4 className="font-medium text-gray-800 mb-1">{meal.name}</h4>
-                        <p className="text-sm text-emerald-600 mb-4">
-                          {getRestaurantName(meal.restaurantId)}
-                        </p>
+                        <div className="mb-4">
+                          <h4 className="font-medium text-gray-800 mb-1">{meal.name}</h4>
+                          <div className="flex items-center gap-4">
+                            <p className="text-sm text-emerald-600">
+                              {getRestaurantName(meal.restaurantId)}
+                            </p>
+                            <div className="flex items-center text-sm text-gray-500">
+                              <Clock size={14} className="mr-1" />
+                              <span>15-20 min</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Portion Size Selector */}
+                        <div className="mb-4">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Portion Size
+                          </label>
+                          <div className="flex gap-2">
+                            {[0.5, 1, 1.5].map((size) => (
+                              <button
+                                key={size}
+                                onClick={() => setPortions(prev => ({ ...prev, [meal.id]: size }))}
+                                className={`px-3 py-1 rounded-lg text-sm ${
+                                  portions[meal.id] === size
+                                    ? 'bg-emerald-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                }`}
+                              >
+                                {size}×
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Dietary Tags */}
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {meal.tags.map((tag, idx) => (
+                            <span
+                              key={idx}
+                              className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* Nutrition Info */}
                         <div className="grid grid-cols-4 gap-2">
                           <div className="text-center p-2 bg-gray-50 rounded-lg">
                             <div className="text-xs text-gray-500">Cal</div>
-                            <div className="font-semibold">{meal.calories}</div>
+                            <div className="font-semibold">
+                              {Math.round(meal.calories * (portions[meal.id] || 1))}
+                            </div>
                           </div>
                           <div className="text-center p-2 bg-gray-50 rounded-lg">
                             <div className="text-xs text-gray-500">Protein</div>
-                            <div className="font-semibold">{meal.nutrition.protein}g</div>
+                            <div className="font-semibold">
+                              {Math.round(meal.nutrition.protein * (portions[meal.id] || 1))}g
+                            </div>
                           </div>
                           <div className="text-center p-2 bg-gray-50 rounded-lg">
                             <div className="text-xs text-gray-500">Carbs</div>
-                            <div className="font-semibold">{meal.nutrition.carbs}g</div>
+                            <div className="font-semibold">
+                              {Math.round(meal.nutrition.carbs * (portions[meal.id] || 1))}g
+                            </div>
                           </div>
                           <div className="text-center p-2 bg-gray-50 rounded-lg">
                             <div className="text-xs text-gray-500">Fat</div>
-                            <div className="font-semibold">{meal.nutrition.totalFat}g</div>
+                            <div className="font-semibold">
+                              {Math.round(meal.nutrition.totalFat * (portions[meal.id] || 1))}g
+                            </div>
                           </div>
                         </div>
+
+                        {/* View Ingredients Button */}
+                        <button
+                          onClick={() => setShowIngredients(meal.id)}
+                          className="mt-4 text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-1"
+                        >
+                          <Info size={16} />
+                          View Ingredients
+                        </button>
                       </>
                     )}
                   </div>
@@ -296,23 +412,54 @@ const MealPlanBuilder: React.FC = () => {
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex justify-end gap-4 max-w-5xl mx-auto">
-          <button
-            onClick={regeneratePlan}
-            className="px-6 py-3 text-emerald-600 font-medium hover:bg-emerald-50 rounded-xl transition-colors flex items-center gap-2"
-          >
-            <Repeat size={20} />
-            Regenerate Plan
-          </button>
-          <button
-            onClick={() => alert('Plan saved!')}
-            className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors flex items-center gap-2"
-          >
-            <Save size={20} />
-            Save Plan
-          </button>
+        {/* Fixed Bottom Bar */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 flex justify-between items-center">
+          <div className="container mx-auto max-w-5xl flex justify-between items-center">
+            <button
+              onClick={() => alert('Shopping list downloaded!')}
+              className="px-6 py-3 text-emerald-600 font-medium hover:bg-emerald-50 rounded-xl transition-colors flex items-center gap-2"
+            >
+              <Download size={20} />
+              Download Shopping List
+            </button>
+            <button
+              onClick={() => alert('Plan saved!')}
+              className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors flex items-center gap-2"
+            >
+              <Save size={20} />
+              Save Plan
+            </button>
+          </div>
         </div>
+
+        {/* Ingredients Modal */}
+        {showIngredients && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">Ingredients & Instructions</h3>
+                  <button
+                    onClick={() => setShowIngredients(null)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <ChevronDown size={24} />
+                  </button>
+                </div>
+                <div className="prose prose-sm max-w-none">
+                  <h4 className="font-medium text-gray-700">Ingredients</h4>
+                  <ul className="list-disc pl-4 mb-4">
+                    {weekPlan[currentDay - 1][showIngredients]?.ingredients?.map((ingredient, idx) => (
+                      <li key={idx} className="text-gray-600">{ingredient}</li>
+                    ))}
+                  </ul>
+                  <h4 className="font-medium text-gray-700">Preparation</h4>
+                  <p className="text-gray-600">{weekPlan[currentDay - 1][showIngredients]?.description}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
