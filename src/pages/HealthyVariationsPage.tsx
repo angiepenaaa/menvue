@@ -1,17 +1,32 @@
-import React, { useState } from 'react';
-import { Leaf, Search, Filter, TrendingUp } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { Leaf, Search, Filter, TrendingUp, Loader2 } from 'lucide-react';
 import Header from '../components/Header';
 import VariationCard from '../components/VariationCard';
 import { healthyVariations } from '../data/healthyVariations';
+import { generateHealthyVariation } from '../lib/openai';
 
 const HealthyVariationsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVariation, setSelectedVariation] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
 
   const filteredVariations = healthyVariations.filter(variation =>
     variation.originalItem.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     variation.healthyVersion.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleGenerateVariation = useCallback(async (itemName: string) => {
+    setIsGenerating(true);
+    try {
+      const suggestion = await generateHealthyVariation(itemName);
+      setAiSuggestion(suggestion);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsGenerating(false);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -22,10 +37,10 @@ const HealthyVariationsPage: React.FC = () => {
         <div className="relative bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 rounded-2xl overflow-hidden">
           <div className="relative z-10 px-8 py-12 md:px-12 md:py-16">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
-              Healthy Food Swaps
+              AI-Powered Healthy Food Swaps
             </h1>
             <p className="text-emerald-50 text-lg md:text-xl max-w-2xl leading-relaxed opacity-90">
-              Discover healthier versions of your favorite menu items, carefully crafted to maintain taste while improving nutrition.
+              Discover healthier versions of your favorite menu items, powered by AI and crafted by nutrition experts.
             </p>
           </div>
           
@@ -77,13 +92,31 @@ const HealthyVariationsPage: React.FC = () => {
           </div>
         </div>
 
+        {/* AI Suggestion Section */}
+        {isGenerating && (
+          <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center">
+            <Loader2 className="animate-spin text-emerald-600 mr-2" size={24} />
+            <span className="text-gray-600">Generating healthy variation...</span>
+          </div>
+        )}
+
+        {aiSuggestion && (
+          <div className="mb-8 p-6 bg-white rounded-xl shadow-sm border border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">AI-Generated Suggestion</h3>
+            <p className="text-gray-600 whitespace-pre-line">{aiSuggestion}</p>
+          </div>
+        )}
+
         {/* Variations Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredVariations.map((variation) => (
             <VariationCard
               key={variation.originalItem.id}
               variation={variation}
-              onClick={() => setSelectedVariation(variation.originalItem.id)}
+              onClick={() => {
+                setSelectedVariation(variation.originalItem.id);
+                handleGenerateVariation(variation.originalItem.name);
+              }}
             />
           ))}
         </div>
