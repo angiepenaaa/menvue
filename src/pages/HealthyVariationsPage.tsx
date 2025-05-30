@@ -51,39 +51,32 @@ const HealthyVariationsPage: React.FC = () => {
       <Header showSearch={false} />
       
       <main className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="relative bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-3xl overflow-hidden mb-12">
-          <div className="relative z-10 px-8 py-16 md:px-12">
-            <div className="max-w-3xl">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl">
-                  <Brain className="w-8 h-8 text-white" />
-                </div>
-                <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-                  AI-Powered Menu Variations
-                </h1>
-              </div>
-              <p className="text-emerald-50 text-xl md:text-2xl leading-relaxed opacity-90 mb-8">
-                Transform your favorite dishes into healthier versions while preserving their delicious taste.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white">
-                  <Sparkles size={18} />
-                  <span>Smart Recommendations</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white">
-                  <Leaf size={18} />
-                  <span>Healthier Options</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white">
-                  <MessageSquare size={18} />
-                  <span>Personalized Advice</span>
-                </div>
-              </div>
+        {/* Welcome Section */}
+        <div className="mb-8 bg-gradient-to-r from-emerald-50/50 to-transparent rounded-2xl p-6">
+          <div className="relative">
+            <div className="w-1 h-8 bg-emerald-500 absolute -left-6 top-1/2 -translate-y-1/2 rounded-r-full" />
+            <div className="flex items-center gap-3 mb-2">
+              <Brain className="w-6 h-6 text-emerald-600" />
+              <h1 className="text-2xl font-bold text-gray-800">AI-Powered Menu Variations</h1>
             </div>
+            <p className="text-gray-600">Transform your favorite dishes into healthier alternatives</p>
           </div>
-          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl transform translate-x-1/3 -translate-y-1/3"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-400/20 rounded-full blur-2xl transform -translate-x-1/3 translate-y-1/3"></div>
+        </div>
+        
+        {/* Feature Pills */}
+        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide mb-8">
+          <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-medium">
+            <Sparkles size={16} />
+            <span>Smart Recommendations</span>
+          </div>
+          <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-medium">
+            <Leaf size={16} />
+            <span>Healthier Options</span>
+          </div>
+          <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-medium">
+            <MessageSquare size={16} />
+            <span>Personalized Advice</span>
+          </div>
         </div>
 
         {/* AI Advisor Section */}
