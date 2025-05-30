@@ -59,17 +59,14 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
   const filteredItems = useMemo(() => {
     let items = filterMenuItems(menuItems, filters);
     
-    // Apply restaurant filter
     if (activeRestaurantId) {
       items = items.filter(item => item.restaurantId === activeRestaurantId);
     }
     
-    // Apply calorie filter
     if (showUnder500) {
       items = items.filter(item => item.calories <= 500);
     }
     
-    // Apply search filter
     return filterMenuItemsBySearch(items, searchTerm);
   }, [filters, activeRestaurantId, searchTerm, showUnder500]);
 
@@ -115,7 +112,6 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
       />
       
       <main className="container mx-auto px-4 py-8">
-        {/* Show back button when in Trending, Mood, or Restaurant view */}
         {(showTrending || showMoodSelector || selectedMood || activeRestaurantId || showNearbyPickup) && (
           <button
             onClick={resetView}
@@ -130,14 +126,14 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         {!activeRestaurantId && !showMoodSelector && !selectedMood && !showTrending && !showNearbyPickup && (
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              {greeting}, Angie! 👋
+              {greeting}, Angie
             </h2>
             <p className="text-gray-600 italic">Match Me with a Clean Meal</p>
           </div>
         )}
 
         {/* Quick Filters */}
-        {!activeRestaurantId && !showMoodSelector && !selectedMood && !showTrending && (
+        {!activeRestaurantId && !showMoodSelector && !selectedMood && !showTrending && !showNearbyPickup && (
           <div className="mb-8">
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
               <button 
