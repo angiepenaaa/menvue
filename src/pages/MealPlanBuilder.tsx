@@ -100,14 +100,37 @@ const MealPlanBuilder: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <Header showSearch={false} />
       
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <div className="bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-2xl p-8 mb-8 text-white">
-          <h1 className="text-3xl font-bold mb-3">Custom Meal Plan Builder</h1>
-          <p className="text-emerald-50 text-lg">No time? No problem. We planned your clean week.</p>
+      <div className="container mx-auto px-4 py-8">
+        {/* Welcome Section */}
+        <div className="mb-8 bg-gradient-to-r from-emerald-50/50 to-transparent rounded-2xl p-6">
+          <div className="relative">
+            <div className="w-1 h-8 bg-emerald-500 absolute -left-6 top-1/2 -translate-y-1/2 rounded-r-full" />
+            <div className="flex items-center gap-3 mb-2">
+              <Calendar className="w-6 h-6 text-emerald-600" />
+              <h1 className="text-2xl font-bold text-gray-800">Custom Meal Plan Builder</h1>
+            </div>
+            <p className="text-gray-600">No time? No problem. We planned your clean week.</p>
+          </div>
+        </div>
+        
+        {/* Feature Pills */}
+        <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide mb-8">
+          <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-medium">
+            <Calendar size={16} />
+            <span>Weekly Planning</span>
+          </div>
+          <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-medium">
+            <Scale size={16} />
+            <span>Macro Tracking</span>
+          </div>
+          <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-full text-sm font-medium">
+            <Sparkles size={16} />
+            <span>Smart Suggestions</span>
+          </div>
         </div>
         
         {/* Plan Configuration */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8 max-w-5xl mx-auto">
           <div className="p-6 space-y-6">
             {/* Health Goal Selection */}
             <div>
@@ -176,7 +199,7 @@ const MealPlanBuilder: React.FC = () => {
         </div>
 
         {/* Day Navigation */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8 max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <button
               onClick={() => setCurrentDay(day => Math.max(1, day - 1))}
@@ -273,7 +296,7 @@ const MealPlanBuilder: React.FC = () => {
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4 max-w-5xl mx-auto">
           <button
             onClick={regeneratePlan}
             className="px-6 py-3 text-emerald-600 font-medium hover:bg-emerald-50 rounded-xl transition-colors flex items-center gap-2"
