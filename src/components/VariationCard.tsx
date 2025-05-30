@@ -1,5 +1,5 @@
-import React from 'react';
-import { ArrowRight, Leaf, TrendingUp } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, Leaf, TrendingUp, Info } from 'lucide-react';
 import type { HealthyVariation } from '../types';
 
 interface VariationCardProps {
@@ -11,6 +11,7 @@ const VariationCard: React.FC<VariationCardProps> = ({ variation, onClick }) => 
   const { originalItem, healthyVersion } = variation;
   const calorieReduction = originalItem.calories - healthyVersion.calories;
   const caloriePercentage = Math.round((calorieReduction / originalItem.calories) * 100);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   return (
     <div 
@@ -55,11 +56,51 @@ const VariationCard: React.FC<VariationCardProps> = ({ variation, onClick }) => 
         </div>
 
         <div className="mt-6 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
+          <div className="flex items-center gap-2 relative">
+            <div 
+              className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center"
+              onMouseEnter={(e) => {
+                e.stopPropagation();
+                setShowTooltip(true);
+              }}
+              onMouseLeave={(e) => {
+                e.stopPropagation();
+                setShowTooltip(false);
+              }}
+            >
               <span className="text-emerald-600 font-semibold">{healthyVersion.healthScore}</span>
             </div>
-            <span className="text-sm text-gray-600">Health Score</span>
+            <span className="text-sm text-gray-600 flex items-center gap-1">
+              Health Score
+              <Info 
+                size={14} 
+                className="text-gray-400 cursor-help"
+                onMouseEnter={(e) => {
+                  e.stopPropagation();
+                  setShowTooltip(true);
+                }}
+                onMouseLeave={(e) => {
+                  e.stopPropagation();
+                  setShowTooltip(false);
+                }}
+              />
+            </span>
+            {showTooltip && (
+              <div className="absolute bottom-full left-0 mb-2 w-64 p-4 bg-gray-800 text-white text-sm rounded-lg shadow-lg z-10">
+                <p className="mb-2">Health Score is calculated based on:</p>
+                <ul className="space-y-1 list-disc list-inside text-gray-300">
+                  <li>Nutrient density</li>
+                  <li>Protein to calorie ratio</li>
+                  <li>Fiber content</li>
+                  <li>Added sugar levels</li>
+                  <li>Sodium content</li>
+                </ul>
+                <div className="mt-2 text-xs text-gray-400">
+                  Score range: 0-100, higher is better
+                </div>
+                <div className="absolute bottom-0 left-4 transform translate-y-1/2 rotate-45 w-2 h-2 bg-gray-800"></div>
+              </div>
+            )}
           </div>
           <button className="text-emerald-600 hover:text-emerald-700 flex items-center gap-1">
             <span className="text-sm font-medium">View Details</span>
