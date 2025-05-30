@@ -21,7 +21,7 @@ const AccountPage: React.FC = () => {
     name: 'Angie Pena',
     email: 'sarah.j@example.com',
     joinDate: 'March 2024', 
-    avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
+    avatar: '/IMG_2423_Facetune_11-11-2021-18-44-36.jpeg'
   };
 
   const menuItems = [
