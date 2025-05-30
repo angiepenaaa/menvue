@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Leaf, Search, Filter, TrendingUp, Loader2, Sparkles, Brain } from 'lucide-react';
+import { Leaf, Search, Filter, TrendingUp, Loader2, Sparkles, Brain, MessageSquare } from 'lucide-react';
 import Header from '../components/Header';
 import VariationCard from '../components/VariationCard';
 import { healthyVariations } from '../data/healthyVariations';
@@ -10,6 +10,9 @@ const HealthyVariationsPage: React.FC = () => {
   const [selectedVariation, setSelectedVariation] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
+  const [userQuery, setUserQuery] = useState('');
+  const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [isAdvisorLoading, setIsAdvisorLoading] = useState(false);
 
   const filteredVariations = healthyVariations.filter(variation =>
     variation.originalItem.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -27,6 +30,21 @@ const HealthyVariationsPage: React.FC = () => {
       setIsGenerating(false);
     }
   }, []);
+
+  const handleAiAdvisor = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userQuery.trim()) return;
+
+    setIsAdvisorLoading(true);
+    try {
+      const response = await generateHealthyVariation(userQuery);
+      setAiResponse(response);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setIsAdvisorLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -50,6 +68,62 @@ const HealthyVariationsPage: React.FC = () => {
           {/* Decorative Elements */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl transform translate-x-1/3 -translate-y-1/3"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-emerald-400/20 rounded-full blur-2xl transform -translate-x-1/3 translate-y-1/3"></div>
+        </div>
+
+        {/* AI Advisor Section */}
+        <div className="mt-8 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-emerald-100 rounded-lg">
+                <MessageSquare className="w-5 h-5 text-emerald-600" />
+              </div>
+              <h2 className="text-xl font-semibold text-gray-800">AI Nutrition Advisor</h2>
+            </div>
+            
+            <form onSubmit={handleAiAdvisor} className="space-y-4">
+              <div>
+                <label htmlFor="query" className="block text-sm font-medium text-gray-700 mb-2">
+                  Describe your dietary needs and preferences
+                </label>
+                <textarea
+                  id="query"
+                  value={userQuery}
+                  onChange={(e) => setUserQuery(e.target.value)}
+                  placeholder="Example: I need high-protein, low-carb options that are vegetarian and around 400 calories..."
+                  className="w-full h-32 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isAdvisorLoading || !userQuery.trim()}
+                className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isAdvisorLoading ? (
+                  <>
+                    <Loader2 className="animate-spin" size={18} />
+                    <span>Generating suggestions...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={18} />
+                    <span>Get Personalized Suggestions</span>
+                  </>
+                )}
+              </button>
+            </form>
+
+            {aiResponse && (
+              <div className="mt-6 bg-emerald-50 rounded-xl p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Brain className="w-5 h-5 text-emerald-600" />
+                  <h3 className="font-semibold text-emerald-800">AI Recommendations</h3>
+                </div>
+                <div className="prose prose-emerald max-w-none">
+                  <p className="text-emerald-700 whitespace-pre-line">{aiResponse}</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Search and Filters */}
