@@ -9,11 +9,7 @@ export const restaurants: Restaurant[] = [
     distance: '0.3 mi',
     deliveryTime: '10-20 min',
     image: 'https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg',
-    location: 'Brandon, FL',
-    coordinates: {
-      lat: 27.937801,
-      lon: -82.285652
-    }
+    location: 'Brandon, FL'
   },
   {
     id: 'dunkin',
@@ -23,11 +19,7 @@ export const restaurants: Restaurant[] = [
     distance: '0.5 mi',
     deliveryTime: '15-25 min',
     image: 'https://images.pexels.com/photos/1855214/pexels-photo-1855214.jpeg',
-    location: 'Brandon, FL',
-    coordinates: {
-      lat: 27.936921,
-      lon: -82.284560
-    }
+    location: 'Brandon, FL'
   },
   {
     id: 'panera',
@@ -37,11 +29,7 @@ export const restaurants: Restaurant[] = [
     distance: '0.7 mi',
     deliveryTime: '20-30 min',
     image: 'https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg',
-    location: 'Brandon, FL',
-    coordinates: {
-      lat: 27.938456,
-      lon: -82.286789
-    }
+    location: 'Brandon, FL'
   },
   {
     id: 'sweetgreen',
@@ -51,11 +39,7 @@ export const restaurants: Restaurant[] = [
     distance: '1.2 mi',
     deliveryTime: '15-25 min',
     image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg',
-    location: 'Brandon, FL',
-    coordinates: {
-      lat: 27.935678,
-      lon: -82.283421
-    }
+    location: 'Brandon, FL'
   },
   {
     id: 'chipotle',
@@ -65,11 +49,7 @@ export const restaurants: Restaurant[] = [
     distance: '0.8 mi',
     deliveryTime: '15-25 min',
     image: 'https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg',
-    location: 'Brandon, FL',
-    coordinates: {
-      lat: 27.939012,
-      lon: -82.287654
-    }
+    location: 'Brandon, FL'
   },
   {
     id: 'bolay',
@@ -79,11 +59,7 @@ export const restaurants: Restaurant[] = [
     distance: '1.5 mi',
     deliveryTime: '20-30 min',
     image: 'https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg',
-    location: 'Brandon, FL',
-    coordinates: {
-      lat: 27.934567,
-      lon: -82.282345
-    }
+    location: 'Brandon, FL'
   },
   {
     id: 'cava',
@@ -93,11 +69,7 @@ export const restaurants: Restaurant[] = [
     distance: '0.8 mi',
     deliveryTime: '15-25 min',
     image: 'https://images.pexels.com/photos/1640770/pexels-photo-1640770.jpeg',
-    location: 'Brandon, FL',
-    coordinates: {
-      lat: 27.940123,
-      lon: -82.288901
-    }
+    location: 'Brandon, FL'
   },
   {
     id: 'chick-fil-a',
@@ -107,11 +79,7 @@ export const restaurants: Restaurant[] = [
     distance: '0.5 mi',
     deliveryTime: '15-25 min',
     image: 'https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg',
-    location: 'Brandon, FL',
-    coordinates: {
-      lat: 27.937234,
-      lon: -82.285123
-    }
+    location: 'Brandon, FL'
   },
   {
     id: 'subway',
@@ -121,11 +89,7 @@ export const restaurants: Restaurant[] = [
     distance: '0.4 mi',
     deliveryTime: '10-20 min',
     image: 'https://images.pexels.com/photos/1647163/pexels-photo-1647163.jpeg',
-    location: 'Brandon, FL',
-    coordinates: {
-      lat: 27.936789,
-      lon: -82.284789
-    }
+    location: 'Brandon, FL'
   },
   {
     id: 'jamba',
@@ -135,11 +99,7 @@ export const restaurants: Restaurant[] = [
     distance: '1.0 mi',
     deliveryTime: '15-25 min',
     image: 'https://images.pexels.com/photos/1346347/pexels-photo-1346347.jpeg',
-    location: 'Brandon, FL',
-    coordinates: {
-      lat: 27.935234,
-      lon: -82.283567
-    }
+    location: 'Brandon, FL'
   },
   {
     id: 'tropical-smoothie',
@@ -149,11 +109,7 @@ export const restaurants: Restaurant[] = [
     distance: '0.9 mi',
     deliveryTime: '15-25 min',
     image: 'https://images.pexels.com/photos/1346347/pexels-photo-1346347.jpeg',
-    location: 'Brandon, FL',
-    coordinates: {
-      lat: 27.938901,
-      lon: -82.287123
-    }
+    location: 'Brandon, FL'
   },
   {
     id: 'first-watch',
@@ -163,10 +119,6 @@ export const restaurants: Restaurant[] = [
     distance: '0.8 mi',
     deliveryTime: '20-30 min',
     image: 'https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg',
-    location: 'Brandon, FL',
-    coordinates: {
-      lat: 27.937567,
-      lon: -82.285901
-    }
+    location: 'Brandon, FL'
   }
 ];
