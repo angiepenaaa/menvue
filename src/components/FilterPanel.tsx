@@ -10,15 +10,23 @@ import {
   Heart,
   Leaf,
   Timer,
-  Tag
+  Tag,
+  Gauge
 } from 'lucide-react';
 
 interface FilterPanelProps {
   filters: FilterState;
   onFilterChange: (filters: FilterState) => void;
+  showUnder500: boolean;
+  setShowUnder500: (show: boolean) => void;
 }
 
-const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) => {
+const FilterPanel: React.FC<FilterPanelProps> = ({ 
+  filters, 
+  onFilterChange,
+  showUnder500,
+  setShowUnder500
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const mealTypes = [
@@ -79,6 +87,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
       prepTime: '',
       specialTags: [],
     });
+    setShowUnder500(false);
   };
 
   return (
@@ -94,7 +103,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-500">
-            {Object.values(filters).flat().filter(Boolean).length} active
+            {[...Object.values(filters).flat().filter(Boolean), showUnder500 ? 'Under 500 Calories' : ''].filter(Boolean).length} active
           </span>
         </div>
       </button>
@@ -102,6 +111,24 @@ const FilterPanel: React.FC<FilterPanelProps> = ({ filters, onFilterChange }) =>
       {/* Filter Content */}
       {isOpen && (
         <div className="p-6 border-t border-gray-100 space-y-6">
+          {/* Calorie Filter */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <Gauge size={18} className="text-gray-500" />
+              <h3 className="font-medium text-gray-800">Calories</h3>
+            </div>
+            <button
+              onClick={() => setShowUnder500(!showUnder500)}
+              className={`px-3 py-1 rounded-full text-sm ${
+                showUnder500
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Under 500 Calories
+            </button>
+          </div>
+
           {/* Meal Type */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
