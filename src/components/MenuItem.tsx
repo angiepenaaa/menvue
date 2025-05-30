@@ -3,7 +3,7 @@ import type { MenuItem as MenuItemType } from '../types';
 import CalorieBadge from './CalorieBadge';
 import ActivityMatchBadge from './ActivityMatchBadge';
 import { restaurants } from '../data/restaurants';
-import { MapPin, Clock, ChevronDown, ChevronUp, ShoppingCart, X, Leaf, Scale, Flame, Apple, Wheat, Salad as Salt, Check } from 'lucide-react';
+import { MapPin, Clock, ChevronDown, ChevronUp, ShoppingCart, X, Leaf, Scale, Flame, Apple, Wheat, Salad as Salt, Check, ChevronRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 interface MenuItemProps {
@@ -14,6 +14,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
   const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [removedIngredients, setRemovedIngredients] = useState<string[]>([]);
+  const [expandedNutrition, setExpandedNutrition] = useState<string | null>(null);
   const restaurant = restaurants.find(r => r.id === item.restaurantId);
   const { addItem } = useCart();
 
@@ -239,6 +240,167 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                       Add to Cart
                       {removedIngredients.length > 0 && ` (${removedIngredients.length} customizations)`}
                     </button>
+                    
+                    {/* Detailed Nutrition Information */}
+                    <div className="mt-6 space-y-4">
+                      <h3 className="font-semibold text-gray-800 mb-3">Detailed Nutrition</h3>
+                      <div className="space-y-2">
+                        {/* Calories */}
+                        <div className="bg-gray-50 rounded-lg">
+                          <button
+                            onClick={() => setExpandedNutrition(expandedNutrition === 'calories' ? null : 'calories')}
+                            className="w-full px-4 py-3 flex items-center justify-between"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Flame size={18} className="text-orange-500" />
+                              <span className="font-medium text-gray-700">Calories</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{item.calories}</span>
+                              {expandedNutrition === 'calories' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            </div>
+                          </button>
+                          {expandedNutrition === 'calories' && (
+                            <div className="px-4 pb-3 space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">From Fat</span>
+                                <span>{Math.round(item.nutrition.totalFat * 9)} cal</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">From Carbs</span>
+                                <span>{Math.round(item.nutrition.carbs * 4)} cal</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">From Protein</span>
+                                <span>{Math.round(item.nutrition.protein * 4)} cal</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Protein */}
+                        <div className="bg-gray-50 rounded-lg">
+                          <button
+                            onClick={() => setExpandedNutrition(expandedNutrition === 'protein' ? null : 'protein')}
+                            className="w-full px-4 py-3 flex items-center justify-between"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Scale size={18} className="text-emerald-500" />
+                              <span className="font-medium text-gray-700">Protein</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{item.nutrition.protein}g</span>
+                              {expandedNutrition === 'protein' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            </div>
+                          </button>
+                          {expandedNutrition === 'protein' && (
+                            <div className="px-4 pb-3">
+                              <div className="h-2 bg-emerald-100 rounded-full overflow-hidden mb-2">
+                                <div 
+                                  className="h-full bg-emerald-500 rounded-full"
+                                  style={{ width: `${(item.nutrition.protein / 50) * 100}%` }}
+                                />
+                              </div>
+                              <p className="text-sm text-gray-500">
+                                {Math.round((item.nutrition.protein / 50) * 100)}% of daily value
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Carbs */}
+                        <div className="bg-gray-50 rounded-lg">
+                          <button
+                            onClick={() => setExpandedNutrition(expandedNutrition === 'carbs' ? null : 'carbs')}
+                            className="w-full px-4 py-3 flex items-center justify-between"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Wheat size={18} className="text-amber-500" />
+                              <span className="font-medium text-gray-700">Carbohydrates</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{item.nutrition.carbs}g</span>
+                              {expandedNutrition === 'carbs' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            </div>
+                          </button>
+                          {expandedNutrition === 'carbs' && (
+                            <div className="px-4 pb-3 space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">Dietary Fiber</span>
+                                <span>{item.nutrition.fiber}g</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">Sugars</span>
+                                <span>{item.nutrition.sugars}g</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">Net Carbs</span>
+                                <span>{item.nutrition.carbs - item.nutrition.fiber}g</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Fats */}
+                        <div className="bg-gray-50 rounded-lg">
+                          <button
+                            onClick={() => setExpandedNutrition(expandedNutrition === 'fats' ? null : 'fats')}
+                            className="w-full px-4 py-3 flex items-center justify-between"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Leaf size={18} className="text-yellow-500" />
+                              <span className="font-medium text-gray-700">Fats</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{item.nutrition.totalFat}g</span>
+                              {expandedNutrition === 'fats' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            </div>
+                          </button>
+                          {expandedNutrition === 'fats' && (
+                            <div className="px-4 pb-3 space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">Saturated Fat</span>
+                                <span>{item.nutrition.saturatedFat}g</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-gray-500">Unsaturated Fat</span>
+                                <span>{(item.nutrition.totalFat - item.nutrition.saturatedFat).toFixed(1)}g</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Sodium */}
+                        <div className="bg-gray-50 rounded-lg">
+                          <button
+                            onClick={() => setExpandedNutrition(expandedNutrition === 'sodium' ? null : 'sodium')}
+                            className="w-full px-4 py-3 flex items-center justify-between"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Salt size={18} className="text-blue-500" />
+                              <span className="font-medium text-gray-700">Sodium</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{item.nutrition.sodium}mg</span>
+                              {expandedNutrition === 'sodium' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            </div>
+                          </button>
+                          {expandedNutrition === 'sodium' && (
+                            <div className="px-4 pb-3">
+                              <div className="h-2 bg-blue-100 rounded-full overflow-hidden mb-2">
+                                <div 
+                                  className="h-full bg-blue-500 rounded-full"
+                                  style={{ width: `${(item.nutrition.sodium / 2300) * 100}%` }}
+                                />
+                              </div>
+                              <p className="text-sm text-gray-500">
+                                {Math.round((item.nutrition.sodium / 2300) * 100)}% of daily value
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
