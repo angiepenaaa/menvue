@@ -8,6 +8,10 @@ interface RestaurantCardProps {
 }
 
 const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onClick }) => {
+  // Generate array of 5 stars for rating
+  const fullStars = Math.floor(restaurant.rating);
+  const hasHalfStar = restaurant.rating % 1 >= 0.5;
+
   return (
     <div 
       onClick={onClick}
@@ -29,12 +33,28 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onClick }) 
         <p className="text-gray-500 text-sm mb-2">{restaurant.cuisine}</p>
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <Star size={16} className="text-yellow-500 mr-1" />
-            <span className="text-sm font-medium">{restaurant.rating}</span>
+            <div className="flex items-center">
+              {[...Array(5)].map((_, index) => (
+                <Star
+                  key={index}
+                  size={16}
+                  className={`${
+                    index < fullStars
+                      ? 'text-yellow-400 fill-current'
+                      : index === fullStars && hasHalfStar
+                      ? 'text-yellow-400 fill-[50%]'
+                      : 'text-gray-300'
+                  } transition-colors`}
+                />
+              ))}
+              <span className="ml-1 text-sm font-medium text-gray-600">
+                {restaurant.rating}
+              </span>
+            </div>
           </div>
-          <div className="flex items-center">
-            <Clock size={16} className="text-gray-500 mr-1" />
-            <span className="text-sm text-gray-500">{restaurant.deliveryTime}</span>
+          <div className="flex items-center text-gray-500">
+            <Clock size={16} className="mr-1" />
+            <span className="text-sm">{restaurant.deliveryTime}</span>
           </div>
         </div>
       </div>
