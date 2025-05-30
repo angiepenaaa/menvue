@@ -10,7 +10,15 @@ interface MenuItemProps {
   item: MenuItemType;
 }
 
+const isValidImageUrl = (url: string): boolean => {
+  return url.startsWith('https://images.pexels.com/');
+};
+
 const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
+  if (!isValidImageUrl(item.image)) {
+    return null;
+  }
+
   const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [removedIngredients, setRemovedIngredients] = useState<string[]>([]);
