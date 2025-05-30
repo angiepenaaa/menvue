@@ -11,10 +11,13 @@ import {
   UtensilsCrossed, 
   Clock, 
   Award,
-  Timer
+  Timer,
+  Sparkles,
+  Zap
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
+import RewardsCard from '../components/RewardsCard';
 
 const AccountPage: React.FC = () => {
   const user = {
@@ -63,6 +66,26 @@ const AccountPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Rewards Section */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-emerald-100 rounded-lg">
+                <Gift className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-800">Rewards & Perks</h2>
+                <p className="text-gray-500 text-sm">Earn points with every healthy choice</p>
+              </div>
+            </div>
+            <button className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-100 transition-colors text-sm font-medium">
+              <Sparkles size={16} />
+              Redeem Points
+            </button>
+          </div>
+          <RewardsCard points={2450} tier="Gold" nextTierProgress={75} />
+        </div>
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
@@ -85,6 +108,37 @@ const AccountPage: React.FC = () => {
               <div className="text-emerald-600 font-semibold">Calories Saved</div>
             </div>
             <div className="text-3xl font-bold mt-2">4,800</div>
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h2>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 divide-y divide-gray-100">
+            <div className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-50 rounded-lg">
+                  <Zap size={18} className="text-emerald-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-gray-800">Earned 150 Points</p>
+                  <p className="text-sm text-gray-500">Ordered from First Watch</p>
+                </div>
+              </div>
+              <span className="text-sm text-gray-500">2h ago</span>
+            </div>
+            <div className="p-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-50 rounded-lg">
+                  <Award size={18} className="text-emerald-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-gray-800">Achieved Gold Status</p>
+                  <p className="text-sm text-gray-500">Unlocked new perks</p>
+                </div>
+              </div>
+              <span className="text-sm text-gray-500">1d ago</span>
+            </div>
           </div>
         </div>
 
