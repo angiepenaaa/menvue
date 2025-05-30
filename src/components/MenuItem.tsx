@@ -3,7 +3,7 @@ import type { MenuItem as MenuItemType } from '../types';
 import CalorieBadge from './CalorieBadge';
 import ActivityMatchBadge from './ActivityMatchBadge';
 import { restaurants } from '../data/restaurants';
-import { MapPin, Clock, ChevronDown, ChevronUp, ShoppingCart, X, Leaf, Scale, Flame, Apple, Wheat, Salad as Salt, Check } from 'lucide-react';
+import { MapPin, Clock, ChevronDown, ChevronUp, ShoppingCart, X, Leaf, Scale, Flame, Apple, Wheat, Salad as Salt, Check, Star, ThumbsUp } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 interface MenuItemProps {
@@ -164,6 +164,77 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                       <h2 className="text-2xl font-bold text-gray-800 mb-3">{item.name}</h2>
                       <p className="text-gray-600 leading-relaxed">{item.description}</p>
                     </div>
+
+                    {/* Ratings & Reviews */}
+                    {item.rating && (
+                      <div className="mb-8">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="font-semibold text-gray-800">Ratings & Reviews</h3>
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, index) => (
+                                <Star
+                                  key={index}
+                                  size={18}
+                                  className={`${
+                                    index < Math.floor(item.rating!.score)
+                                      ? 'text-yellow-400 fill-current'
+                                      : index < item.rating!.score
+                                      ? 'text-yellow-400 fill-[50%]'
+                                      : 'text-gray-300'
+                                  }`}
+                                />
+                              ))}
+                            </div>
+                            <span className="font-medium text-gray-700">{item.rating.score.toFixed(1)}</span>
+                            <span className="text-gray-500">({item.rating.count} reviews)</span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          {item.rating.reviews.map((review) => (
+                            <div key={review.id} className="bg-gray-50 rounded-xl p-4">
+                              <div className="flex items-center gap-3 mb-2">
+                                {review.userImage ? (
+                                  <img
+                                    src={review.userImage}
+                                    alt={review.username}
+                                    className="w-8 h-8 rounded-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                                    <span className="text-emerald-600 font-medium">
+                                      {review.username[0].toUpperCase()}
+                                    </span>
+                                  </div>
+                                )}
+                                <div>
+                                  <p className="font-medium text-gray-800">{review.username}</p>
+                                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                                    <div className="flex">
+                                      {[...Array(5)].map((_, index) => (
+                                        <Star
+                                          key={index}
+                                          size={12}
+                                          className={index < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}
+                                        />
+                                      ))}
+                                    </div>
+                                    <span>•</span>
+                                    <span>{review.date}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <p className="text-gray-600">{review.comment}</p>
+                              <button className="flex items-center gap-1 text-sm text-gray-500 mt-2 hover:text-emerald-600">
+                                <ThumbsUp size={14} />
+                                <span>Helpful ({review.helpful})</span>
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {/* Ingredients Customization */}
                     <div className="mb-8">
