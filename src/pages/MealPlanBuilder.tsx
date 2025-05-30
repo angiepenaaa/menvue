@@ -10,7 +10,8 @@ import {
   Utensils,
   Calendar,
   Flame,
-  Heart
+  Heart,
+  Sparkles
 } from 'lucide-react';
 import Header from '../components/Header';
 import { menuItems } from '../data/menuItems';
