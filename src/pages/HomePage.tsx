@@ -15,7 +15,7 @@ import { filterMenuItems, filterMenuItemsBySearch } from '../utils/filterItems';
 import { getSmartRecommendations, getMoodBasedRecommendations } from '../utils/recommendationEngine';
 import { savePreferences } from '../utils/storage';
 import { Mood, FilterState } from '../types';
-import { Brain, MapPin, Gauge, TrendingUp } from 'lucide-react';
+import { Brain, MapPin, TrendingUp } from 'lucide-react';
 
 interface HomePageProps {
   onCartClick: () => void;
@@ -123,17 +123,6 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
                 <MapPin size={16} />
                 <span>Nearby Pickup</span>
               </button>
-              <button 
-                onClick={() => setShowUnder500(!showUnder500)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap border ${
-                  showUnder500 
-                    ? 'bg-emerald-600 text-white border-emerald-600' 
-                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                <Gauge size={16} />
-                <span>Under 500 Cals</span>
-              </button>
               <button
                 onClick={() => {
                   setShowTrending(!showTrending);
@@ -166,7 +155,12 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         {/* Filters Panel */}
         {!showMoodSelector && !selectedMood && !showTrending && (
           <div className="mb-8">
-            <FilterPanel filters={filters} onFilterChange={setFilters} />
+            <FilterPanel 
+              filters={filters} 
+              onFilterChange={setFilters}
+              showUnder500={showUnder500}
+              setShowUnder500={setShowUnder500}
+            />
           </div>
         )}
 
