@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import AccountPage from './pages/AccountPage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
 import MealPlanBuilder from './pages/MealPlanBuilder';
+import ItemDetailPage from './pages/ItemDetailPage';
 import HealthyVariationsPage from './pages/HealthyVariationsPage';
 import CartDrawer from './components/CartDrawer';
 import LoginPage from './pages/LoginPage';
@@ -79,6 +80,17 @@ function App() {
                 <ProtectedRoute>
                   <div className="pb-20">
                     <HomePage onCartClick={() => setIsCartOpen(true)} />
+                    <BottomNav />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/item/:itemId"
+              element={
+                <ProtectedRoute>
+                  <div className="pb-20">
+                    <ItemDetailPage />
                     <BottomNav />
                   </div>
                 </ProtectedRoute>
