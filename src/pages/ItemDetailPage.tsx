@@ -1,18 +1,40 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ShoppingCart, Scale, Flame, Leaf } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Scale, Flame, Leaf, Minus, Plus, Check } from 'lucide-react';
 import { menuItems } from '../data/menuItems';
 import { restaurants } from '../data/restaurants';
 import { useCart } from '../context/CartContext';
 import CalorieBadge from '../components/CalorieBadge';
 
 const ItemDetailPage: React.FC = () => {
+  const [quantity, setQuantity] = React.useState(1);
+  const [selectedOptions, setSelectedOptions] = React.useState<string[]>([]);
+  const [showAddedToCart, setShowAddedToCart] = React.useState(false);
   const navigate = useNavigate();
   const { itemId } = useParams();
   const { addItem } = useCart();
 
   const item = menuItems.find(item => item.id === itemId);
   const restaurant = item ? restaurants.find(r => r.id === item.restaurantId) : null;
+
+  const handleAddToCart = () => {
+    addItem(item!, [], quantity);
+    setShowAddedToCart(true);
+    setTimeout(() => {
+      setShowAddedToCart(false);
+      navigate(-1);
+    }, 1500);
+  };
+
+  const toggleOption = (option: string) => {
+    setSelectedOptions(current =>
+      current.includes(option)
+        ? current.filter(o => o !== option)
+        : [...current, option]
+    );
+  };
+
+  const totalPrice = parseFloat(item?.price.replace('$', '') || '0') * quantity;
 
   if (!item || !restaurant) {
     return (
@@ -38,7 +60,7 @@ const ItemDetailPage: React.FC = () => {
       unit: 'g'
     },
     { 
-      icon: <Flame className="text-orange-600" size={24} />, 
+      icon: <Flame className="text-orange-600\" size={24} />, 
       label: 'Carbs', 
       value: item.nutrition.carbs,
       unit: 'g'
@@ -97,7 +119,7 @@ const ItemDetailPage: React.FC = () => {
           </div>
 
           {/* Nutrition Section */}
-          <div className="mb-8">
+          <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Nutrition</h3>
             <div className="bg-gray-50 rounded-xl p-6">
               <div className="grid grid-cols-3 gap-6">
@@ -112,6 +134,52 @@ const ItemDetailPage: React.FC = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+
+          {/* Customization Options */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Customize Your Order</h3>
+            <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+              {item.ingredients?.map((ingredient) => (
+                <button
+                  key={ingredient}
+                  onClick={() => toggleOption(ingredient)}
+                  className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+                >
+                  <span className="text-gray-700">{ingredient}</span>
+                  <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${
+                    selectedOptions.includes(ingredient)
+                      ? 'bg-emerald-600 border-emerald-600'
+                      : 'border-gray-300'
+                  }`}>
+                    {selectedOptions.includes(ingredient) && (
+                      <Check size={12} className="text-white" />
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quantity Selector */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Quantity</h3>
+            <div className="flex items-center gap-4 bg-white rounded-xl border border-gray-200 p-4">
+              <button
+                onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                disabled={quantity === 1}
+              >
+                <Minus size={20} className={quantity === 1 ? 'text-gray-300' : 'text-gray-600'} />
+              </button>
+              <span className="text-xl font-semibold text-gray-900 w-8 text-center">{quantity}</span>
+              <button
+                onClick={() => setQuantity(q => q + 1)}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <Plus size={20} className="text-gray-600" />
+              </button>
             </div>
           </div>
 
@@ -133,21 +201,31 @@ const ItemDetailPage: React.FC = () => {
       </div>
 
       {/* Fixed Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 shadow-lg">
+      <div className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 shadow-lg ${
+        showAddedToCart ? 'bg-emerald-600' : ''
+      }`}>
         <div className="container mx-auto max-w-2xl flex items-center justify-between">
-          <div>
-            <span className="text-3xl font-bold text-gray-900">{item.price}</span>
-          </div>
-          <button
-            onClick={() => {
-              addItem(item, []);
-              navigate(-1);
-            }}
-            className="px-8 py-3 bg-emerald-600 text-white rounded-full font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2"
-          >
-            <ShoppingCart size={20} />
-            Add to Cart
-          </button>
+          {showAddedToCart ? (
+            <div className="w-full flex items-center justify-center">
+              <span className="text-white font-medium flex items-center gap-2">
+                <Check size={20} />
+                Added to Cart!
+              </span>
+            </div>
+          ) : (
+            <>
+              <div>
+                <span className="text-3xl font-bold text-gray-900">${totalPrice.toFixed(2)}</span>
+              </div>
+              <button
+                onClick={handleAddToCart}
+                className="px-8 py-3 bg-emerald-600 text-white rounded-full font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2"
+              >
+                <ShoppingCart size={20} />
+                Add to Cart
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

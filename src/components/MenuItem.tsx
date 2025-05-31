@@ -33,7 +33,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
       color: 'emerald'
     },
     { 
-      icon: <Flame className="text-orange-600" size={18} />, 
+      icon: <Flame className="text-orange-600\" size={18} />, 
       label: 'Carbs', 
       value: item.nutrition.carbs,
       unit: 'g',
