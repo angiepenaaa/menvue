@@ -65,7 +65,7 @@ const ItemDetailPage: React.FC = () => {
       ]
     },
     { 
-      icon: <Flame className="text-orange-600" size={24} />, 
+      icon: <Flame className="text-orange-600\" size={24} />, 
       label: 'Carbs', 
       value: item.nutrition.carbs,
       unit: 'g',
