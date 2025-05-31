@@ -10,7 +10,6 @@ const ItemDetailPage: React.FC = () => {
   const [quantity, setQuantity] = React.useState(1);
   const [selectedOptions, setSelectedOptions] = React.useState<string[]>([]);
   const [showAddedToCart, setShowAddedToCart] = React.useState(false);
-  const [showAddedToCart, setShowAddedToCart] = React.useState(false);
   const navigate = useNavigate();
   const { itemId } = useParams();
   const { addItem } = useCart();
@@ -20,15 +19,6 @@ const ItemDetailPage: React.FC = () => {
 
   const handleAddToCart = () => {
     addItem(item!, selectedOptions, quantity);
-    setShowAddedToCart(true);
-    setTimeout(() => {
-      setShowAddedToCart(false);
-      navigate(-1);
-    }, 1500);
-  };
-
-  const handleAddToCart = () => {
-    addItem(item!, [], quantity);
     setShowAddedToCart(true);
     setTimeout(() => {
       setShowAddedToCart(false);
@@ -67,19 +57,34 @@ const ItemDetailPage: React.FC = () => {
       icon: <Scale className="text-emerald-600" size={24} />, 
       label: 'Protein', 
       value: item.nutrition.protein,
-      unit: 'g'
+      unit: 'g',
+      details: [
+        { label: 'Essential Amino Acids', value: Math.round(item.nutrition.protein * 0.4) },
+        { label: 'Branch Chain Amino Acids', value: Math.round(item.nutrition.protein * 0.2) },
+        { label: 'Other Proteins', value: Math.round(item.nutrition.protein * 0.4) }
+      ]
     },
     { 
-      icon: <Flame className="text-orange-600\" size={24} />, 
+      icon: <Flame className="text-orange-600" size={24} />, 
       label: 'Carbs', 
       value: item.nutrition.carbs,
-      unit: 'g'
+      unit: 'g',
+      details: [
+        { label: 'Dietary Fiber', value: item.nutrition.fiber },
+        { label: 'Sugars', value: item.nutrition.sugars },
+        { label: 'Net Carbs', value: item.nutrition.carbs - item.nutrition.fiber }
+      ]
     },
     { 
-      icon: <Leaf className="text-yellow-600\" size={24} />, 
+      icon: <Leaf className="text-yellow-600" size={24} />, 
       label: 'Fat', 
       value: item.nutrition.totalFat,
-      unit: 'g'
+      unit: 'g',
+      details: [
+        { label: 'Saturated Fat', value: item.nutrition.saturatedFat },
+        { label: 'Unsaturated Fat', value: item.nutrition.totalFat - item.nutrition.saturatedFat },
+        { label: 'Trans Fat', value: 0 }
+      ]
     }
   ];
 
@@ -133,14 +138,28 @@ const ItemDetailPage: React.FC = () => {
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Nutrition</h3>
             <div className="bg-gray-50 rounded-xl p-6">
               <div className="grid grid-cols-3 gap-6">
-                {nutritionMetrics.map(({ icon, label, value, unit }) => (
+                {nutritionMetrics.map(({ icon, label, value, unit, details }) => (
                   <div 
                     key={label} 
-                    className="bg-white rounded-lg p-4 flex flex-col items-center shadow-sm"
+                    className="group relative bg-white rounded-lg p-4 flex flex-col items-center shadow-sm"
                   >
                     <div className="mb-2">{icon}</div>
                     <span className="text-2xl font-bold text-gray-900">{value}{unit}</span>
                     <span className="text-sm text-gray-500 mt-1">{label}</span>
+                    
+                    {/* Hover Details */}
+                    <div className="absolute invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-gray-900 text-white rounded-lg p-3 shadow-lg z-10">
+                      <div className="text-sm font-medium mb-2">{label} Breakdown</div>
+                      <div className="space-y-2">
+                        {details.map((detail, index) => (
+                          <div key={index} className="flex justify-between text-xs">
+                            <span className="text-gray-300">{detail.label}</span>
+                            <span className="font-medium">{detail.value}g</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 transform rotate-45 w-2 h-2 bg-gray-900"></div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -211,23 +230,10 @@ const ItemDetailPage: React.FC = () => {
       </div>
 
       {/* Fixed Bottom Bar */}
-      <div className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 shadow-lg ${
-        showAddedToCart ? 'bg-emerald-600' : ''
       <div className={`fixed bottom-0 left-0 right-0 border-t border-gray-100 p-4 shadow-lg ${
         showAddedToCart ? 'bg-emerald-600' : 'bg-white'
       }`}>
         <div className="container mx-auto max-w-2xl flex items-center justify-between">
-          {showAddedToCart ? (
-            <div className="w-full flex items-center justify-center">
-              <span className="text-white font-medium flex items-center gap-2">
-                <Check size={20} />
-                Added to Cart!
-              </span>
-            </div>
-          ) : (
-            <>
-              <div>
-                <span className="text-3xl font-bold text-gray-900">${totalPrice.toFixed(2)}</span>
           {showAddedToCart ? (
             <div className="w-full flex items-center justify-center">
               <span className="text-white font-medium flex items-center gap-2">
