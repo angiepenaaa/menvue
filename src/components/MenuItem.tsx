@@ -22,6 +22,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
   const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [removedIngredients, setRemovedIngredients] = useState<string[]>([]);
+  const [expandedNutrition, setExpandedNutrition] = useState<string | null>(null);
   const restaurant = restaurants.find(r => r.id === item.restaurantId);
   const { addItem } = useCart();
 
