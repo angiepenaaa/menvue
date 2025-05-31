@@ -10,12 +10,22 @@ const ItemDetailPage: React.FC = () => {
   const [quantity, setQuantity] = React.useState(1);
   const [selectedOptions, setSelectedOptions] = React.useState<string[]>([]);
   const [showAddedToCart, setShowAddedToCart] = React.useState(false);
+  const [showAddedToCart, setShowAddedToCart] = React.useState(false);
   const navigate = useNavigate();
   const { itemId } = useParams();
   const { addItem } = useCart();
 
   const item = menuItems.find(item => item.id === itemId);
   const restaurant = item ? restaurants.find(r => r.id === item.restaurantId) : null;
+
+  const handleAddToCart = () => {
+    addItem(item!, selectedOptions, quantity);
+    setShowAddedToCart(true);
+    setTimeout(() => {
+      setShowAddedToCart(false);
+      navigate(-1);
+    }, 1500);
+  };
 
   const handleAddToCart = () => {
     addItem(item!, [], quantity);
@@ -66,7 +76,7 @@ const ItemDetailPage: React.FC = () => {
       unit: 'g'
     },
     { 
-      icon: <Leaf className="text-yellow-600" size={24} />, 
+      icon: <Leaf className="text-yellow-600\" size={24} />, 
       label: 'Fat', 
       value: item.nutrition.totalFat,
       unit: 'g'
@@ -203,8 +213,21 @@ const ItemDetailPage: React.FC = () => {
       {/* Fixed Bottom Bar */}
       <div className={`fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 shadow-lg ${
         showAddedToCart ? 'bg-emerald-600' : ''
+      <div className={`fixed bottom-0 left-0 right-0 border-t border-gray-100 p-4 shadow-lg ${
+        showAddedToCart ? 'bg-emerald-600' : 'bg-white'
       }`}>
         <div className="container mx-auto max-w-2xl flex items-center justify-between">
+          {showAddedToCart ? (
+            <div className="w-full flex items-center justify-center">
+              <span className="text-white font-medium flex items-center gap-2">
+                <Check size={20} />
+                Added to Cart!
+              </span>
+            </div>
+          ) : (
+            <>
+              <div>
+                <span className="text-3xl font-bold text-gray-900">${totalPrice.toFixed(2)}</span>
           {showAddedToCart ? (
             <div className="w-full flex items-center justify-center">
               <span className="text-white font-medium flex items-center gap-2">
@@ -219,10 +242,10 @@ const ItemDetailPage: React.FC = () => {
               </div>
               <button
                 onClick={handleAddToCart}
-                className="px-8 py-3 bg-emerald-600 text-white rounded-full font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2"
+                className="px-8 py-3 bg-emerald-600 text-white rounded-full font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2 animate-slide-up"
               >
                 <ShoppingCart size={20} />
-                Add to Cart
+                Add to Cart {quantity > 1 ? `(${quantity})` : ''}
               </button>
             </>
           )}
