@@ -59,6 +59,9 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
   const filteredItems = useMemo(() => {
     let items = filterMenuItems(menuItems, filters);
     
+    // Limit to 10 items
+    items = items.slice(0, 10);
+    
     if (activeRestaurantId) {
       items = items.filter(item => item.restaurantId === activeRestaurantId);
     }
