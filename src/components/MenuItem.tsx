@@ -133,27 +133,30 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
 
       {/* Details Modal */}
       {showDetails && (
-        <div className="fixed inset-0 z-50 overflow-hidden" onClick={() => setShowDetails(false)}>
-          <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" />
+        <div 
+          className="fixed inset-0 z-50 overflow-hidden overscroll-contain" 
+          onClick={() => setShowDetails(false)}
+        >
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           
-          <div className="fixed inset-0 overflow-y-auto overscroll-contain">
+          <div className="fixed inset-0 overflow-y-auto overscroll-contain scroll-smooth">
             <div className="flex min-h-full items-center justify-center p-4">
               <div 
                 className="relative bg-white w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden"
                 onClick={e => e.stopPropagation()}
               >
                 {/* Close Button */}
-                <div className="fixed top-4 right-4 z-10">
+                <div className="sticky top-4 right-4 z-10 float-right">
                   <button
                     onClick={() => setShowDetails(false)}
-                    className="p-2 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full transition-colors shadow-lg"
+                    className="p-2 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full transition-all shadow-lg hover:shadow-xl"
                   >
                     <X size={20} className="text-gray-500" />
                   </button>
                 </div>
 
                 {/* Content */}
-                <div className="max-h-[85vh] overflow-y-auto overscroll-contain scroll-smooth">
+                <div className="max-h-[85vh] overflow-y-auto overscroll-contain scroll-smooth px-6 pt-6 pb-24">
                   <div className="relative h-72">
                     <img
                       src={item.image}
@@ -236,7 +239,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                   </div>
 
                   {/* Fixed Bottom Bar */}
-                  <div className="sticky bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-100 p-4 flex items-center justify-between shadow-lg">
+                  <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-100 p-4 flex items-center justify-between shadow-xl w-full max-w-2xl mx-auto">
                     <div>
                       <span className="text-3xl font-bold text-gray-900">{item.price}</span>
                     </div>
@@ -253,19 +256,19 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                     <div className="mt-6 space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-gray-800">Detailed Nutrition</h3>
-                        <button 
-                          onClick={() => setExpandedNutrition(null)}
-                          className="text-sm text-emerald-600 hover:text-emerald-700"
+                        <button
+                          onClick={() => setExpandedNutrition(expandedNutrition ? null : 'all')}
+                          className="text-sm text-emerald-600 hover:text-emerald-700 px-3 py-1 rounded-lg hover:bg-emerald-50 transition-colors"
                         >
                           {expandedNutrition ? 'Collapse All' : 'Expand All'}
                         </button>
                       </div>
                       <div className="space-y-2">
                         {/* Calories */}
-                        <div className="bg-gray-50 rounded-lg">
+                        <div className="bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                           <button
                             onClick={() => setExpandedNutrition(expandedNutrition === 'calories' ? null : 'calories')}
-                            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-100 transition-colors rounded-lg"
+                            className="w-full px-4 py-3 flex items-center justify-between rounded-lg"
                           >
                             <div className="flex items-center gap-2">
                               <Flame size={18} className="text-orange-500" />
@@ -295,10 +298,10 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                         </div>
 
                         {/* Protein */}
-                        <div className="bg-gray-50 rounded-lg">
+                        <div className="bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                           <button
                             onClick={() => setExpandedNutrition(expandedNutrition === 'protein' ? null : 'protein')}
-                            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-100 transition-colors rounded-lg"
+                            className="w-full px-4 py-3 flex items-center justify-between rounded-lg"
                           >
                             <div className="flex items-center gap-2">
                               <Scale size={18} className="text-emerald-500" />
@@ -325,10 +328,10 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                         </div>
 
                         {/* Carbs */}
-                        <div className="bg-gray-50 rounded-lg">
+                        <div className="bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                           <button
                             onClick={() => setExpandedNutrition(expandedNutrition === 'carbs' ? null : 'carbs')}
-                            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-100 transition-colors rounded-lg"
+                            className="w-full px-4 py-3 flex items-center justify-between rounded-lg"
                           >
                             <div className="flex items-center gap-2">
                               <Wheat size={18} className="text-amber-500" />
@@ -358,10 +361,10 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                         </div>
 
                         {/* Fats */}
-                        <div className="bg-gray-50 rounded-lg">
+                        <div className="bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                           <button
                             onClick={() => setExpandedNutrition(expandedNutrition === 'fats' ? null : 'fats')}
-                            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-100 transition-colors rounded-lg"
+                            className="w-full px-4 py-3 flex items-center justify-between rounded-lg"
                           >
                             <div className="flex items-center gap-2">
                               <Leaf size={18} className="text-yellow-500" />
@@ -387,10 +390,10 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                         </div>
 
                         {/* Sodium */}
-                        <div className="bg-gray-50 rounded-lg">
+                        <div className="bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                           <button
                             onClick={() => setExpandedNutrition(expandedNutrition === 'sodium' ? null : 'sodium')}
-                            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-100 transition-colors rounded-lg"
+                            className="w-full px-4 py-3 flex items-center justify-between rounded-lg"
                           >
                             <div className="flex items-center gap-2">
                               <Salt size={18} className="text-blue-500" />
