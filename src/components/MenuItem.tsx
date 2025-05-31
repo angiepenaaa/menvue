@@ -22,17 +22,31 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
   const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [removedIngredients, setRemovedIngredients] = useState<string[]>([]);
-  const [expandedNutrition, setExpandedNutrition] = useState<string | null>(null);
   const restaurant = restaurants.find(r => r.id === item.restaurantId);
   const { addItem } = useCart();
 
   const nutritionMetrics = [
-    { icon: <Scale size={16} />, label: 'Protein', value: `${item.nutrition.protein}g` },
-    { icon: <Flame size={16} />, label: 'Carbs', value: `${item.nutrition.carbs}g` },
-    { icon: <Apple size={16} />, label: 'Sugars', value: `${item.nutrition.sugars}g` },
-    { icon: <Leaf size={16} />, label: 'Total Fat', value: `${item.nutrition.totalFat}g` },
-    { icon: <Wheat size={16} />, label: 'Fiber', value: `${item.nutrition.fiber}g` },
-    { icon: <Salt size={16} />, label: 'Sodium', value: `${item.nutrition.sodium}mg` }
+    { 
+      icon: <Scale className="text-emerald-600" size={18} />, 
+      label: 'Protein', 
+      value: item.nutrition.protein,
+      unit: 'g',
+      color: 'emerald'
+    },
+    { 
+      icon: <Flame className="text-orange-600" size={18} />, 
+      label: 'Carbs', 
+      value: item.nutrition.carbs,
+      unit: 'g',
+      color: 'orange'
+    },
+    { 
+      icon: <Leaf className="text-yellow-600" size={18} />, 
+      label: 'Fat', 
+      value: item.nutrition.totalFat,
+      unit: 'g',
+      color: 'yellow'
+    }
   ];
 
   const toggleIngredient = (ingredient: string) => {
@@ -115,7 +129,38 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
           {/* Price and Action */}
           <div className="flex items-center flex-wrap gap-4 pt-4 mt-auto border-t border-gray-100">
             <div className="flex-shrink-0">
-              <span className="text-2xl font-bold text-gray-900">{item.price}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl font-bold text-gray-900">{item.price}</span>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsNutritionOpen(!isNutritionOpen);
+                  }}
+                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1"
+                >
+                  {isNutritionOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  Nutrition
+                </button>
+              </div>
+              {isNutritionOpen && (
+                <div className="absolute left-0 right-0 bottom-full bg-white shadow-lg rounded-t-xl border border-gray-100 p-4 animate-slide-up">
+                  <div className="grid grid-cols-3 gap-4">
+                    {nutritionMetrics.map(({ icon, label, value, unit, color }) => (
+                      <div key={label} className={`bg-${color}-50 rounded-xl p-3 flex flex-col items-center`}>
+                        {icon}
+                        <span className="text-lg font-bold mt-1">{value}{unit}</span>
+                        <span className="text-xs text-gray-600">{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex justify-between text-sm text-gray-600">
+                      <span>Total Calories:</span>
+                      <span className="font-semibold">{item.calories} cal</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <button
               onClick={(e) => {
