@@ -22,7 +22,6 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
   const [isNutritionOpen, setIsNutritionOpen] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [removedIngredients, setRemovedIngredients] = useState<string[]>([]);
-  const [expandedNutrition, setExpandedNutrition] = useState<string | null>(null);
   const restaurant = restaurants.find(r => r.id === item.restaurantId);
   const { addItem } = useCart();
 
@@ -130,39 +129,18 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
           {/* Price and Action */}
           <div className="flex items-center flex-wrap gap-4 pt-4 mt-auto border-t border-gray-100">
             <div className="flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl font-bold text-gray-900">{item.price}</span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsNutritionOpen(!isNutritionOpen);
-                  }}
-                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1"
-                >
-                  {isNutritionOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  Nutrition
-                </button>
-              </div>
-              {isNutritionOpen && (
-                <div className="absolute left-0 right-0 bottom-full bg-white shadow-lg rounded-t-xl border border-gray-100 p-4 animate-slide-up">
-                  <div className="grid grid-cols-3 gap-4">
-                    {nutritionMetrics.map(({ icon, label, value, unit, color }) => (
-                      <div key={label} className={`bg-${color}-50 rounded-xl p-3 flex flex-col items-center`}>
-                        {icon}
-                        <span className="text-lg font-bold mt-1">{value}{unit}</span>
-                        <span className="text-xs text-gray-600">{label}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-3 pt-3 border-t border-gray-100">
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>Total Calories:</span>
-                      <span className="font-semibold">{item.calories} cal</span>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <span className="text-2xl font-bold text-gray-900">{item.price}</span>
             </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsNutritionOpen(!isNutritionOpen);
+              }}
+              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1"
+            >
+              {isNutritionOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              Nutrition Facts
+            </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -174,6 +152,30 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
               Add to Cart
             </button>
           </div>
+          
+          {/* Nutrition Panel */}
+          {isNutritionOpen && (
+            <div className="mt-4 bg-gray-50 rounded-xl p-4 animate-slide-up">
+              <div className="grid grid-cols-3 gap-4">
+                {nutritionMetrics.map(({ icon, label, value, unit }) => (
+                  <div key={label} className="bg-white rounded-lg p-3 flex flex-col items-center shadow-sm">
+                    <div className="mb-1">{icon}</div>
+                    <span className="text-lg font-bold">{value}{unit}</span>
+                    <span className="text-xs text-gray-600">{label}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 pt-3 border-t border-gray-200">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Total Calories</span>
+                  <div className="flex items-center gap-2">
+                    <Flame size={16} className="text-orange-500" />
+                    <span className="font-semibold text-gray-900">{item.calories} cal</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -271,13 +273,13 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                     <div className="mb-8">
                       <h3 className="font-semibold text-gray-800 mb-4">Nutrition Information</h3>
                       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        {nutritionMetrics.map(({ icon, label, value }) => (
+                        {nutritionMetrics.map(({ icon, label, value, unit }) => (
                           <div key={label} className="bg-gray-50 rounded-xl p-4">
                             <div className="flex items-center gap-2 text-gray-500 mb-1">
                               {icon}
                               <span className="text-sm">{label}</span>
                             </div>
-                            <div className="text-xl font-semibold text-gray-800">{value}</div>
+                            <div className="text-xl font-semibold text-gray-800">{value}{unit}</div>
                           </div>
                         ))}
                       </div>
@@ -298,174 +300,6 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
                       {removedIngredients.length > 0 && ` (${removedIngredients.length} customizations)`}
                     </button>
                     
-                    {/* Detailed Nutrition Information */}
-                    <div className="mt-6 space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-gray-800">Detailed Nutrition</h3>
-                        <button
-                          onClick={() => setExpandedNutrition(expandedNutrition ? null : 'all')}
-                          className="text-sm text-emerald-600 hover:text-emerald-700 px-3 py-1 rounded-lg hover:bg-emerald-50 transition-colors"
-                        >
-                          {expandedNutrition ? 'Collapse All' : 'Expand All'}
-                        </button>
-                      </div>
-                      <div className="space-y-2">
-                        {/* Calories */}
-                        <div className="bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                          <button
-                            onClick={() => setExpandedNutrition(expandedNutrition === 'calories' ? null : 'calories')}
-                            className="w-full px-4 py-3 flex items-center justify-between rounded-lg"
-                          >
-                            <div className="flex items-center gap-2">
-                              <Flame size={18} className="text-orange-500" />
-                              <span className="font-medium text-gray-700">Calories</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">{item.calories}</span>
-                              {expandedNutrition === 'calories' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                            </div>
-                          </button>
-                          {expandedNutrition === 'calories' && (
-                            <div className="px-4 pb-3 space-y-2">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">From Fat</span>
-                                <span>{Math.round(item.nutrition.totalFat * 9)} cal</span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">From Carbs</span>
-                                <span>{Math.round(item.nutrition.carbs * 4)} cal</span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">From Protein</span>
-                                <span>{Math.round(item.nutrition.protein * 4)} cal</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Protein */}
-                        <div className="bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                          <button
-                            onClick={() => setExpandedNutrition(expandedNutrition === 'protein' ? null : 'protein')}
-                            className="w-full px-4 py-3 flex items-center justify-between rounded-lg"
-                          >
-                            <div className="flex items-center gap-2">
-                              <Scale size={18} className="text-emerald-500" />
-                              <span className="font-medium text-gray-700">Protein</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">{item.nutrition.protein}g</span>
-                              {expandedNutrition === 'protein' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                            </div>
-                          </button>
-                          {expandedNutrition === 'protein' && (
-                            <div className="px-4 pb-3">
-                              <div className="h-2 bg-emerald-100 rounded-full overflow-hidden mb-2">
-                                <div 
-                                  className="h-full bg-emerald-500 rounded-full"
-                                  style={{ width: `${(item.nutrition.protein / 50) * 100}%` }}
-                                />
-                              </div>
-                              <p className="text-sm text-gray-500">
-                                {Math.round((item.nutrition.protein / 50) * 100)}% of daily value
-                              </p>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Carbs */}
-                        <div className="bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                          <button
-                            onClick={() => setExpandedNutrition(expandedNutrition === 'carbs' ? null : 'carbs')}
-                            className="w-full px-4 py-3 flex items-center justify-between rounded-lg"
-                          >
-                            <div className="flex items-center gap-2">
-                              <Wheat size={18} className="text-amber-500" />
-                              <span className="font-medium text-gray-700">Carbohydrates</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">{item.nutrition.carbs}g</span>
-                              {expandedNutrition === 'carbs' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                            </div>
-                          </button>
-                          {expandedNutrition === 'carbs' && (
-                            <div className="px-4 pb-3 space-y-2">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">Dietary Fiber</span>
-                                <span>{item.nutrition.fiber}g</span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">Sugars</span>
-                                <span>{item.nutrition.sugars}g</span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">Net Carbs</span>
-                                <span>{item.nutrition.carbs - item.nutrition.fiber}g</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Fats */}
-                        <div className="bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                          <button
-                            onClick={() => setExpandedNutrition(expandedNutrition === 'fats' ? null : 'fats')}
-                            className="w-full px-4 py-3 flex items-center justify-between rounded-lg"
-                          >
-                            <div className="flex items-center gap-2">
-                              <Leaf size={18} className="text-yellow-500" />
-                              <span className="font-medium text-gray-700">Fats</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">{item.nutrition.totalFat}g</span>
-                              {expandedNutrition === 'fats' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                            </div>
-                          </button>
-                          {expandedNutrition === 'fats' && (
-                            <div className="px-4 pb-3 space-y-2">
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">Saturated Fat</span>
-                                <span>{item.nutrition.saturatedFat}g</span>
-                              </div>
-                              <div className="flex justify-between text-sm">
-                                <span className="text-gray-500">Unsaturated Fat</span>
-                                <span>{(item.nutrition.totalFat - item.nutrition.saturatedFat).toFixed(1)}g</span>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Sodium */}
-                        <div className="bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                          <button
-                            onClick={() => setExpandedNutrition(expandedNutrition === 'sodium' ? null : 'sodium')}
-                            className="w-full px-4 py-3 flex items-center justify-between rounded-lg"
-                          >
-                            <div className="flex items-center gap-2">
-                              <Salt size={18} className="text-blue-500" />
-                              <span className="font-medium text-gray-700">Sodium</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">{item.nutrition.sodium}mg</span>
-                              {expandedNutrition === 'sodium' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                            </div>
-                          </button>
-                          {expandedNutrition === 'sodium' && (
-                            <div className="px-4 pb-3">
-                              <div className="h-2 bg-blue-100 rounded-full overflow-hidden mb-2">
-                                <div 
-                                  className="h-full bg-blue-500 rounded-full"
-                                  style={{ width: `${(item.nutrition.sodium / 2300) * 100}%` }}
-                                />
-                              </div>
-                              <p className="text-sm text-gray-500">
-                                {Math.round((item.nutrition.sodium / 2300) * 100)}% of daily value
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
