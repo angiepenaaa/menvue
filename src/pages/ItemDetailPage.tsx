@@ -3,16 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Scale, Flame, Leaf, Minus, Plus, Check } from 'lucide-react';
 import { menuItems } from '../data/menuItems';
 import { restaurants } from '../data/restaurants';
-import { useCart } from '../context/CartContext';
+import { useCart, CartContextType } from '../context/CartContext';
 import CalorieBadge from '../components/CalorieBadge';
 
 const ItemDetailPage: React.FC = () => {
   const [quantity, setQuantity] = React.useState(1);
   const [selectedOptions, setSelectedOptions] = React.useState<string[]>([]);
   const [showAddedToCart, setShowAddedToCart] = React.useState(false);
+  const { addItem, totalItems } = useCart() as CartContextType;
   const navigate = useNavigate();
-  const { itemId } = useParams();
-  const { addItem } = useCart();
 
   const item = menuItems.find(item => item.id === itemId);
   const restaurant = item ? restaurants.find(r => r.id === item.restaurantId) : null;
@@ -96,7 +95,7 @@ const ItemDetailPage: React.FC = () => {
           <div className="h-16 flex items-center justify-between">
             <button
               onClick={() => navigate(-1)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center gap-2"
               aria-label="Go back"
             >
               <ArrowLeft size={24} className="text-gray-700" />
@@ -104,7 +103,18 @@ const ItemDetailPage: React.FC = () => {
             <h1 className="text-lg font-semibold text-gray-800 flex-1 text-center">
               {item.name}
             </h1>
-            <div className="w-10" /> {/* Spacer for balance */}
+            <button
+              onClick={() => navigate('/cart')}
+              className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label="View cart"
+            >
+              <ShoppingCart size={24} className="text-gray-700" />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                  {totalItems}
+                </span>
+              )}
+            </button>
           </div>
         </div>
       </div>
