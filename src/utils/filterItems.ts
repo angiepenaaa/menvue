@@ -1,10 +1,26 @@
 import { MenuItem, FilterState } from '../types';
 
+const isValidMenuItem = (item: MenuItem): boolean => {
+  // Check if image URL is valid
+  const isValidImage = item.image?.startsWith('https://images.pexels.com/');
+  
+  // Check if nutrition info exists and has valid values
+  const hasValidNutrition = item.nutrition && 
+    typeof item.nutrition.protein === 'number' &&
+    typeof item.nutrition.carbs === 'number' &&
+    typeof item.nutrition.totalFat === 'number' &&
+    typeof item.nutrition.fiber === 'number' &&
+    typeof item.nutrition.sugars === 'number' &&
+    typeof item.nutrition.saturatedFat === 'number';
+  
+  return isValidImage && hasValidNutrition;
+};
+
 export const filterMenuItems = (
   items: MenuItem[],
   filters: FilterState
 ): MenuItem[] => {
-  return items.filter(item => {
+  return items.filter(item => isValidMenuItem(item) && {
     // Meal Type Filter
     if (filters.mealType.length > 0 && 
         !filters.mealType.some(type => 
