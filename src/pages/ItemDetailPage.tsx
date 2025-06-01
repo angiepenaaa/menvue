@@ -7,6 +7,7 @@ import { useCart, CartContextType } from '../context/CartContext';
 import CalorieBadge from '../components/CalorieBadge';
 
 const ItemDetailPage: React.FC = () => {
+  const { itemId } = useParams<{ itemId: string }>();
   const [quantity, setQuantity] = React.useState(1);
   const [selectedOptions, setSelectedOptions] = React.useState<string[]>([]);
   const [showAddedToCart, setShowAddedToCart] = React.useState(false);
@@ -64,7 +65,7 @@ const ItemDetailPage: React.FC = () => {
       ]
     },
     { 
-      icon: <Flame className="text-orange-600\" size={24} />, 
+      icon: <Flame className="text-orange-600" size={24} />, 
       label: 'Carbs', 
       value: item.nutrition.carbs,
       unit: 'g',
@@ -75,7 +76,7 @@ const ItemDetailPage: React.FC = () => {
       ]
     },
     { 
-      icon: <Leaf className="text-yellow-600\" size={24} />, 
+      icon: <Leaf className="text-yellow-600" size={24} />, 
       label: 'Fat', 
       value: item.nutrition.totalFat,
       unit: 'g',
