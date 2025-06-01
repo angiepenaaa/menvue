@@ -63,11 +63,6 @@ const ItemDetailPage: React.FC = () => {
         { label: 'Branch Chain Amino Acids', value: Math.round(item.nutrition.protein * 0.2) },
         { label: 'Other Proteins', value: Math.round(item.nutrition.protein * 0.4) }
       ]
-      details: [
-        { label: 'Essential Amino Acids', value: Math.round(item.nutrition.protein * 0.4) },
-        { label: 'Branch Chain Amino Acids', value: Math.round(item.nutrition.protein * 0.2) },
-        { label: 'Other Proteins', value: Math.round(item.nutrition.protein * 0.4) }
-      ]
     },
     { 
       icon: <Flame className="text-orange-600\" size={24} />, 
@@ -79,22 +74,12 @@ const ItemDetailPage: React.FC = () => {
         { label: 'Sugars', value: item.nutrition.sugars },
         { label: 'Net Carbs', value: item.nutrition.carbs - item.nutrition.fiber }
       ]
-      details: [
-        { label: 'Dietary Fiber', value: item.nutrition.fiber },
-        { label: 'Sugars', value: item.nutrition.sugars },
-        { label: 'Net Carbs', value: item.nutrition.carbs - item.nutrition.fiber }
-      ]
     },
     { 
       icon: <Leaf className="text-yellow-600" size={24} />, 
       label: 'Fat', 
       value: item.nutrition.totalFat,
       unit: 'g',
-      details: [
-        { label: 'Saturated Fat', value: item.nutrition.saturatedFat },
-        { label: 'Unsaturated Fat', value: item.nutrition.totalFat - item.nutrition.saturatedFat },
-        { label: 'Trans Fat', value: 0 }
-      ]
       details: [
         { label: 'Saturated Fat', value: item.nutrition.saturatedFat },
         { label: 'Unsaturated Fat', value: item.nutrition.totalFat - item.nutrition.saturatedFat },
@@ -161,20 +146,6 @@ const ItemDetailPage: React.FC = () => {
                     <div className="mb-2">{icon}</div>
                     <span className="text-2xl font-bold text-gray-900">{value}{unit}</span>
                     <span className="text-sm text-gray-500 mt-1">{label}</span>
-                    
-                    {/* Hover Details */}
-                    <div className="absolute invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-gray-900 text-white rounded-lg p-3 shadow-lg z-10">
-                      <div className="text-sm font-medium mb-2">{label} Breakdown</div>
-                      <div className="space-y-2">
-                        {details.map((detail, index) => (
-                          <div key={index} className="flex justify-between text-xs">
-                            <span className="text-gray-300">{detail.label}</span>
-                            <span className="font-medium">{detail.value}g</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 transform rotate-45 w-2 h-2 bg-gray-900"></div>
-                    </div>
                     
                     {/* Hover Details */}
                     <div className="absolute invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-gray-900 text-white rounded-lg p-3 shadow-lg z-10">
