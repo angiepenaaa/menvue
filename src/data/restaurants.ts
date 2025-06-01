@@ -106,19 +106,6 @@ export const restaurants: Restaurant[] = [
     reviewCount: 423
   },
   {
-    id: 'just-salad',
-    name: 'Just Salad',
-    cuisine: 'Salads & Wraps',
-    rating: 4.3,
-    distance: '2.2 mi',
-    deliveryTime: '20-35',
-    image: 'https://images.pexels.com/photos/1640778/pexels-photo-1640778.jpeg',
-    location: 'Brandon, FL',
-    coordinates: { lat: 27.945901, lng: -82.277101 },
-    isOpen: true,
-    reviewCount: 367
-  },
-  {
     id: 'honeygrow',
     name: 'Honeygrow',
     cuisine: 'Stir-Fry & Salads',
@@ -143,32 +130,6 @@ export const restaurants: Restaurant[] = [
     coordinates: { lat: 27.947901, lng: -82.275101 },
     isOpen: true,
     reviewCount: 245
-  },
-  {
-    id: 'core-life',
-    name: 'CoreLife Eatery',
-    cuisine: 'Bowls & Broths',
-    rating: 4.5,
-    distance: '3.0 mi',
-    deliveryTime: '25-40',
-    image: 'https://images.pexels.com/photos/1640781/pexels-photo-1640781.jpeg',
-    location: 'Brandon, FL',
-    coordinates: { lat: 27.948901, lng: -82.274101 },
-    isOpen: true,
-    reviewCount: 198
-  },
-  {
-    id: 'modern-market',
-    name: 'Modern Market Eatery',
-    cuisine: 'American & Healthy',
-    rating: 4.6,
-    distance: '3.2 mi',
-    deliveryTime: '25-40',
-    image: 'https://images.pexels.com/photos/1640782/pexels-photo-1640782.jpeg',
-    location: 'Brandon, FL',
-    coordinates: { lat: 27.949901, lng: -82.273101 },
-    isOpen: true,
-    reviewCount: 167
   },
   {
     id: 'protein-bar',
