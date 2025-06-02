@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { ShoppingCart, X, Plus, Minus, Trash2 } from 'lucide-react';
 
@@ -9,6 +10,7 @@ interface CartDrawerProps {
 
 const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
   const { items, updateQuantity, removeItem, subtotal, totalItems } = useCart();
+  const navigate = useNavigate();
 
   if (!isOpen) return null;
 
