@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowLeft, Check, Circle, Mouse as House, Glasses as MagnifyingGlass, Receipt, User } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const OrderStatusPage: React.FC = () => {
   const navigate = useNavigate();
@@ -104,34 +104,33 @@ const OrderStatusPage: React.FC = () => {
       {/* Bottom Navigation */}
       <div>
         <div className="flex gap-2 border-t border-emerald-100 bg-gray-50 px-4 pb-3 pt-2">
-          <Link
-            to="/"
+          <button
+            onClick={() => navigate('/')}
             className="flex flex-1 flex-col items-center justify-end gap-1 text-emerald-700"
           >
             <House className="h-8" />
             <p className="text-xs font-medium tracking-[0.015em]">Home</p>
-          </Link>
-          <Link
-            to="/browse"
+          </button>
+          <button
+            onClick={() => navigate('/browse')}
             className="flex flex-1 flex-col items-center justify-end gap-1 text-emerald-700"
           >
             <MagnifyingGlass className="h-8" />
             <p className="text-xs font-medium tracking-[0.015em]">Browse</p>
-          </Link>
-          <Link
-            to="/orders"
+          </button>
+          <button
             className="flex flex-1 flex-col items-center justify-end gap-1 text-gray-800"
           >
             <Receipt className="h-8" />
             <p className="text-xs font-medium tracking-[0.015em]">Orders</p>
-          </Link>
-          <Link
-            to="/account"
+          </button>
+          <button
+            onClick={() => navigate('/account')}
             className="flex flex-1 flex-col items-center justify-end gap-1 text-emerald-700"
           >
             <User className="h-8" />
             <p className="text-xs font-medium tracking-[0.015em]">Account</p>
-          </Link>
+          </button>
         </div>
         <div className="h-5 bg-gray-50"></div>
       </div>
