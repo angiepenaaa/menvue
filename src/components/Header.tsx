@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, ShoppingCart, User, Home, MapPin, Utensils } from 'lucide-react';
+import { Search, ShoppingCart, User, MapPin, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Link, useLocation } from 'react-router-dom';
 import { useGeolocation } from '../hooks/useGeolocation';
@@ -47,8 +47,12 @@ const Header: React.FC<HeaderProps> = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Link to="/" className="flex items-center">
-              <div className="bg-emerald-600 text-white p-2 rounded-lg mr-3">
-                <Home size={24} />
+              <div className="bg-emerald-600 text-white p-2 rounded-xl mr-3 flex items-center justify-center" style={{ width: '40px', height: '40px' }}>
+                <div className="relative" style={{ width: '24px', height: '24px' }}>
+                  <div className="absolute inset-0 bg-white transform -rotate-45" style={{ width: '16px', height: '20px', left: '4px', top: '2px' }}></div>
+                  <div className="absolute bg-white transform rotate-45" style={{ width: '16px', height: '20px', left: '4px', top: '2px' }}></div>
+                  <Check className="absolute text-emerald-600" size={16} style={{ left: '4px', top: '4px' }} />
+                </div>
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-800">menVue</h1>
