@@ -62,9 +62,16 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                       {item.removedIngredients.length > 0 && (
                         <div className="mt-2 text-sm text-red-500">
                           <p className="font-medium">Removed ingredients:</p>
-                          <p className="line-through">
+                          <p className="line-through text-red-400">
                             {item.removedIngredients.join(', ')}
                           </p>
+                        </div>
+                      )}
+                      
+                      {item.specialInstructions && (
+                        <div className="mt-2 text-sm text-gray-600">
+                          <p className="font-medium">Special instructions:</p>
+                          <p className="italic">{item.specialInstructions}</p>
                         </div>
                       )}
                       

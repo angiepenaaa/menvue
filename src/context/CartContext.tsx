@@ -6,20 +6,21 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
 
-  const addItem = useCallback((item: MenuItem, removedIngredients: string[] = []) => {
+  const addItem = useCallback((item: MenuItem, removedIngredients: string[] = [], quantity = 1, specialInstructions?: string) => {
     setItems(currentItems => {
       const existingItemIndex = currentItems.findIndex(i => 
         i.id === item.id && 
-        JSON.stringify(i.removedIngredients.sort()) === JSON.stringify(removedIngredients.sort())
+        JSON.stringify(i.removedIngredients.sort()) === JSON.stringify(removedIngredients.sort()) &&
+        i.specialInstructions === specialInstructions
       );
 
       if (existingItemIndex > -1) {
         return currentItems.map((i, index) =>
-          index === existingItemIndex ? { ...i, quantity: i.quantity + 1 } : i
+          index === existingItemIndex ? { ...i, quantity: i.quantity + quantity } : i
         );
       }
 
-      return [...currentItems, { ...item, quantity: 1, removedIngredients }];
+      return [...currentItems, { ...item, quantity, removedIngredients, specialInstructions }];
     });
   }, []);
 

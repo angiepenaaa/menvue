@@ -9,7 +9,8 @@ import CalorieBadge from '../components/CalorieBadge';
 const ItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
   const [quantity, setQuantity] = React.useState(1);
-  const [selectedOptions, setSelectedOptions] = React.useState<string[]>([]);
+  const [removedIngredients, setRemovedIngredients] = React.useState<string[]>([]);
+  const [specialInstructions, setSpecialInstructions] = React.useState('');
   const [showAddedToCart, setShowAddedToCart] = React.useState(false);
   const { addItem, totalItems } = useCart() as CartContextType;
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const ItemDetailPage: React.FC = () => {
   const restaurant = item ? restaurants.find(r => r.id === item.restaurantId) : null;
 
   const handleAddToCart = () => {
-    addItem(item!, selectedOptions, quantity);
+    addItem(item!, removedIngredients, quantity, specialInstructions.trim() || undefined);
     setShowAddedToCart(true);
     setTimeout(() => {
       setShowAddedToCart(false);
@@ -26,8 +27,8 @@ const ItemDetailPage: React.FC = () => {
     }, 1500);
   };
 
-  const toggleOption = (option: string) => {
-    setSelectedOptions(current =>
+  const toggleIngredient = (option: string) => {
+    setRemovedIngredients(current =>
       current.includes(option)
         ? current.filter(o => o !== option)
         : [...current, option]
@@ -179,26 +180,47 @@ const ItemDetailPage: React.FC = () => {
 
           {/* Customization Options */}
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Customize Your Order</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">Remove Ingredients</h3>
+            <p className="text-gray-600 text-sm mb-4">Select ingredients you'd like to remove from your order</p>
             <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
               {item.ingredients?.map((ingredient) => (
                 <button
                   key={ingredient}
-                  onClick={() => toggleOption(ingredient)}
-                  className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+                  onClick={() => toggleIngredient(ingredient)}
+                  className={`w-full flex items-center justify-between p-4 transition-colors ${
+                    removedIngredients.includes(ingredient)
+                      ? 'bg-red-50 hover:bg-red-100'
+                      : 'hover:bg-gray-50'
+                  }`}
                 >
-                  <span className="text-gray-700">{ingredient}</span>
-                  <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${
-                    selectedOptions.includes(ingredient)
-                      ? 'bg-emerald-600 border-emerald-600'
+                  <span className={`${
+                    removedIngredients.includes(ingredient)
+                      ? 'text-red-600 line-through'
+                      : 'text-gray-700'
+                  }`}>{ingredient}</span>
+                  <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+                    removedIngredients.includes(ingredient)
+                      ? 'bg-red-600 border-red-600'
                       : 'border-gray-300'
                   }`}>
-                    {selectedOptions.includes(ingredient) && (
+                    {removedIngredients.includes(ingredient) && (
                       <Check size={12} className="text-white" />
                     )}
                   </div>
                 </button>
               ))}
+            </div>
+            
+            {/* Special Instructions */}
+            <div className="mt-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">Special Instructions</h3>
+              <p className="text-gray-600 text-sm mb-4">Add any special requests or notes for your order</p>
+              <textarea
+                value={specialInstructions}
+                onChange={(e) => setSpecialInstructions(e.target.value)}
+                placeholder="E.g., Extra sauce on the side, allergies, etc."
+                className="w-full h-32 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
+              />
             </div>
           </div>
 
