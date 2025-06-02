@@ -70,10 +70,12 @@ const Header: React.FC<HeaderProps> = ({
                 <Search size={18} className="text-gray-400" />
               </div>
               <input
-            <div className="bg-emerald-600 text-white p-3 rounded-xl mr-3 flex items-center justify-center relative overflow-hidden" style={{ width: '40px', height: '40px' }}>
-              <div className="absolute inset-0 bg-white/20 transform rotate-45 translate-x-2"></div>
-              <div className="absolute inset-0 bg-white/20 transform -rotate-45 -translate-x-2"></div>
-              <Check className="relative z-10" size={20} />
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
+                placeholder="Search products..."
+              />
             </div>
           )}
           
