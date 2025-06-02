@@ -8,7 +8,7 @@ const openai = new OpenAI({
 export const getNutritionAdvice = async (query: string) => {
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
@@ -45,7 +45,7 @@ export const getNutritionAdvice = async (query: string) => {
 export const generateHealthyVariation = async (menuItem: string) => {
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
