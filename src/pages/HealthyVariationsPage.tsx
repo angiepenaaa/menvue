@@ -3,7 +3,7 @@ import { Leaf, Search, Filter, TrendingUp, Loader2, Sparkles, Brain, MessageSqua
 import Header from '../components/Header';
 import VariationCard from '../components/VariationCard';
 import { healthyVariations } from '../data/healthyVariations';
-import { generateHealthyVariation } from '../lib/openai';
+import { generateHealthyVariation, getNutritionAdvice } from '../lib/openai';
 
 const HealthyVariationsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,7 +37,7 @@ const HealthyVariationsPage: React.FC = () => {
 
     setIsAdvisorLoading(true);
     try {
-      const response = await generateHealthyVariation(userQuery);
+      const response = await getNutritionAdvice(userQuery);
       setAiResponse(response);
     } catch (error) {
       console.error('Error:', error);
@@ -95,13 +95,13 @@ const HealthyVariationsPage: React.FC = () => {
             <form onSubmit={handleAiAdvisor} className="space-y-6">
               <div>
                 <label htmlFor="query" className="block text-sm font-medium text-gray-700 mb-2">
-                  Describe your dietary needs and preferences
+                  What nutrition advice do you need?
                 </label>
                 <textarea
                   id="query"
                   value={userQuery}
                   onChange={(e) => setUserQuery(e.target.value)}
-                  placeholder="Example: I need high-protein, low-carb options that are vegetarian and around 400 calories..."
+                  placeholder="Example: I'm training for a marathon and need advice on what to eat before and after my runs. I'm vegetarian and tend to feel low energy during long runs."
                   className="w-full h-32 px-6 py-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none text-gray-700 placeholder-gray-400"
                 />
               </div>
