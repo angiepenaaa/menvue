@@ -6,6 +6,7 @@ import AccountPage from './pages/AccountPage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
 import NutritionPreferencesPage from './pages/NutritionPreferencesPage';
 import MealPlanBuilder from './pages/MealPlanBuilder';
+import OrderPage from './pages/OrderPage';
 import ItemDetailPage from './pages/ItemDetailPage';
 import HealthyVariationsPage from './pages/HealthyVariationsPage';
 import CartDrawer from './components/CartDrawer';
@@ -138,6 +139,14 @@ function App() {
                     <MealPlanBuilder />
                     <BottomNav />
                   </div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/order"
+              element={
+                <ProtectedRoute>
+                  <OrderPage />
                 </ProtectedRoute>
               }
             />
