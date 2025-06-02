@@ -1,10 +1,9 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ShoppingCart, Scale, Flame, Leaf, Minus, Plus, Check } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Scale, Flame, Leaf, Check } from 'lucide-react';
 import { menuItems } from '../data/menuItems';
 import { restaurants } from '../data/restaurants';
 import { useCart, CartContextType } from '../context/CartContext';
-import CalorieBadge from '../components/CalorieBadge';
 
 const ItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
@@ -90,205 +89,123 @@ const ItemDetailPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="relative flex min-h-screen flex-col bg-[#f9fbfa] justify-between">
       {/* Custom Header */}
-      <div className="sticky top-0 z-10 bg-white shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="h-16 flex items-center justify-between">
-            <button
-              onClick={() => navigate(-1)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex items-center gap-2"
-              aria-label="Go back"
-            >
-              <ArrowLeft size={24} className="text-gray-700" />
-            </button>
-            <h1 className="text-lg font-semibold text-gray-800 flex-1 text-center">
-              {item.name}
-            </h1>
-            <button
-              onClick={() => navigate('/cart')}
-              className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
-              aria-label="View cart"
-            >
-              <ShoppingCart size={24} className="text-gray-700" />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                  {totalItems}
-                </span>
-              )}
-            </button>
-          </div>
+      <div>
+        <div className="flex items-center bg-[#f9fbfa] p-4 pb-2 justify-between">
+          <button
+            onClick={() => navigate(-1)}
+            className="text-[#101913] flex size-12 shrink-0 items-center"
+          >
+            <ArrowLeft size={24} />
+          </button>
         </div>
-      </div>
 
-      <div className="container mx-auto px-4 pb-32">
         {/* Hero Image */}
-        <div className="relative h-64 md:h-96 -mx-4">
-          <img
-            src={item.image}
-            alt={item.name}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute top-4 right-4">
-            <CalorieBadge calories={item.calories} />
+        <div className="@container">
+          <div className="@[480px]:px-4 @[480px]:py-3">
+            <div
+              className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-[#f9fbfa] @[480px]:rounded-xl min-h-[218px]"
+              style={{ backgroundImage: `url(${item.image})` }}
+            />
           </div>
         </div>
 
-        {/* Content */}
-        <div className="max-w-2xl mx-auto mt-8">
-          {/* Restaurant & Item Info */}
-          <div className="mb-8">
-            <h2 className="text-emerald-600 text-sm font-medium tracking-wide uppercase mb-2">
-              {restaurant.name}
-            </h2>
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{item.name}</h1>
-            <p className="text-gray-600 leading-relaxed">{item.description}</p>
-          </div>
+        <h1 className="text-[#101913] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 text-left pb-3 pt-5">
+          {item.name}
+        </h1>
+        <p className="text-[#101913] text-base font-normal leading-normal pb-3 pt-1 px-4">
+          {item.description}
+        </p>
 
-          {/* Nutrition Section */}
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Nutrition</h3>
-            <div className="bg-gray-50 rounded-xl p-6">
-              <div className="grid grid-cols-3 gap-6">
-                {nutritionMetrics.map(({ icon, label, value, unit, details }) => (
-                  <div 
-                    key={label} 
-                    className="group relative bg-white rounded-lg p-4 flex flex-col items-center shadow-sm"
-                  >
-                    <div className="mb-2">{icon}</div>
-                    <span className="text-2xl font-bold text-gray-900">{value}{unit}</span>
-                    <span className="text-sm text-gray-500 mt-1">{label}</span>
-                    
-                    {/* Hover Details */}
-                    <div className="absolute invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-gray-900 text-white rounded-lg p-3 shadow-lg z-10">
-                      <div className="text-sm font-medium mb-2">{label} Breakdown</div>
-                      <div className="space-y-2">
-                        {details.map((detail, index) => (
-                          <div key={index} className="flex justify-between text-xs">
-                            <span className="text-gray-300">{detail.label}</span>
-                            <span className="font-medium">{detail.value}g</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 transform rotate-45 w-2 h-2 bg-gray-900"></div>
-                    </div>
-                  </div>
-                ))}
+        <h3 className="text-[#101913] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">
+          Customize
+        </h3>
+
+        {/* Ingredients Selection */}
+        {item.ingredients?.map((ingredient) => (
+          <div key={ingredient} className="flex items-center gap-4 bg-[#f9fbfa] px-4 min-h-[72px] py-2 justify-between">
+            <div className="flex flex-col justify-center">
+              <p className="text-[#101913] text-base font-medium line-clamp-1">{ingredient}</p>
+              <p className="text-[#5b8b6c] text-sm font-normal line-clamp-2">
+                {removedIngredients.includes(ingredient) ? 'Removed' : 'Included'}
+              </p>
+            </div>
+            <button
+              onClick={() => toggleIngredient(ingredient)}
+              className={`shrink-0 ${
+                removedIngredients.includes(ingredient)
+                  ? 'text-red-600'
+                  : 'text-[#101913]'
+              }`}
+            >
+              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                removedIngredients.includes(ingredient)
+                  ? 'border-red-600'
+                  : 'border-[#101913]'
+              }`}>
+                {removedIngredients.includes(ingredient) && (
+                  <Check size={14} />
+                )}
               </div>
-            </div>
+            </button>
           </div>
+        ))}
 
-          {/* Customization Options */}
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Remove Ingredients</h3>
-            <p className="text-gray-600 text-sm mb-4">Select ingredients you'd like to remove from your order</p>
-            <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
-              {item.ingredients?.map((ingredient) => (
-                <button
-                  key={ingredient}
-                  onClick={() => toggleIngredient(ingredient)}
-                  className={`w-full flex items-center justify-between p-4 transition-colors ${
-                    removedIngredients.includes(ingredient)
-                      ? 'bg-red-50 hover:bg-red-100'
-                      : 'hover:bg-gray-50'
-                  }`}
-                >
-                  <span className={`${
-                    removedIngredients.includes(ingredient)
-                      ? 'text-red-600 line-through'
-                      : 'text-gray-700'
-                  }`}>{ingredient}</span>
-                  <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
-                    removedIngredients.includes(ingredient)
-                      ? 'bg-red-600 border-red-600'
-                      : 'border-gray-300'
-                  }`}>
-                    {removedIngredients.includes(ingredient) && (
-                      <Check size={12} className="text-white" />
-                    )}
-                  </div>
-                </button>
-              ))}
-            </div>
-            
-            {/* Special Instructions */}
-            <div className="mt-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-2">Special Instructions</h3>
-              <p className="text-gray-600 text-sm mb-4">Add any special requests or notes for your order</p>
-              <textarea
-                value={specialInstructions}
-                onChange={(e) => setSpecialInstructions(e.target.value)}
-                placeholder="E.g., Extra sauce on the side, allergies, etc."
-                className="w-full h-32 px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
-              />
-            </div>
+        {/* Special Instructions */}
+        <div className="px-4 py-4">
+          <h3 className="text-[#101913] text-lg font-bold leading-tight tracking-[-0.015em] mb-2">
+            Special Instructions
+          </h3>
+          <textarea
+            value={specialInstructions}
+            onChange={(e) => setSpecialInstructions(e.target.value)}
+            placeholder="Add any special requests or notes..."
+            className="w-full h-32 px-4 py-3 rounded-xl border border-[#d4e3d9] focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none bg-white text-[#101913]"
+          />
+        </div>
+
+        <h3 className="text-[#101913] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">
+          Nutritional Information
+        </h3>
+        <div className="p-4 grid grid-cols-[20%_1fr] gap-x-6">
+          <div className="col-span-2 grid grid-cols-subgrid border-t border-t-[#d4e3d9] py-5">
+            <p className="text-[#5b8b6c] text-sm font-normal leading-normal">Calories</p>
+            <p className="text-[#101913] text-sm font-normal leading-normal">{item.calories}</p>
           </div>
-
-          {/* Quantity Selector */}
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Quantity</h3>
-            <div className="flex items-center gap-4 bg-white rounded-xl border border-gray-200 p-4">
-              <button
-                onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                disabled={quantity === 1}
-              >
-                <Minus size={20} className={quantity === 1 ? 'text-gray-300' : 'text-gray-600'} />
-              </button>
-              <span className="text-xl font-semibold text-gray-900 w-8 text-center">{quantity}</span>
-              <button
-                onClick={() => setQuantity(q => q + 1)}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-              >
-                <Plus size={20} className="text-gray-600" />
-              </button>
-            </div>
+          <div className="col-span-2 grid grid-cols-subgrid border-t border-t-[#d4e3d9] py-5">
+            <p className="text-[#5b8b6c] text-sm font-normal leading-normal">Protein</p>
+            <p className="text-[#101913] text-sm font-normal leading-normal">{item.nutrition.protein}g</p>
           </div>
-
-          {/* Tags */}
-          <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Dietary Tags</h3>
-            <div className="flex flex-wrap gap-2">
-              {item.tags.map((tag, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 text-sm font-medium rounded-full bg-gray-100 text-gray-700"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
+          <div className="col-span-2 grid grid-cols-subgrid border-t border-t-[#d4e3d9] py-5">
+            <p className="text-[#5b8b6c] text-sm font-normal leading-normal">Carbs</p>
+            <p className="text-[#101913] text-sm font-normal leading-normal">{item.nutrition.carbs}g</p>
+          </div>
+          <div className="col-span-2 grid grid-cols-subgrid border-t border-t-[#d4e3d9] py-5">
+            <p className="text-[#5b8b6c] text-sm font-normal leading-normal">Fat</p>
+            <p className="text-[#101913] text-sm font-normal leading-normal">{item.nutrition.totalFat}g</p>
           </div>
         </div>
       </div>
 
       {/* Fixed Bottom Bar */}
-      <div className={`fixed bottom-0 left-0 right-0 border-t border-gray-100 p-4 shadow-lg ${
-        showAddedToCart ? 'bg-emerald-600' : 'bg-white'
-      }`}>
-        <div className="container mx-auto max-w-2xl flex items-center justify-between">
+      <div>
+        <div className="flex px-4 py-3">
           {showAddedToCart ? (
-            <div className="w-full flex items-center justify-center">
-              <span className="text-white font-medium flex items-center gap-2">
-                <Check size={20} />
-                Added to Cart!
-              </span>
-            </div>
+            <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#2c8b4f] text-[#f9fbfa] text-base font-bold">
+              <Check size={20} className="mr-2" />
+              Added to Cart!
+            </button>
           ) : (
-            <>
-              <div>
-                <span className="text-3xl font-bold text-gray-900">${totalPrice.toFixed(2)}</span>
-              </div>
-              <button
-                onClick={handleAddToCart}
-                className="px-8 py-3 bg-emerald-600 text-white rounded-full font-medium hover:bg-emerald-700 transition-colors flex items-center gap-2 animate-slide-up"
-              >
-                <ShoppingCart size={20} />
-                Add to Cart {quantity > 1 ? `(${quantity})` : ''}
-              </button>
-            </>
+            <button
+              onClick={handleAddToCart}
+              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#2c8b4f] text-[#f9fbfa] text-base font-bold"
+            >
+              <span className="truncate">Add to Cart • ${totalPrice.toFixed(2)}</span>
+            </button>
           )}
         </div>
+        <div className="h-5 bg-[#f9fbfa]"></div>
       </div>
     </div>
   );
