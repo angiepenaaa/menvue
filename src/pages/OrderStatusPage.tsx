@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Check, Circle, House, MagnifyingGlass, Receipt, User } from 'lucide-react';
+import { ArrowLeft, Check, Circle, Mouse as House, Glasses as MagnifyingGlass, Receipt, User } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 
 const OrderStatusPage: React.FC = () => {
