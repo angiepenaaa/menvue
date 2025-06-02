@@ -1,23 +1,34 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ArrowLeft, MapPin, ChevronRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
+import { useCart } from '../context/CartContext';
 
 const OrderPage: React.FC = () => {
   const navigate = useNavigate();
+  const { items } = useCart();
   
-  const orderItems = [
-    { name: 'Chicken Salad', quantity: 1, price: 12.99 },
-    { name: 'Green Smoothie', quantity: 1, price: 6.99 }
-  ];
+  const summary = useMemo(() => {
+    const subtotal = items.reduce((sum, item) => {
+      const price = parseFloat(item.price.replace('$', ''));
+      return sum + (price * item.quantity);
+    }, 0);
 
-  const summary = {
-    subtotal: orderItems.reduce((sum, item) => sum + item.price, 0),
-    deliveryFee: 2.99,
-    taxes: 1.50
-  };
+    const deliveryFee = 2.99;
+    const taxes = subtotal * 0.08; // 8% tax rate
 
-  const total = summary.subtotal + summary.deliveryFee + summary.taxes;
+    return {
+      subtotal,
+      deliveryFee,
+      taxes,
+      total: subtotal + deliveryFee + taxes
+    };
+  }, [items]);
+
+  if (items.length === 0) {
+    navigate('/');
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
@@ -53,13 +64,20 @@ const OrderPage: React.FC = () => {
         <div className="px-4 pt-4">
           <h3 className="text-gray-800 text-lg font-bold pb-2">Items</h3>
           <div className="bg-white rounded-xl divide-y">
-            {orderItems.map((item, index) => (
-              <div key={index} className="flex items-center justify-between p-4">
+            {items.map((item) => (
+              <div key={`${item.id}-${item.removedIngredients.join('-')}`} className="flex items-center justify-between p-4">
                 <div>
                   <p className="text-gray-800 font-medium">{item.name}</p>
-                  <p className="text-emerald-700 text-sm">{item.quantity} item</p>
+                  <p className="text-emerald-700 text-sm">
+                    {item.quantity} item{item.quantity > 1 ? 's' : ''}
+                    {item.removedIngredients.length > 0 && (
+                      <span className="text-red-500 ml-2">
+                        (Customized)
+                      </span>
+                    )}
+                  </p>
                 </div>
-                <p className="text-gray-800">${item.price.toFixed(2)}</p>
+                <p className="text-gray-800">{item.price}</p>
               </div>
             ))}
           </div>
@@ -105,9 +123,9 @@ const OrderPage: React.FC = () => {
               <p className="text-emerald-700">Taxes</p>
               <p className="text-gray-800">${summary.taxes.toFixed(2)}</p>
             </div>
-            <div className="flex justify-between pt-2 border-t">
+            <div className="flex justify-between pt-2 border-t border-gray-100">
               <p className="text-emerald-700">Total</p>
-              <p className="text-gray-800 font-medium">${total.toFixed(2)}</p>
+              <p className="text-gray-800 font-medium">${summary.total.toFixed(2)}</p>
             </div>
           </div>
         </div>
@@ -115,7 +133,14 @@ const OrderPage: React.FC = () => {
 
       {/* Place Order Button */}
       <div className="p-4 bg-white border-t mt-8">
-        <button className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition-colors">
+        <button
+          onClick={() => {
+            // TODO: Implement order placement
+            alert('Order placed successfully!');
+            navigate('/');
+          }}
+          className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
+        >
           Place Order
         </button>
       </div>
