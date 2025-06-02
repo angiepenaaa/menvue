@@ -135,9 +135,7 @@ const OrderPage: React.FC = () => {
       <div className="p-4 bg-white border-t mt-8">
         <button
           onClick={() => {
-            // TODO: Implement order placement
-            alert('Order placed successfully!');
-            navigate('/');
+            navigate('/order/status');
           }}
           className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
         >
