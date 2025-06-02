@@ -104,10 +104,13 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose }) => {
                 <span className="text-lg font-semibold">${subtotal.toFixed(2)}</span>
               </div>
               <button
-                onClick={() => alert('Checkout functionality coming soon!')}
+                onClick={() => {
+                  onClose();
+                  navigate('/order');
+                }}
                 className="w-full rounded-full bg-emerald-600 py-3 text-white font-medium hover:bg-emerald-700 transition-colors"
               >
-                Proceed to Checkout
+                Checkout
               </button>
             </div>
           )}
