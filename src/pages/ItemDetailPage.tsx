@@ -76,7 +76,7 @@ const ItemDetailPage: React.FC = () => {
       ]
     },
     { 
-      icon: <Leaf className="text-yellow-600" size={24} />, 
+      icon: <Leaf className="text-yellow-600\" size={24} />, 
       label: 'Fat', 
       value: item.nutrition.totalFat,
       unit: 'g',
