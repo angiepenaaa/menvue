@@ -9,7 +9,6 @@ import {
   LogOut, 
   Calendar, 
   Gift, 
-  UtensilsCrossed, 
   Clock, 
   Award,
   Timer,
