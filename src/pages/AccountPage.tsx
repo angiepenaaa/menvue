@@ -2,6 +2,7 @@ import React from 'react';
 import { 
   User, 
   Settings, 
+  UtensilsCrossed,
   CreditCard, 
   History, 
   Bell, 
@@ -39,8 +40,8 @@ const AccountPage: React.FC = () => {
 
   const menuItems = [
     { icon: <Calendar size={20} />, label: 'Manage Meal Plans', href: '/meal-plan' },
+    { icon: <UtensilsCrossed size={20} />, label: 'Nutrition Preferences', href: '/account/nutrition' },
     { icon: <Gift size={20} />, label: 'Rewards & Perks', href: '#' },
-    { icon: <UtensilsCrossed size={20} />, label: 'Nutrition Preferences', href: '#' },
     { icon: <History size={20} />, label: 'Order History', href: '#' }
   ];
 

@@ -4,6 +4,7 @@ import { Home, User, CalendarRange, ShoppingCart, Leaf } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import AccountPage from './pages/AccountPage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
+import NutritionPreferencesPage from './pages/NutritionPreferencesPage';
 import MealPlanBuilder from './pages/MealPlanBuilder';
 import ItemDetailPage from './pages/ItemDetailPage';
 import HealthyVariationsPage from './pages/HealthyVariationsPage';
@@ -113,6 +114,17 @@ function App() {
                 <ProtectedRoute>
                   <div className="pb-20">
                     <AccountSettingsPage />
+                    <BottomNav />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/account/nutrition"
+              element={
+                <ProtectedRoute>
+                  <div className="pb-20">
+                    <NutritionPreferencesPage />
                     <BottomNav />
                   </div>
                 </ProtectedRoute>
