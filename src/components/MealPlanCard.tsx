@@ -35,9 +35,22 @@ const MealPlanCard: React.FC<MealPlanCardProps> = ({
           alt={meal_name}
           className="w-full h-full object-cover"
         />
-        <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
+        <div 
+          className="absolute top-3 right-3 px-3 py-1 rounded-full text-sm font-medium"
+          style={{ 
+            backgroundColor: calories <= 500 ? '#A5D6A7' : '#FFF59D',
+            color: calories <= 500 ? '#1B5E20' : '#F57F17'
+          }}
+        >
           {calories} cal
         </div>
+        <div 
+          className="absolute top-3 left-3 w-3 h-3 rounded-full"
+          style={{ 
+            backgroundColor: calories <= 500 ? '#A5D6A7' : '#FFF59D',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}
+        />
       </div>
 
       {/* Content */}

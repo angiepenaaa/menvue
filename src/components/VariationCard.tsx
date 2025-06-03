@@ -24,6 +24,13 @@ const VariationCard: React.FC<VariationCardProps> = ({ variation, onClick }) => 
           alt={originalItem.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
+        <div 
+          className="absolute top-4 left-4 w-3 h-3 rounded-full"
+          style={{ 
+            backgroundColor: healthyVersion.calories <= 500 ? '#A5D6A7' : '#FFF59D',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}
+        />
         <div className="absolute top-4 left-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
           <Leaf size={16} />
           <span>Healthy Swap</span>
@@ -47,11 +54,23 @@ const VariationCard: React.FC<VariationCardProps> = ({ variation, onClick }) => 
         <div className="space-y-4">
           <div className="flex justify-between text-sm">
             <span className="text-gray-500">Original</span>
-            <span className="font-medium">{originalItem.calories} cal</span>
+            <div className="flex items-center gap-2">
+              <span 
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: originalItem.calories <= 500 ? '#A5D6A7' : '#FFF59D' }}
+              />
+              <span className="font-medium">{originalItem.calories} cal</span>
+            </div>
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-emerald-600">Healthy Version</span>
-            <span className="font-medium">{healthyVersion.calories} cal</span>
+            <div className="flex items-center gap-2">
+              <span 
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: healthyVersion.calories <= 500 ? '#A5D6A7' : '#FFF59D' }}
+              />
+              <span className="font-medium">{healthyVersion.calories} cal</span>
+            </div>
           </div>
         </div>
 
