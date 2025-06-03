@@ -19,4 +19,12 @@ export interface Restaurant {
   specialInstructions?: string;
 }
 
+export interface Mood {
+  id: string;
+  name: string;
+  lucideIcon: string;
+  tags: string[];
+  tip: string;
+}
+
 // ... rest of the types remain unchanged

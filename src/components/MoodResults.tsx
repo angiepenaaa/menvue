@@ -68,7 +68,7 @@ const MoodResults: React.FC<MoodResultsProps> = ({ mood, items, onBack }) => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-800">
-            Meals That Match Your Mood {mood.emoji}
+            Meals That Match Your Mood
           </h2>
           <p className="text-gray-600 mt-1">
             {mood.tip}
