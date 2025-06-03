@@ -37,10 +37,17 @@ const HealthyVariationsPage: React.FC = () => {
 
     setIsAdvisorLoading(true);
     try {
-      const response = await getNutritionAdvice(userQuery);
+      // Format the query as a menu item for transformation
+      const formattedQuery = JSON.stringify({
+        original_name: userQuery,
+        description: "User requested menu item for transformation"
+      });
+      
+      const response = await getNutritionAdvice(formattedQuery);
       setAiResponse(response);
     } catch (error) {
       console.error('Error:', error);
+      setAiResponse("I apologize, but I encountered an error while processing your request. Please try again with a different query.");
     } finally {
       setIsAdvisorLoading(false);
     }
