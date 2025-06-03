@@ -59,9 +59,16 @@ const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
             alt={item.name}
             className="w-full h-full object-cover"
           />
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-4 z-10">
             <CalorieBadge calories={item.calories} />
           </div>
+          <div 
+            className="absolute top-4 left-4 w-3 h-3 rounded-full"
+            style={{ 
+              backgroundColor: item.calories <= 500 ? '#A5D6A7' : '#FFF59D',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}
+          />
           {item.activityMatch && <ActivityMatchBadge matches={item.activityMatch} />}
         </div>
         

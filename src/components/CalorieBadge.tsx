@@ -5,28 +5,32 @@ interface CalorieBadgeProps {
   maxCalories?: number;
 }
 
-const CalorieBadge: React.FC<CalorieBadgeProps> = ({ 
-  calories, 
-  maxCalories = 500 
-}) => {
-  // Calculate percentage of max calories
-  const percentage = (calories / maxCalories) * 100;
-  
-  // Determine color based on percentage
-  let bgColor = 'bg-green-500';
-  
-  if (percentage > 90) {
-    bgColor = 'bg-orange-500';
-  } else if (percentage > 70) {
-    bgColor = 'bg-yellow-500';
-  }
-  
+const CalorieBadge: React.FC<CalorieBadgeProps> = ({ calories }) => {
+  const getTierStyles = (calories: number) => {
+    if (calories <= 500) {
+      return {
+        background: '#A5D6A7',
+        text: '#1B5E20'
+      };
+    }
+    return {
+      background: '#FFF59D',
+      text: '#F57F17'
+    };
+  };
+
+  const styles = getTierStyles(calories);
+
   return (
-    <div className="flex items-center">
-      <div className={`${bgColor} text-white text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center`}>
-        <span>{calories}</span>
-        <span className="ml-1 text-xs">cal</span>
-      </div>
+    <div 
+      className="px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1"
+      style={{ 
+        backgroundColor: styles.background,
+        color: styles.text
+      }}
+    >
+      <span>{calories}</span>
+      <span className="text-xs">cal</span>
     </div>
   );
 };
