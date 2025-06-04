@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { Leaf, Search, Filter, TrendingUp, Loader2, Sparkles, Brain, MessageSquare, ChevronRight } from 'lucide-react';
 import Header from '../components/Header';
+import { getNutritionInfo } from '../lib/pica';
 import VariationCard from '../components/VariationCard';
 import { healthyVariations } from '../data/healthyVariations';
-import { generateHealthyVariation, getNutritionAdvice } from '../lib/openai';
 
 const HealthyVariationsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,8 +22,9 @@ const HealthyVariationsPage: React.FC = () => {
   const handleGenerateVariation = useCallback(async (itemName: string) => {
     setIsGenerating(true);
     try {
-      const suggestion = await generateHealthyVariation(itemName);
-      setAiSuggestion(suggestion);
+      const prompt = `Given the menu item "${itemName}", provide a lower-calorie, high-protein version while preserving flavor. Include specific ingredient swaps and explain the nutritional benefits.`;
+      const response = await getNutritionInfo(prompt);
+      setAiSuggestion(response.choices[0].text);
     } catch (error) {
       console.error('Error:', error);
     } finally {
@@ -34,24 +35,16 @@ const HealthyVariationsPage: React.FC = () => {
   const handleAiAdvisor = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userQuery.trim()) return;
-
     setIsAdvisorLoading(true);
+    
     try {
-      // Format the query as a menu item for transformation
-      const formattedQuery = JSON.stringify({
-        original_name: userQuery,
-        description: "User requested menu item for transformation"
-      });
-      
-      const response = await getNutritionAdvice(formattedQuery);
-      setAiResponse(response);
+      const response = await getNutritionInfo(userQuery);
+      setAiResponse(response.choices[0].text);
     } catch (error) {
       console.error('Error:', error);
       setAiResponse("I apologize, but I encountered an error while processing your request. Please try again with a different query.");
     } finally {
       setIsAdvisorLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -1,8 +1,7 @@
 import { corsHeaders } from '../_shared/cors.ts';
 
 interface NutritionRequest {
-  menuItem: string;
-  includeVariations?: boolean;
+  prompt: string;
 }
 
 Deno.serve(async (req) => {
@@ -11,11 +10,7 @@ Deno.serve(async (req) => {
       return new Response(null, { headers: corsHeaders, status: 204 });
     }
 
-    const { menuItem, includeVariations = true }: NutritionRequest = await req.json();
-
-    const prompt = `Given the following menu item: '${menuItem}', return a JSON object with calories, protein, carbs, and fat.${
-      includeVariations ? ' Then, suggest a healthy variation under 500 calories, and explain the swap.' : ''
-    }`;
+    const { prompt }: NutritionRequest = await req.json();
 
     const response = await fetch('https://api.picaos.com/v1/passthrough/completions', {
       method: 'POST',

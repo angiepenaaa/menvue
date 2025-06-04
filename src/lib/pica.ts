@@ -9,9 +9,9 @@ export async function fetchNearbyRestaurants(latitude: number, longitude: number
   return data;
 }
 
-export async function getNutritionInfo(menuItem: string, includeVariations = true) {
+export async function getNutritionInfo(prompt: string) {
   const { data, error } = await supabase.functions.invoke('nutrition', {
-    body: { menuItem, includeVariations }
+    body: { prompt }
   });
 
   if (error) throw error;
