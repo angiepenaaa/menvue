@@ -9,3 +9,13 @@ export interface AIResponse {
   timestamp: string;
   model: string;
 }
+
+export interface CacheEntry {
+  response: AIResponse;
+  timestamp: number;
+}
+
+export interface AIError extends Error {
+  code?: string;
+  retryAfter?: number;
+}

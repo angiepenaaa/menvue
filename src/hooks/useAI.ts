@@ -1,20 +1,38 @@
 import { useState } from 'react';
 import { generateAIResponse } from '../lib/ai';
-import type { AIConfig, AIResponse } from '../types/ai';
+import type { AIConfig, AIResponse, AIError } from '../types/ai';
 
 export function useAI() {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<AIError | null>(null);
+  const [lastRequestTime, setLastRequestTime] = useState<number>(0);
 
   const generate = async (message: string, config?: AIConfig): Promise<AIResponse | null> => {
     try {
+      const now = Date.now();
+      const timeSinceLastRequest = now - lastRequestTime;
+      
+      if (timeSinceLastRequest < 1000) { // 1 second minimum delay
+        throw Object.assign(new Error('Please wait before making another request'), {
+          code: 'RATE_LIMIT',
+          retryAfter: 1000 - timeSinceLastRequest
+        });
+      }
+
       setLoading(true);
       setError(null);
-      return await generateAIResponse(message, config);
+      const response = await generateAIResponse(message, config);
+      setLastRequestTime(Date.now());
+      return response;
+
     } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to generate AI response');
+      const error = err as AIError;
+      if (error.code === 'RATE_LIMIT' && error.retryAfter) {
+        setTimeout(() => setError(null), error.retryAfter);
+      }
       setError(error);
       return null;
+
     } finally {
       setLoading(false);
     }
@@ -23,6 +41,7 @@ export function useAI() {
   return {
     generate,
     loading,
-    error
+    error,
+    canRetry: !error?.code || error.code !== 'RATE_LIMIT'
   };
 }
