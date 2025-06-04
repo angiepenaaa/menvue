@@ -13,35 +13,49 @@ const NearbyPickupSection: React.FC<NearbyPickupProps> = ({ onSelectRestaurant }
   const { location, error, loading, getLocation } = useGeolocation();
   const [nearbyRestaurants, setNearbyRestaurants] = useState(restaurants);
   const [sortBy, setSortBy] = useState<'distance' | 'wait' | 'rating'>('distance');
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   useEffect(() => {
     if (location) {
-      const restaurantsWithDistance = restaurants.map(restaurant => ({
-        ...restaurant,
-        actualDistance: calculateDistance(
-          location.latitude,
-          location.longitude,
-          restaurant.coordinates.lat,
-          restaurant.coordinates.lng
-        )
-      }));
+      const fetchNearbyVenues = async () => {
+        try {
+          const data = await fetchNearbyRestaurants(location.latitude, location.longitude);
+          
+          // Map the API response to our restaurant format
+          const nearbyVenues = data.places.map((place: any) => ({
+            ...place,
+            actualDistance: calculateDistance(
+              location.latitude,
+              location.longitude,
+              place.location?.latitude || 0,
+              place.location?.longitude || 0
+            )
+          }));
 
-      const filtered = restaurantsWithDistance
-        .filter(r => r.actualDistance <= 2) // 2 miles radius
-        .sort((a, b) => {
-          switch (sortBy) {
-            case 'distance':
-              return a.actualDistance - b.actualDistance;
-            case 'wait':
-              return parseInt(a.deliveryTime) - parseInt(b.deliveryTime);
-            case 'rating':
-              return b.rating - a.rating;
-            default:
-              return 0;
-          }
-        });
+          const filtered = nearbyVenues
+            .filter(r => r.actualDistance <= 2) // 2 miles radius
+            .sort((a, b) => {
+              switch (sortBy) {
+                case 'distance':
+                  return a.actualDistance - b.actualDistance;
+                case 'wait':
+                  return parseInt(a.deliveryTime || '0') - parseInt(b.deliveryTime || '0');
+                case 'rating':
+                  return (b.rating || 0) - (a.rating || 0);
+                default:
+                  return 0;
+              }
+            });
 
-      setNearbyRestaurants(filtered);
+          setNearbyRestaurants(filtered);
+          setFetchError(null);
+        } catch (err) {
+          console.error('Error fetching nearby restaurants:', err);
+          setFetchError('Failed to fetch nearby restaurants. Please try again.');
+        }
+      };
+
+      fetchNearbyVenues();
     }
   }, [location, sortBy]);
 
@@ -65,6 +79,21 @@ const NearbyPickupSection: React.FC<NearbyPickupProps> = ({ onSelectRestaurant }
           className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
         >
           Enable Location
+        </button>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center">
+        <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-4" />
+        <p className="text-gray-800 font-medium mb-2">{fetchError}</p>
+        <button
+          onClick={getLocation}
+          className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+        >
+          Try Again
         </button>
       </div>
     );

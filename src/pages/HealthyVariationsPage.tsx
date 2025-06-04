@@ -114,7 +114,7 @@ const HealthyVariationsPage: React.FC = () => {
               >
                 {isAdvisorLoading ? (
                   <>
-                    <Loader2 className="animate-spin" size={20} />
+                    <Loader2 className="animate-spin\" size={20} />
                     <span>Generating suggestions...</span>
                   </>
                 ) : (
@@ -214,5 +214,6 @@ const HealthyVariationsPage: React.FC = () => {
       </main>
     </div>
   );
+};
 
 export default HealthyVariationsPage;
