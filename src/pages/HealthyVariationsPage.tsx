@@ -45,6 +45,8 @@ const HealthyVariationsPage: React.FC = () => {
       setAiResponse("I apologize, but I encountered an error while processing your request. Please try again with a different query.");
     } finally {
       setIsAdvisorLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -112,7 +114,7 @@ const HealthyVariationsPage: React.FC = () => {
               >
                 {isAdvisorLoading ? (
                   <>
-                    <Loader2 className="animate-spin\" size={20} />
+                    <Loader2 className="animate-spin" size={20} />
                     <span>Generating suggestions...</span>
                   </>
                 ) : (
@@ -212,6 +214,5 @@ const HealthyVariationsPage: React.FC = () => {
       </main>
     </div>
   );
-};
 
 export default HealthyVariationsPage;
