@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Lock, AlertCircle, Utensils } from 'lucide-react';
+import { Lock, AlertCircle, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const LoginPage: React.FC = () => {
@@ -59,8 +59,12 @@ const LoginPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <div className="bg-emerald-600 text-white p-3 rounded-xl">
-            <Utensils size={32} />
+          <div className="bg-emerald-600 text-white p-2 rounded-xl flex items-center justify-center" style={{ width: '40px', height: '40px' }}>
+            <div className="relative" style={{ width: '24px', height: '24px' }}>
+              <div className="absolute inset-0 bg-white transform -rotate-45" style={{ width: '16px', height: '20px', left: '4px', top: '2px' }}></div>
+              <div className="absolute bg-white transform rotate-45" style={{ width: '16px', height: '20px', left: '4px', top: '2px' }}></div>
+              <Check className="absolute text-emerald-600" size={16} style={{ left: '4px', top: '4px' }} />
+            </div>
           </div>
         </div>
         <h1 className="mt-3 text-center text-2xl font-bold text-emerald-600">menVue</h1>

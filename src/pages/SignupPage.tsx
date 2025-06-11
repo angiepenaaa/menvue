@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, AlertCircle, Check } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const SignupPage: React.FC = () => {
@@ -30,10 +30,16 @@ const SignupPage: React.FC = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <div className="bg-emerald-600 text-white p-3 rounded-xl">
-            <User size={32} />
+          <div className="bg-emerald-600 text-white p-2 rounded-xl flex items-center justify-center" style={{ width: '40px', height: '40px' }}>
+            <div className="relative" style={{ width: '24px', height: '24px' }}>
+              <div className="absolute inset-0 bg-white transform -rotate-45" style={{ width: '16px', height: '20px', left: '4px', top: '2px' }}></div>
+              <div className="absolute bg-white transform rotate-45" style={{ width: '16px', height: '20px', left: '4px', top: '2px' }}></div>
+              <Check className="absolute text-emerald-600" size={16} style={{ left: '4px', top: '4px' }} />
+            </div>
+          </div>
           </div>
         </div>
+        <h1 className="mt-3 text-center text-2xl font-bold text-emerald-600">menVue</h1>
         <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
           Create your account
         </h2>
