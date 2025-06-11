@@ -79,14 +79,14 @@ const AccountPage: React.FC = () => {
     const daysToPersonalBest = personalBest - healthyStreak;
     
     if (daysToPersonalBest > 0 && daysToPersonalBest <= 7) {
-      return `🔥 You're ${daysToPersonalBest} days away from beating your personal best streak!`;
+      return `You're ${daysToPersonalBest} days away from beating your personal best streak!`;
     } else if (timeframe === 'week' && mealsPlannedThisWeek < 14) {
       const remaining = 14 - mealsPlannedThisWeek;
-      return `📅 Only ${remaining} more meals to complete your weekly plan!`;
+      return `Only ${remaining} more meals to complete your weekly plan!`;
     } else if (timeframe === 'week') {
-      return `💪 You've saved ${currentStats.caloriesSaved.toLocaleString()} calories this week by choosing cleaner meals.`;
+      return `You've saved ${currentStats.caloriesSaved.toLocaleString()} calories this week by choosing cleaner meals.`;
     } else {
-      return `🌟 Amazing! You've maintained an ${currentStats.cleanMealPercentage}% clean eating rate overall.`;
+      return `Amazing! You've maintained an ${currentStats.cleanMealPercentage}% clean eating rate overall.`;
     }
   };
 
@@ -107,7 +107,7 @@ const AccountPage: React.FC = () => {
             </div>
             <div className="flex-1">
               <h1 className="text-3xl font-bold text-gray-800 mb-1">
-                Welcome back, {user.name}! 👋
+                Welcome back, {user.name}!
               </h1>
               <p className="text-gray-600">
                 Member since {user.joinDate}
@@ -155,7 +155,7 @@ const AccountPage: React.FC = () => {
                   <Flame className="w-6 h-6 text-orange-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-orange-600 font-medium">🔥 Healthy Streak</p>
+                  <p className="text-sm text-orange-600 font-medium">Healthy Streak</p>
                   <p className="text-3xl font-bold text-orange-700">{currentStats.healthyStreak}</p>
                 </div>
               </div>
@@ -169,7 +169,7 @@ const AccountPage: React.FC = () => {
                   <CheckCircle className="w-6 h-6 text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-sm text-emerald-600 font-medium">✅ Clean Meals</p>
+                  <p className="text-sm text-emerald-600 font-medium">Clean Meals</p>
                   <p className="text-3xl font-bold text-emerald-700">{currentStats.cleanMealPercentage}%</p>
                 </div>
               </div>
@@ -189,7 +189,7 @@ const AccountPage: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm text-blue-600 font-medium">
-                    📅 {timeframe === 'week' ? 'Meals This Week' : 'Total Meals'}
+                    {timeframe === 'week' ? 'Meals This Week' : 'Total Meals'}
                   </p>
                   <p className="text-3xl font-bold text-blue-700">{currentStats.mealsPlannedThisWeek}</p>
                 </div>
@@ -210,6 +210,7 @@ const AccountPage: React.FC = () => {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm text-purple-600 font-medium">🥇 {timeframe === 'week' ? 'Top Pick This Week' : 'Most Ordered'}</p>
+                  <p className="text-sm text-purple-600 font-medium">{timeframe === 'week' ? 'Top Pick This Week' : 'Most Ordered'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -235,7 +236,7 @@ const AccountPage: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-sm text-green-600 font-medium">
-                    💵 {timeframe === 'week' ? 'Spent This Week' : 'Total Spent'}
+                    {timeframe === 'week' ? 'Spent This Week' : 'Total Spent'}
                   </p>
                   <p className="text-3xl font-bold text-green-700">${currentStats.moneySpent.toFixed(2)}</p>
                 </div>
