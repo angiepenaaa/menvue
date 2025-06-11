@@ -37,7 +37,6 @@ const SignupPage: React.FC = () => {
               <Check className="absolute text-emerald-600" size={16} style={{ left: '4px', top: '4px' }} />
             </div>
           </div>
-          </div>
         </div>
         <h1 className="mt-3 text-center text-2xl font-bold text-emerald-600">menVue</h1>
         <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
