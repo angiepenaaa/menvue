@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Home, User, CalendarRange, ShoppingCart, Leaf } from 'lucide-react';
+import { Home, User, CalendarRange, ShoppingCart, Leaf, MessageSquare } from 'lucide-react';
 import HomePage from './pages/HomePage';
 import AccountPage from './pages/AccountPage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
@@ -16,7 +16,6 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
-import { Home, User, CalendarRange, ShoppingCart, Leaf, MessageSquare } from 'lucide-react';
 
 function BottomNav() {
   const location = useLocation();
