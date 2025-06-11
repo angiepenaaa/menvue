@@ -106,10 +106,10 @@ const AccountPage: React.FC = () => {
               />
             </div>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-800 mb-1">
+              <h1 className="text-3xl font-bold text-gray-800 mb-1">
                 Welcome back, {user.name}! 👋
               </h1>
-              <p className="text-gray-500">
+              <p className="text-gray-600">
                 Member since {user.joinDate}
               </p>
             </div>
@@ -147,9 +147,9 @@ const AccountPage: React.FC = () => {
             <div className="text-sm text-gray-500 capitalize">{timeframe === 'week' ? 'This Week' : 'All Time'}</div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6 transition-all duration-300">
             {/* Healthy Streak */}
-            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-6 border border-orange-100">
+            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-6 border border-orange-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-orange-100 rounded-lg">
                   <Flame className="w-6 h-6 text-orange-600" />
@@ -163,7 +163,7 @@ const AccountPage: React.FC = () => {
             </div>
 
             {/* Clean Meal Percentage */}
-            <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-6 border border-emerald-100">
+            <div className="bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl p-6 border border-emerald-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-emerald-100 rounded-lg">
                   <CheckCircle className="w-6 h-6 text-emerald-600" />
@@ -182,7 +182,7 @@ const AccountPage: React.FC = () => {
             </div>
 
             {/* Meals Planned */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-blue-100 rounded-lg">
                   <CalendarDays className="w-6 h-6 text-blue-600" />
@@ -203,7 +203,7 @@ const AccountPage: React.FC = () => {
           {/* Most Ordered Meal & Money Spent */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Most Ordered Meal */}
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100">
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-purple-100 rounded-lg">
                   <Trophy className="w-6 h-6 text-purple-600" />
@@ -228,7 +228,7 @@ const AccountPage: React.FC = () => {
             </div>
 
             {/* Money Spent */}
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-green-100 rounded-lg">
                   <DollarSign className="w-6 h-6 text-green-600" />
@@ -246,14 +246,14 @@ const AccountPage: React.FC = () => {
         </div>
 
         {/* Encouragement & Reminders */}
-        <div className="bg-gradient-to-r from-emerald-50 to-blue-50 rounded-2xl p-6 mb-8 border border-emerald-100">
+        <div className="bg-gradient-to-r from-emerald-50 to-blue-50 rounded-2xl p-8 mb-8 border border-emerald-100">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-emerald-100 rounded-lg">
               <TrendingUp className="w-6 h-6 text-emerald-600" />
             </div>
-            <h3 className="text-lg font-semibold text-gray-800">Keep It Up!</h3>
+            <h3 className="text-xl font-semibold text-gray-800">Keep It Up!</h3>
           </div>
-          <p className="text-gray-700 text-lg">{getEncouragementMessage()}</p>
+          <p className="text-gray-700 text-xl">{getEncouragementMessage()}</p>
         </div>
 
         {/* Clean Eating Level Badge (Optional Future Use) */}
