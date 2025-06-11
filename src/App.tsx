@@ -10,12 +10,13 @@ import OrderPage from './pages/OrderPage';
 import OrderStatusPage from './pages/OrderStatusPage';
 import ItemDetailPage from './pages/ItemDetailPage';
 import HealthyVariationsPage from './pages/HealthyVariationsPage';
+import ChatPage from './pages/ChatPage';
 import CartDrawer from './components/CartDrawer';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
-import { AuthProvider } from './context/AuthContext';
+import { Home, User, CalendarRange, ShoppingCart, Leaf, MessageSquare } from 'lucide-react';
 
 function BottomNav() {
   const location = useLocation();
@@ -51,6 +52,15 @@ function BottomNav() {
           >
             <Leaf size={24} />
             <span className="text-xs mt-1">Variations</span>
+          </Link>
+          <Link
+            to="/chat"
+            className={`flex flex-col items-center p-2 ${
+              isActive('/chat') ? 'text-emerald-600' : 'text-gray-600'
+            }`}
+          >
+            <MessageSquare size={24} />
+            <span className="text-xs mt-1">AI Chat</span>
           </Link>
           <Link
             to="/account"
@@ -167,6 +177,14 @@ function App() {
                     <HealthyVariationsPage />
                     <BottomNav />
                   </div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/chat"
+              element={
+                <ProtectedRoute>
+                  <ChatPage />
                 </ProtectedRoute>
               }
             />

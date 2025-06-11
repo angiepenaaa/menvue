@@ -21,7 +21,9 @@
     "zod": "^3.22.4", 
     "socket.io-client": "^4.7.4",
     "pusher-js": "^8.4.0-rc2",
-    "@pusher/push-notifications-web": "^1.1.0"
+    "@pusher/push-notifications-web": "^1.1.0",
+    "ai": "^4.3.16",
+    "@ai-sdk/react": "^1.2.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
