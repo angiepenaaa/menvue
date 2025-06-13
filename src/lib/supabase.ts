@@ -7,4 +7,22 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Validate URL format
+try {
+  new URL(supabaseUrl);
+} catch (error) {
+  throw new Error(`Invalid Supabase URL: ${supabaseUrl}`);
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'supabase-js-web'
+    }
+  }
+});
