@@ -18,8 +18,23 @@ serve(async (req) => {
     const openaiApiKey = Deno.env.get("OPENAI_API_KEY");
     const picaSecretKey = Deno.env.get("PICA_SECRET_KEY");
 
-    if (!openaiApiKey) throw new Error("OPENAI_API_KEY is not set");
-    if (!picaSecretKey) throw new Error("PICA_SECRET_KEY is not set");
+    // Provide detailed error messages for missing environment variables
+    const missingVars = [];
+    if (!openaiApiKey) missingVars.push("OPENAI_API_KEY");
+    if (!picaSecretKey) missingVars.push("PICA_SECRET_KEY");
+
+    if (missingVars.length > 0) {
+      const errorMessage = `Missing required environment variables: ${missingVars.join(", ")}. Please set these secrets in your Supabase project using the Supabase CLI or dashboard.`;
+      
+      return new Response(JSON.stringify({
+        error: errorMessage,
+        missingVariables: missingVars,
+        instructions: "Set these environment variables using: supabase secrets set VARIABLE_NAME=your_value"
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
 
     const { messages } = await req.json();
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
@@ -36,7 +51,7 @@ serve(async (req) => {
     const systemPrompt = await pica.generateSystemPrompt();
 
     const result = streamText({
-      model: openai("gpt-4.1"),
+      model: openai("gpt-4o"),
       system: systemPrompt,
       tools: { ...pica.oneTool },
       messages: convertToCoreMessages(messages),
@@ -46,8 +61,11 @@ serve(async (req) => {
     return result.toDataStreamResponse({ headers: corsHeaders });
 
   } catch (error) {
+    console.error("Chat function error:", error);
+    
     return new Response(JSON.stringify({
-      error: error.message || "Internal Server Error"
+      error: error.message || "Internal Server Error",
+      timestamp: new Date().toISOString()
     }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" }
