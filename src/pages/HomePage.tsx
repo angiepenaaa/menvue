@@ -228,7 +228,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
           <>
             {recommendations.length > 0 && (
               <div className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Recommended for You</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">Fresh finds for you</h2>
                 <RecommendationList items={recommendations} />
               </div>
             )}
