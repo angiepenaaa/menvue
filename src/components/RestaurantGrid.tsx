@@ -1,9 +1,9 @@
 import React from 'react';
-import { Restaurant } from '../types';
+import { RestaurantData } from '../utils/yelpApi';
 import RestaurantCard from './RestaurantCard';
 
 interface RestaurantGridProps {
-  restaurants: Restaurant[];
+  restaurants: RestaurantData[];
   onSelectRestaurant: (id: string) => void;
 }
 

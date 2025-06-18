@@ -1,9 +1,9 @@
 import React from 'react';
-import { Restaurant } from '../types';
+import { RestaurantData } from '../utils/yelpApi';
 import { Star, Clock, MapPin, Award } from 'lucide-react';
 
 interface RestaurantCardProps {
-  restaurant: Restaurant;
+  restaurant: RestaurantData;
   onClick: () => void;
 }
 
@@ -34,10 +34,18 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onClick }) 
             <span>Top Rated</span>
           </div>
         )}
+        {!restaurant.isOpen && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <span className="bg-red-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+              Closed
+            </span>
+          </div>
+        )}
       </div>
       <div className="p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-1">{restaurant.name}</h3>
         <p className="text-gray-500 text-sm mb-2">{restaurant.cuisine}</p>
+        <p className="text-gray-400 text-xs mb-2 line-clamp-1">{restaurant.location}</p>
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <div className="flex items-center">
@@ -56,6 +64,9 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onClick }) 
               ))}
               <span className="ml-1 text-sm font-medium text-gray-600">
                 {restaurant.rating}
+              </span>
+              <span className="ml-1 text-xs text-gray-400">
+                ({restaurant.reviewCount})
               </span>
             </div>
           </div>

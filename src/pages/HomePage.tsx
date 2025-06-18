@@ -9,14 +9,14 @@ import MoodResults from '../components/MoodResults';
 import FilterPanel from '../components/FilterPanel';
 import TrendingSection from '../components/TrendingSection';
 import NearbyPickupSection from '../components/NearbyPickupSection';
-import { restaurants } from '../data/restaurants';
+import { fetchRestaurants, getFallbackRestaurants, RestaurantData } from '../utils/yelpApi';
 import { menuItems } from '../data/menuItems';
 import { userPreferences } from '../data/userPreferences';
 import { filterMenuItems, filterMenuItemsBySearch } from '../utils/filterItems';
 import { getSmartRecommendations, getMoodBasedRecommendations } from '../utils/recommendationEngine';
 import { savePreferences } from '../utils/storage';
 import { Mood, FilterState } from '../types';
-import { Brain, MapPin, Gauge, TrendingUp, ArrowLeft } from 'lucide-react';
+import { Brain, MapPin, Gauge, TrendingUp, ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
 
 interface HomePageProps {
   onCartClick: () => void;
@@ -25,6 +25,9 @@ interface HomePageProps {
 const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeRestaurantId, setActiveRestaurantId] = useState<string | null>(null);
+  const [restaurants, setRestaurants] = useState<RestaurantData[]>([]);
+  const [restaurantsLoading, setRestaurantsLoading] = useState(true);
+  const [restaurantsError, setRestaurantsError] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<MenuItem[]>([]);
   const [showMoodSelector, setShowMoodSelector] = useState(false);
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
@@ -54,6 +57,25 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
     const smartRecommendations = getSmartRecommendations(menuItems, userPreferences);
     setRecommendations(smartRecommendations);
     savePreferences(userPreferences);
+
+    // Fetch restaurants from Yelp API
+    const loadRestaurants = async () => {
+      try {
+        setRestaurantsLoading(true);
+        setRestaurantsError(null);
+        const restaurantData = await fetchRestaurants('Gainesville, FL');
+        setRestaurants(restaurantData);
+      } catch (error) {
+        console.error('Failed to fetch restaurants:', error);
+        setRestaurantsError('Failed to load restaurants. Using fallback data.');
+        // Use fallback data if API fails
+        setRestaurants(getFallbackRestaurants());
+      } finally {
+        setRestaurantsLoading(false);
+      }
+    };
+
+    loadRestaurants();
   }, []);
 
   const filteredItems = useMemo(() => {
@@ -234,10 +256,27 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
             )}
             
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Popular Restaurants</h2>
+            
+            {restaurantsError && (
+              <div className="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg flex items-center gap-2">
+                <AlertCircle size={20} />
+                <span>{restaurantsError}</span>
+              </div>
+            )}
+            
+            {restaurantsLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="flex items-center gap-3 text-gray-600">
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  <span>Loading restaurants from Yelp...</span>
+                </div>
+              </div>
+            ) : (
             <RestaurantGrid 
               restaurants={restaurants} 
               onSelectRestaurant={handleSelectRestaurant} 
             />
+            )}
           </>
         ) : (
           <>

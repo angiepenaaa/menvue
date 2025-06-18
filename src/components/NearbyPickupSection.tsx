@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Clock, Check, Navigation2, Loader2, AlertCircle } from 'lucide-react';
-import { restaurants } from '../data/restaurants';
+import { fetchRestaurants, getFallbackRestaurants, RestaurantData } from '../utils/yelpApi';
 import { formatDistance } from '../utils/formatDistance';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { calculateDistance } from '../utils/calculateDistance';
@@ -11,24 +11,41 @@ interface NearbyPickupProps {
 
 const NearbyPickupSection: React.FC<NearbyPickupProps> = ({ onSelectRestaurant }) => {
   const { location, error, loading, getLocation } = useGeolocation();
-  const [nearbyRestaurants, setNearbyRestaurants] = useState(restaurants);
+  const [nearbyRestaurants, setNearbyRestaurants] = useState<RestaurantData[]>([]);
   const [sortBy, setSortBy] = useState<'distance' | 'wait' | 'rating'>('distance');
   const [fetchError, setFetchError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Load initial restaurants
+    const loadInitialRestaurants = async () => {
+      try {
+        const restaurantData = await fetchRestaurants('Gainesville, FL');
+        setNearbyRestaurants(restaurantData);
+      } catch (error) {
+        console.error('Failed to fetch restaurants:', error);
+        setNearbyRestaurants(getFallbackRestaurants());
+      }
+    };
+
+    loadInitialRestaurants();
+  }, []);
 
   useEffect(() => {
     if (location) {
       const fetchNearbyVenues = async () => {
         try {
-          const data = await fetchNearbyRestaurants(location.latitude, location.longitude);
+          // Use user's location to fetch nearby restaurants
+          const locationString = `${location.latitude},${location.longitude}`;
+          const data = await fetchRestaurants(locationString);
           
-          // Map the API response to our restaurant format
-          const nearbyVenues = data.places.map((place: any) => ({
-            ...place,
+          // Calculate actual distances and filter
+          const nearbyVenues = data.map((restaurant) => ({
+            ...restaurant,
             actualDistance: calculateDistance(
               location.latitude,
               location.longitude,
-              place.location?.latitude || 0,
-              place.location?.longitude || 0
+              restaurant.coordinates.lat,
+              restaurant.coordinates.lng
             )
           }));
 
@@ -39,9 +56,9 @@ const NearbyPickupSection: React.FC<NearbyPickupProps> = ({ onSelectRestaurant }
                 case 'distance':
                   return a.actualDistance - b.actualDistance;
                 case 'wait':
-                  return parseInt(a.deliveryTime || '0') - parseInt(b.deliveryTime || '0');
+                  return parseInt(a.deliveryTime.split('-')[0] || '0') - parseInt(b.deliveryTime.split('-')[0] || '0');
                 case 'rating':
-                  return (b.rating || 0) - (a.rating || 0);
+                  return b.rating - a.rating;
                 default:
                   return 0;
               }
@@ -195,7 +212,7 @@ const NearbyPickupSection: React.FC<NearbyPickupProps> = ({ onSelectRestaurant }
                     {isOpen && (
                       <div className="flex items-center gap-1 text-sm text-gray-600 mb-1">
                         <Clock size={14} />
-                        <span>{waitTime} mins</span>
+                        <span>{restaurant.deliveryTime} mins</span>
                       </div>
                     )}
                     <div className="flex items-center gap-1 text-xs">
