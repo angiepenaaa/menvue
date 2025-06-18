@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+console.log("🧪 Vercel Yelp API Key:", import.meta.env.VITE_YELP_API_KEY);
 import '../utils/yelpApi'; // Adjust path if needed
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Home, User, CalendarRange, ShoppingCart, Leaf, MessageSquare } from 'lucide-react';
