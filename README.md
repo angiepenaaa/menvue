@@ -2,6 +2,10 @@
 
 A React-based web application for discovering healthy menu options under 500 calories, built with TypeScript, Tailwind CSS, and Supabase.
 
+## 🚀 Live Demo
+
+[View Live Application](https://your-app-name.vercel.app)
+
 ## Features
 
 - 🥗 Browse healthy menu items from local restaurants
@@ -20,6 +24,33 @@ A React-based web application for discovering healthy menu options under 500 cal
 - **Icons**: Lucide React
 - **Build Tool**: Vite
 - **Deployment**: Netlify
+
+## 🚀 Deployment
+
+This project is configured for easy deployment on Vercel:
+
+### Deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/menvue)
+
+### Manual Deployment
+
+1. **Fork this repository**
+2. **Connect to Vercel:**
+   - Go to [vercel.com](https://vercel.com)
+   - Click "New Project"
+   - Import your forked repository
+3. **Configure Environment Variables** in Vercel dashboard:
+   ```
+   VITE_SUPABASE_URL=your_supabase_project_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_OPENWEATHER_API_KEY=your_openweather_api_key
+   VITE_PUSHER_KEY=your_pusher_key
+   VITE_PUSHER_CLUSTER=your_pusher_cluster
+   VITE_PUSHER_INSTANCE_ID=your_pusher_instance_id
+   VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+   ```
+4. **Deploy!** Vercel will automatically build and deploy your app
 
 ## Getting Started
 
@@ -81,6 +112,14 @@ VITE_PUSHER_INSTANCE_ID=your_pusher_instance_id
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
+
+### Build for Production
+
+```bash
+npm run build
+```
+
+The built files will be in the `dist` directory, ready for deployment.
 
 ### Project Structure
 
