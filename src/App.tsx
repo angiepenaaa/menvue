@@ -18,7 +18,7 @@ import SignupPage from './pages/SignupPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
-
+console.log("🧪 Vercel Yelp API Key:", import.meta.env.VITE_YELP_API_KEY);
 function BottomNav() {
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
