@@ -28,3 +28,21 @@ export interface Mood {
 }
 
 // ... rest of the types remain unchanged
+export interface HealthyVariation {
+  originalItem: any; // Replace with actual type if possible, like MenuItem
+  healthyVersion: {
+    name: string;
+    description: string;
+    calories: number;
+    nutrition: {
+      protein: number;
+      carbs: number;
+      sugars: number;
+      totalFat: number;
+      saturatedFat: number;
+      fiber: number;
+      sodium: number;
+    };
+    modifications: string[];
+  };
+}
