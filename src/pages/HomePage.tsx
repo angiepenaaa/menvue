@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import RestaurantGrid from '../components/RestaurantGrid';
 import YelpSearchBar from '../components/YelpSearchBar';
 import YelpFilterPanel from '../components/YelpFilterPanel';
+import FreshFindsSection from '../components/FreshFindsSection';
 import { yelpBusinessSearch, getFallbackRestaurants, type RestaurantData } from '../utils/yelpApi';
 import type { YelpSearchFilters } from '../types';
 import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
@@ -102,6 +103,16 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
     window.location.href = `/item/${id}`;
   };
 
+  // Listen for custom search events from FreshFindsSection
+  React.useEffect(() => {
+    const handleSearchHealthy = () => {
+      handleSearch('healthy');
+    };
+
+    window.addEventListener('search-healthy', handleSearchHealthy);
+    return () => window.removeEventListener('search-healthy', handleSearchHealthy);
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header
@@ -127,6 +138,13 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         <div className="mb-8">
           <YelpSearchBar onSearch={handleSearch} />
         </div>
+
+        {/* Fresh Finds Section - Show when no search has been performed */}
+        {!hasSearched && (
+          <div className="mb-8">
+            <FreshFindsSection onSelectRestaurant={handleSelectRestaurant} />
+          </div>
+        )}
 
         {/* Filters Panel */}
         {hasSearched && (
