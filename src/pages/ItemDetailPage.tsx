@@ -2,11 +2,13 @@ import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Star, MapPin, Clock, Phone, ExternalLink, Loader2 } from 'lucide-react';
 import { yelpBusinessDetails, yelpBusinessReviews } from '../utils/yelpApi';
+import { menuItems } from '../data/menuItems';
 
 const ItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
   const [business, setBusiness] = React.useState<any>(null);
   const [reviews, setReviews] = React.useState<any>(null);
+  const [localMenuItem, setLocalMenuItem] = React.useState<any>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const navigate = useNavigate();
@@ -19,6 +21,16 @@ const ItemDetailPage: React.FC = () => {
       setError(null);
       
       try {
+        // First check if this is a local menu item
+        const localItem = menuItems.find(item => item.id === itemId);
+        
+        if (localItem) {
+          setLocalMenuItem(localItem);
+          setLoading(false);
+          return;
+        }
+        
+        // If not a local menu item, fetch from Yelp API
         const [businessData, reviewsData] = await Promise.all([
           yelpBusinessDetails(itemId),
           yelpBusinessReviews(itemId)
@@ -70,7 +82,7 @@ const ItemDetailPage: React.FC = () => {
     );
   }
 
-  if (error || !business) {
+  if (error || (!business && !localMenuItem)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -88,6 +100,138 @@ const ItemDetailPage: React.FC = () => {
     );
   }
 
+  // If this is a local menu item, render a simplified view
+  if (localMenuItem) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div>
+          <div className="flex items-center bg-white p-4 pb-2 justify-between border-b">
+            <button
+              onClick={() => navigate(-1)}
+              className="text-gray-800 size-12 flex items-center justify-center"
+            >
+              <ArrowLeft size={24} />
+            </button>
+            <h2 className="text-gray-800 text-lg font-bold flex-1 text-center pr-12">
+              Menu Item Details
+            </h2>
+          </div>
+
+          {/* Hero Section */}
+          <div className="relative h-64">
+            <img
+              src={localMenuItem.image || 'https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg'}
+              alt={localMenuItem.name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-30" />
+            <div className="absolute bottom-4 left-4 right-4">
+              <h1 className="text-white text-2xl font-bold mb-2">{localMenuItem.name}</h1>
+              <div className="flex items-center gap-4 text-white">
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4 fill-current text-yellow-400" />
+                  <span>{localMenuItem.rating || '4.5'}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <span>${localMenuItem.price}</span>
+                </div>
+                {localMenuItem.calories && (
+                  <div className="px-2 py-1 rounded-full text-xs font-medium bg-blue-600">
+                    {localMenuItem.calories} cal
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="container mx-auto px-4 py-6 max-w-4xl">
+            {/* Basic Info */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Description */}
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-3">Description</h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {localMenuItem.description || 'A delicious menu item prepared with fresh ingredients.'}
+                  </p>
+                </div>
+
+                {/* Details */}
+                <div>
+                  <h3 className="font-semibold text-gray-800 mb-3">Details</h3>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Price:</span>
+                      <span className="font-medium">${localMenuItem.price}</span>
+                    </div>
+                    {localMenuItem.calories && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Calories:</span>
+                        <span className="font-medium">{localMenuItem.calories}</span>
+                      </div>
+                    )}
+                    {localMenuItem.category && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Category:</span>
+                        <span className="font-medium">{localMenuItem.category}</span>
+                      </div>
+                    )}
+                    {localMenuItem.restaurant && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Restaurant:</span>
+                        <span className="font-medium">{localMenuItem.restaurant}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Nutritional Info */}
+            {(localMenuItem.protein || localMenuItem.carbs || localMenuItem.fat) && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+                <h3 className="font-semibold text-gray-800 mb-4">Nutritional Information</h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {localMenuItem.protein && (
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-emerald-600">{localMenuItem.protein}g</div>
+                      <div className="text-sm text-gray-600">Protein</div>
+                    </div>
+                  )}
+                  {localMenuItem.carbs && (
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-600">{localMenuItem.carbs}g</div>
+                      <div className="text-sm text-gray-600">Carbs</div>
+                    </div>
+                  )}
+                  {localMenuItem.fat && (
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-orange-600">{localMenuItem.fat}g</div>
+                      <div className="text-sm text-gray-600">Fat</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Action */}
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4">
+            <div className="container mx-auto max-w-4xl">
+              <button
+                onClick={() => navigate(-1)}
+                className="w-full py-3 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors"
+              >
+                Back to Menu
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
   const openStatus = getOpenStatus();
 
   return (
