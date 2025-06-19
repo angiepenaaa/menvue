@@ -16,6 +16,7 @@
     "@tanstack/react-query": "^5.24.1",
     "ai": "^4.3.16",
     "date-fns": "^3.3.1",
+    "dotenv": "^16.5.0",
     "lucide-react": "^0.344.0",
     "pusher-js": "^8.4.0-rc2",
     "react": "^18.3.1",
