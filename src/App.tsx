@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import '../utils/yelpApi'; // Adjust path if needed
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Home, User, CalendarRange, ShoppingCart, Leaf, MessageSquare } from 'lucide-react';
 import HomePage from './pages/HomePage';
