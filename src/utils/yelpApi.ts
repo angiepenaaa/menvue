@@ -134,7 +134,20 @@ const cache = new YelpCache();
 // Helper function to make requests to our Netlify function
 async function makeNetlifyRequest(params: URLSearchParams): Promise<YelpBusiness[]> {
   try {
-    const response = await fetch(`${NETLIFY_FUNCTION_URL}?${params.toString()}`);
+    const apiUrl = import.meta.env.DEV 
+      ? `/api/search-restaurants?location=${encodeURIComponent(location)}${term ? `&term=${encodeURIComponent(term)}` : ''}`
+      : `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/search-restaurants?location=${encodeURIComponent(location)}${term ? `&term=${encodeURIComponent(term)}` : ''}`;
+    
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    // Add authorization header for production
+    if (!import.meta.env.DEV) {
+      headers['Authorization'] = `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`;
+    }
+    
+    const response = await fetch(apiUrl, { headers });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
