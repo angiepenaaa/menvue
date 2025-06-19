@@ -134,20 +134,7 @@ const cache = new YelpCache();
 // Helper function to make requests to our Netlify function
 async function makeNetlifyRequest(params: URLSearchParams): Promise<YelpBusiness[]> {
   try {
-    const apiUrl = import.meta.env.DEV 
-      ? `/api/search-restaurants?${params.toString()}`
-      : `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/search-restaurants?${params.toString()}`;
-    
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    
-    // Add authorization header for production
-    if (!import.meta.env.DEV) {
-      headers['Authorization'] = `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`;
-    }
-    
-    const response = await fetch(apiUrl, { headers });
+    const response = await fetch(`${NETLIFY_FUNCTION_URL}?${params.toString()}`);
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
@@ -178,19 +165,24 @@ export async function yelpBusinessSearch(
   const cached = cache.get(cacheKey);
   if (cached) return cached;
 
+  // For now, we'll use the basic search via our Netlify function
+  // Future enhancement: extend the Netlify function to support all these parameters
   const params = new URLSearchParams({
     term: term.trim(),
   });
 
-  // The search-restaurants function expects a 'location' parameter
-  if (location) {
-    params.append('location', location);
-  } else if (latitude && longitude) {
-    // Convert coordinates to a location string - use a nearby city as fallback
-    params.append('location', 'Brandon, FL');
+  if (latitude && longitude) {
+    params.append('latitude', latitude.toString());
+    params.append('longitude', longitude.toString());
+  } else if (location) {
+    // For location-based searches, we'll need to enhance the Netlify function
+    // For now, default to coordinates if available
+    params.append('latitude', '27.951');
+    params.append('longitude', '-82.457');
   } else {
-    // Default location
-    params.append('location', 'Brandon, FL');
+    // Default to Brandon, FL coordinates
+    params.append('latitude', '27.951');
+    params.append('longitude', '-82.457');
   }
 
   try {
