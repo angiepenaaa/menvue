@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format, addDays } from 'date-fns';
 import { 
   Repeat, 
@@ -19,11 +19,16 @@ import {
   Info,
   ChevronDown,
   Edit3,
-  Filter
+  Filter,
+  Loader2,
+  AlertCircle,
+  Check
 } from 'lucide-react';
 import Header from '../components/Header';
 import { menuItems } from '../data/menuItems';
 import { restaurants } from '../data/restaurants';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 
 type HealthGoal = 'lose-weight' | 'maintain' | 'build-muscle';
 type PlanDuration = 3 | 5 | 7;
@@ -41,21 +46,82 @@ interface MealCustomization {
   healthyFilter: boolean;
 }
 
+interface UserPreferences {
+  health_goal: string;
+  diet_type: string;
+  allergens: string[];
+  meal_type: string;
+  calorie_range: string;
+}
+
 const MealPlanBuilder: React.FC = () => {
+  const { user } = useAuth();
   const [goal, setGoal] = useState<HealthGoal>('maintain');
   const [duration, setDuration] = useState<PlanDuration>(5);
   const [currentDay, setCurrentDay] = useState(1);
   const [customizations, setCustomizations] = useState<Record<string, MealCustomization>>({});
   const [showCustomizeModal, setShowCustomizeModal] = useState<string | null>(null);
+  const [userPreferences, setUserPreferences] = useState<UserPreferences | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+  
   const [weekPlan, setWeekPlan] = useState<DayPlan[]>(() => {
     return Array(duration).fill(null).map(() => ({
-      lunch: getFilteredMeal(goal),
-      dinner: getFilteredMeal(goal),
-      breakfast: getFilteredMeal(goal),
-      snack: getFilteredMeal(goal)
+      lunch: null,
+      dinner: null,
+      breakfast: null,
+      snack: null
     }));
   });
   const [showIngredients, setShowIngredients] = useState<string | null>(null);
+
+  // Load user preferences on component mount
+  useEffect(() => {
+    const loadUserPreferences = async () => {
+      if (!user) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const { data, error: fetchError } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (fetchError) {
+          console.error('Error fetching preferences:', fetchError);
+          setError('Failed to load your preferences');
+          return;
+        }
+
+        if (data) {
+          setUserPreferences(data);
+          // Set goal based on user preferences
+          if (data.health_goal) {
+            setGoal(data.health_goal as HealthGoal);
+          }
+        }
+      } catch (err) {
+        console.error('Error loading preferences:', err);
+        setError('Failed to load your preferences');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserPreferences();
+  }, [user]);
+
+  // Generate initial meal plan when preferences are loaded
+  useEffect(() => {
+    if (userPreferences) {
+      regeneratePlan();
+    }
+  }, [userPreferences, goal, duration]);
 
   const getDefaultCustomization = (): MealCustomization => ({
     size: 'Regular',
@@ -67,33 +133,84 @@ const MealPlanBuilder: React.FC = () => {
     return customizations[mealId] || getDefaultCustomization();
   };
 
-  function getFilteredMeal(healthGoal: HealthGoal) {
-    const filteredItems = menuItems.filter(item => {
-      const customization = customizations[item.id];
-      if (customization?.healthyFilter && item.calories > 500) {
-        return false;
+  function getFilteredMeal(healthGoal: HealthGoal, preferences?: UserPreferences | null) {
+    let filteredItems = [...menuItems];
+
+    // Apply user preferences if available
+    if (preferences) {
+      // Filter by diet type
+      if (preferences.diet_type && preferences.diet_type !== 'No Restrictions') {
+        filteredItems = filteredItems.filter(item => 
+          item.tags.some(tag => tag.toLowerCase().includes(preferences.diet_type.toLowerCase()))
+        );
       }
-      
-      switch (healthGoal) {
-        case 'build-muscle':
-          return item.nutrition.protein >= 25 && item.calories >= 400;
-        case 'lose-weight':
-          return item.calories <= 400 && item.nutrition.fiber >= 5;
-        case 'maintain':
-          return item.calories >= 300 && item.calories <= 600;
-        default:
-          return true;
+
+      // Filter by allergens
+      if (preferences.allergens && preferences.allergens.length > 0) {
+        filteredItems = filteredItems.filter(item => 
+          !preferences.allergens.some(allergen => 
+            item.ingredients?.some(ingredient => 
+              ingredient.toLowerCase().includes(allergen.toLowerCase())
+            )
+          )
+        );
       }
-    });
-    return filteredItems[Math.floor(Math.random() * filteredItems.length)];
+
+      // Filter by calorie range
+      if (preferences.calorie_range) {
+        switch (preferences.calorie_range) {
+          case '<300':
+            filteredItems = filteredItems.filter(item => item.calories < 300);
+            break;
+          case '300-500':
+            filteredItems = filteredItems.filter(item => item.calories >= 300 && item.calories <= 500);
+            break;
+          case '500-700':
+            filteredItems = filteredItems.filter(item => item.calories > 500 && item.calories <= 700);
+            break;
+          case '700+':
+            filteredItems = filteredItems.filter(item => item.calories > 700);
+            break;
+        }
+      }
+    }
+
+    // Apply health goal filters
+    switch (healthGoal) {
+      case 'build-muscle':
+        filteredItems = filteredItems.filter(item => 
+          item.nutrition.protein >= 25 && item.calories >= 400
+        );
+        break;
+      case 'lose-weight':
+        filteredItems = filteredItems.filter(item => 
+          item.calories <= 400 && item.nutrition.fiber >= 5
+        );
+        break;
+      case 'maintain':
+        filteredItems = filteredItems.filter(item => 
+          item.calories >= 300 && item.calories <= 600
+        );
+        break;
+    }
+
+    // Apply healthy filter if enabled
+    const customization = customizations[filteredItems[0]?.id];
+    if (customization?.healthyFilter) {
+      filteredItems = filteredItems.filter(item => item.calories <= 500);
+    }
+
+    return filteredItems.length > 0 
+      ? filteredItems[Math.floor(Math.random() * filteredItems.length)]
+      : menuItems[Math.floor(Math.random() * menuItems.length)];
   }
 
-  const handleSwap = (dayIndex: number, mealType: 'lunch' | 'dinner') => {
+  const handleSwap = (dayIndex: number, mealType: keyof DayPlan) => {
     setWeekPlan(currentPlan => {
       const newPlan = [...currentPlan];
       let newMeal;
       do {
-        newMeal = getFilteredMeal(goal);
+        newMeal = getFilteredMeal(goal, userPreferences);
       } while (newMeal?.id === currentPlan[dayIndex][mealType]?.id);
       
       newPlan[dayIndex] = {
@@ -106,11 +223,79 @@ const MealPlanBuilder: React.FC = () => {
 
   const regeneratePlan = () => {
     setWeekPlan(Array(duration).fill(null).map(() => ({
-      lunch: getFilteredMeal(goal),
-      dinner: getFilteredMeal(goal),
-      breakfast: getFilteredMeal(goal),
-      snack: getFilteredMeal(goal)
+      lunch: getFilteredMeal(goal, userPreferences),
+      dinner: getFilteredMeal(goal, userPreferences),
+      breakfast: getFilteredMeal(goal, userPreferences),
+      snack: getFilteredMeal(goal, userPreferences)
     })));
+  };
+
+  const handleSavePlan = async () => {
+    if (!user) return;
+
+    try {
+      setSaving(true);
+      setError(null);
+      setSuccess(false);
+
+      const startDate = new Date();
+      const endDate = addDays(startDate, duration - 1);
+
+      // Create meal plan record
+      const { data: mealPlan, error: planError } = await supabase
+        .from('meal_plans')
+        .insert({
+          user_id: user.id,
+          start_date: startDate.toISOString().split('T')[0],
+          end_date: endDate.toISOString().split('T')[0]
+        })
+        .select()
+        .single();
+
+      if (planError) {
+        console.error('Error creating meal plan:', planError);
+        setError('Failed to save meal plan. Please try again.');
+        return;
+      }
+
+      // Create meal plan items
+      const mealPlanItems = [];
+      for (let dayIndex = 0; dayIndex < weekPlan.length; dayIndex++) {
+        const day = weekPlan[dayIndex];
+        const mealDate = addDays(startDate, dayIndex).toISOString().split('T')[0];
+
+        Object.entries(day).forEach(([mealType, meal]) => {
+          if (meal) {
+            mealPlanItems.push({
+              meal_plan_id: mealPlan.id,
+              meal_date: mealDate,
+              meal_type: mealType,
+              menu_item_id: meal.id
+            });
+          }
+        });
+      }
+
+      if (mealPlanItems.length > 0) {
+        const { error: itemsError } = await supabase
+          .from('meal_plan_items')
+          .insert(mealPlanItems);
+
+        if (itemsError) {
+          console.error('Error creating meal plan items:', itemsError);
+          setError('Failed to save meal plan items. Please try again.');
+          return;
+        }
+      }
+
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err) {
+      console.error('Error saving meal plan:', err);
+      setError('Failed to save meal plan. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const calculateDayMacros = (day: DayPlan) => {
@@ -129,25 +314,25 @@ const MealPlanBuilder: React.FC = () => {
     };
     
     return {
-      protein: (
+      protein: Math.round(
         lunch.protein * getSizeMultiplier(day.lunch?.id || '') +
         dinner.protein * getSizeMultiplier(day.dinner?.id || '') +
         breakfast.protein * getSizeMultiplier(day.breakfast?.id || '') +
         snack.protein * getSizeMultiplier(day.snack?.id || '')
       ),
-      carbs: (
+      carbs: Math.round(
         lunch.carbs * getSizeMultiplier(day.lunch?.id || '') +
         dinner.carbs * getSizeMultiplier(day.dinner?.id || '') +
         breakfast.carbs * getSizeMultiplier(day.breakfast?.id || '') +
         snack.carbs * getSizeMultiplier(day.snack?.id || '')
       ),
-      fat: (
+      fat: Math.round(
         lunch.totalFat * getSizeMultiplier(day.lunch?.id || '') +
         dinner.totalFat * getSizeMultiplier(day.dinner?.id || '') +
         breakfast.totalFat * getSizeMultiplier(day.breakfast?.id || '') +
         snack.totalFat * getSizeMultiplier(day.snack?.id || '')
       ),
-      calories: (
+      calories: Math.round(
         (day.lunch?.calories || 0) * getSizeMultiplier(day.lunch?.id || '') +
         (day.dinner?.calories || 0) * getSizeMultiplier(day.dinner?.id || '') +
         (day.breakfast?.calories || 0) * getSizeMultiplier(day.breakfast?.id || '') +
@@ -166,6 +351,22 @@ const MealPlanBuilder: React.FC = () => {
     'build-muscle': 'Protein-rich meals to support muscle growth and recovery'
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header showSearch={false} />
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center py-16">
+            <div className="flex items-center gap-3 text-gray-600">
+              <Loader2 className="w-6 h-6 animate-spin" />
+              <span>Loading your meal plan...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header showSearch={false} />
@@ -179,9 +380,30 @@ const MealPlanBuilder: React.FC = () => {
               <Calendar className="w-6 h-6 text-emerald-600" />
               <h1 className="text-2xl font-bold text-gray-800">Custom Meal Plan Builder</h1>
             </div>
-            <p className="text-gray-600">No time? No problem. We planned your clean week.</p>
+            <p className="text-gray-600">
+              {userPreferences 
+                ? `Personalized for your ${userPreferences.health_goal?.replace('-', ' ')} goal`
+                : 'No time? No problem. We planned your clean week.'
+              }
+            </p>
           </div>
         </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg flex items-center gap-2">
+            <AlertCircle size={20} />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* Success Message */}
+        {success && (
+          <div className="mb-6 bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-lg flex items-center gap-2">
+            <Check size={20} />
+            <span>Meal plan saved successfully!</span>
+          </div>
+        )}
         
         {/* Feature Pills */}
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide mb-8">
@@ -197,6 +419,12 @@ const MealPlanBuilder: React.FC = () => {
             <Sparkles size={16} />
             <span>Smart Suggestions</span>
           </div>
+          {userPreferences && (
+            <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium">
+              <Heart size={16} />
+              <span>Personalized</span>
+            </div>
+          )}
         </div>
         
         {/* Plan Configuration */}
@@ -207,6 +435,11 @@ const MealPlanBuilder: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <Heart className="text-emerald-600" />
                 Choose Your Goal
+                {userPreferences?.health_goal && (
+                  <span className="text-sm text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                    From your preferences
+                  </span>
+                )}
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
@@ -220,7 +453,7 @@ const MealPlanBuilder: React.FC = () => {
                       setGoal(id as HealthGoal);
                       regeneratePlan();
                     }}
-                    className={`p-6 rounded-xl flex flex-col items-center gap-3 border-2 transition-all ${
+                    className={`p-6 rounded-xl flex flex-col items-center gap-3 border-2 transition-all hover:shadow-md ${
                       goal === id
                         ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
                         : 'border-gray-100 hover:border-emerald-200'
@@ -249,11 +482,13 @@ const MealPlanBuilder: React.FC = () => {
                     onClick={() => {
                       setDuration(days as PlanDuration);
                       setWeekPlan(Array(days).fill(null).map(() => ({
-                        lunch: getFilteredMeal(goal),
-                        dinner: getFilteredMeal(goal)
+                        lunch: getFilteredMeal(goal, userPreferences),
+                        dinner: getFilteredMeal(goal, userPreferences),
+                        breakfast: getFilteredMeal(goal, userPreferences),
+                        snack: getFilteredMeal(goal, userPreferences)
                       })));
                     }}
-                    className={`p-4 rounded-xl border-2 transition-all ${
+                    className={`p-4 rounded-xl border-2 transition-all hover:shadow-md ${
                       duration === days
                         ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
                         : 'border-gray-100 hover:border-emerald-200'
@@ -541,11 +776,21 @@ const MealPlanBuilder: React.FC = () => {
               Download Shopping List
             </button>
             <button
-              onClick={() => alert('Plan saved!')}
-              className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors flex items-center gap-2"
+              onClick={handleSavePlan}
+              disabled={saving}
+              className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Save size={20} />
-              Save Plan
+              {saving ? (
+                <>
+                  <Loader2 size={20} className="animate-spin" />
+                  Saving Plan...
+                </>
+              ) : (
+                <>
+                  <Save size={20} />
+                  Save Plan
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -567,12 +812,12 @@ const MealPlanBuilder: React.FC = () => {
                 <div className="prose prose-sm max-w-none">
                   <h4 className="font-medium text-gray-700">Ingredients</h4>
                   <ul className="list-disc pl-4 mb-4">
-                    {weekPlan[currentDay - 1][showIngredients]?.ingredients?.map((ingredient, idx) => (
+                    {weekPlan[currentDay - 1][showIngredients as keyof DayPlan]?.ingredients?.map((ingredient, idx) => (
                       <li key={idx} className="text-gray-600">{ingredient}</li>
                     ))}
                   </ul>
                   <h4 className="font-medium text-gray-700">Preparation</h4>
-                  <p className="text-gray-600">{weekPlan[currentDay - 1][showIngredients]?.description}</p>
+                  <p className="text-gray-600">{weekPlan[currentDay - 1][showIngredients as keyof DayPlan]?.description}</p>
                 </div>
               </div>
             </div>
