@@ -178,24 +178,19 @@ export async function yelpBusinessSearch(
   const cached = cache.get(cacheKey);
   if (cached) return cached;
 
-  // For now, we'll use the basic search via our Netlify function
-  // Future enhancement: extend the Netlify function to support all these parameters
   const params = new URLSearchParams({
     term: term.trim(),
   });
 
-  if (latitude && longitude) {
-    params.append('latitude', latitude.toString());
-    params.append('longitude', longitude.toString());
-  } else if (location) {
-    // For location-based searches, we'll need to enhance the Netlify function
-    // For now, default to coordinates if available
-    params.append('latitude', '27.951');
-    params.append('longitude', '-82.457');
+  // The search-restaurants function expects a 'location' parameter
+  if (location) {
+    params.append('location', location);
+  } else if (latitude && longitude) {
+    // Convert coordinates to a location string - use a nearby city as fallback
+    params.append('location', 'Brandon, FL');
   } else {
-    // Default to Brandon, FL coordinates
-    params.append('latitude', '27.951');
-    params.append('longitude', '-82.457');
+    // Default location
+    params.append('location', 'Brandon, FL');
   }
 
   try {
