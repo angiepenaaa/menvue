@@ -24,7 +24,8 @@
     "react-router-dom": "^6.22.3",
     "recharts": "^2.12.2",
     "socket.io-client": "^4.7.4",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "yelp-fusion": "^3.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
