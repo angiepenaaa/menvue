@@ -189,39 +189,29 @@ const cache = new YelpCache();
 
 // Helper function to make API requests with proper headers
 async function makeYelpRequest(endpoint: string): Promise<any> {
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  const apiKey = import.meta.env.VITE_YELP_API_KEY;
+  
+  if (!apiKey) {
+    console.error('Yelp API key not found in environment variables');
+    throw new Error('Yelp API key not configured');
+  }
 
   try {
-    // Parse endpoint to extract path and query parameters
-    const url = new URL(`${YELP_API_BASE_URL}${endpoint}`);
-    const path = url.pathname.replace('/v3', '');
-    const params: Record<string, string> = {};
-    
-    url.searchParams.forEach((value, key) => {
-      params[key] = value;
-    });
-
-    const response = await fetch(`${supabaseUrl}/functions/v1/yelp-proxy`, {
-      method: 'POST',
+    const response = await fetch(`${YELP_API_BASE_URL}${endpoint}`, {
+      method: 'GET',
       headers: {
-        'Authorization': `Bearer ${supabaseAnonKey}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        endpoint: path,
-        params
-      })
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `API error: ${response.status} ${response.statusText}`);
+      throw new Error(`Yelp API error: ${response.status} ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error('Yelp proxy request failed:', error);
+    console.error('Yelp API request failed:', error);
     throw error;
   }
 }

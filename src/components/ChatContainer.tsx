@@ -23,20 +23,6 @@ const ChatContainer: React.FC = () => {
     },
     onError: (err) => {
       console.error('Chat error:', err);
-      
-      // Try to parse the error response for more details
-      if (err.message) {
-        try {
-          const errorData = JSON.parse(err.message);
-          if (errorData.missingVariables) {
-            console.error('Missing environment variables:', errorData.missingVariables);
-            console.error('Instructions:', errorData.instructions);
-          }
-        } catch (parseError) {
-          // Error message is not JSON, log as is
-          console.error('Error details:', err.message);
-        }
-      }
     },
   });
 
@@ -152,20 +138,9 @@ const ChatContainer: React.FC = () => {
                     <div className="flex items-center gap-2 text-red-400 mb-2">
                       <span className="font-medium">Error</span>
                     </div>
-                    <div className="text-red-300 text-sm space-y-2">
-                      <p>{error.message || 'Something went wrong. Please try again.'}</p>
-                      {error.message && error.message.includes('Missing required environment variables') && (
-                        <div className="mt-3 p-3 bg-red-900/30 rounded-lg border border-red-800">
-                          <p className="font-medium text-red-200 mb-2">Setup Required:</p>
-                          <p className="text-red-300 text-xs leading-relaxed">
-                            The chat function requires API keys to be configured in your Supabase project. 
-                            Please set the <code className="bg-red-800/50 px-1 rounded">OPENAI_API_KEY</code> and{' '}
-                            <code className="bg-red-800/50 px-1 rounded">PICA_SECRET_KEY</code> environment variables 
-                            in your Supabase project settings.
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                    <p className="text-red-300 text-sm">
+                      {error.message || 'Something went wrong. Please try again.'}
+                    </p>
                   </div>
                 </div>
               )}
