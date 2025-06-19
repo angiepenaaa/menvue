@@ -102,3 +102,6 @@ supabase/.temp
 # Vercel
 .vercel
 
+
+# Local Netlify folder
+.netlify
