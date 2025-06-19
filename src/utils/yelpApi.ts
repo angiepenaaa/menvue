@@ -135,8 +135,8 @@ const cache = new YelpCache();
 async function makeNetlifyRequest(params: URLSearchParams): Promise<YelpBusiness[]> {
   try {
     const apiUrl = import.meta.env.DEV 
-      ? `/api/search-restaurants?location=${encodeURIComponent(location)}${term ? `&term=${encodeURIComponent(term)}` : ''}`
-      : `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/search-restaurants?location=${encodeURIComponent(location)}${term ? `&term=${encodeURIComponent(term)}` : ''}`;
+      ? `/api/search-restaurants?${params.toString()}`
+      : `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/search-restaurants?${params.toString()}`;
     
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
