@@ -31,6 +31,7 @@ const ItemDetailPage: React.FC = () => {
         }
         
         // If not a local menu item, fetch from Yelp API
+        // Test with a valid Yelp business ID like: "yelp-san-francisco" or "gary-danko-san-francisco"
         const [businessData, reviewsData] = await Promise.all([
           yelpBusinessDetails(itemId),
           yelpBusinessReviews(itemId)
@@ -38,9 +39,15 @@ const ItemDetailPage: React.FC = () => {
         
         setBusiness(businessData);
         setReviews(reviewsData);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching business data:', err);
-        setError('Failed to load restaurant details. Please try again.');
+        
+        // Check for 404 error specifically
+        if (err.message?.includes('404')) {
+          setError('Business not found. This business may no longer exist or the ID may be incorrect.');
+        } else {
+          setError('Failed to load restaurant details. Please try again.');
+        }
       } finally {
         setLoading(false);
       }
@@ -134,7 +141,7 @@ const ItemDetailPage: React.FC = () => {
                   <span>{localMenuItem.rating || '4.5'}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <span>${localMenuItem.price}</span>
+                  <span>{localMenuItem.price}</span>
                 </div>
                 {localMenuItem.calories && (
                   <div className="px-2 py-1 rounded-full text-xs font-medium bg-blue-600">
@@ -164,7 +171,7 @@ const ItemDetailPage: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Price:</span>
-                      <span className="font-medium">${localMenuItem.price}</span>
+                      <span className="font-medium">{localMenuItem.price}</span>
                     </div>
                     {localMenuItem.calories && (
                       <div className="flex justify-between">
@@ -190,25 +197,25 @@ const ItemDetailPage: React.FC = () => {
             </div>
 
             {/* Nutritional Info */}
-            {(localMenuItem.protein || localMenuItem.carbs || localMenuItem.fat) && (
+            {(localMenuItem.nutrition?.protein || localMenuItem.nutrition?.carbs || localMenuItem.nutrition?.totalFat) && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
                 <h3 className="font-semibold text-gray-800 mb-4">Nutritional Information</h3>
                 <div className="grid grid-cols-3 gap-4">
-                  {localMenuItem.protein && (
+                  {localMenuItem.nutrition?.protein && (
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-emerald-600">{localMenuItem.protein}g</div>
+                      <div className="text-2xl font-bold text-emerald-600">{localMenuItem.nutrition.protein}g</div>
                       <div className="text-sm text-gray-600">Protein</div>
                     </div>
                   )}
-                  {localMenuItem.carbs && (
+                  {localMenuItem.nutrition?.carbs && (
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-600">{localMenuItem.carbs}g</div>
+                      <div className="text-2xl font-bold text-blue-600">{localMenuItem.nutrition.carbs}g</div>
                       <div className="text-sm text-gray-600">Carbs</div>
                     </div>
                   )}
-                  {localMenuItem.fat && (
+                  {localMenuItem.nutrition?.totalFat && (
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-orange-600">{localMenuItem.fat}g</div>
+                      <div className="text-2xl font-bold text-orange-600">{localMenuItem.nutrition.totalFat}g</div>
                       <div className="text-sm text-gray-600">Fat</div>
                     </div>
                   )}
@@ -232,6 +239,8 @@ const ItemDetailPage: React.FC = () => {
       </div>
     );
   }
+
+  // Render Yelp business details
   const openStatus = getOpenStatus();
 
   return (
@@ -381,7 +390,7 @@ const ItemDetailPage: React.FC = () => {
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h3 className="font-semibold text-gray-800 mb-4">Recent Reviews</h3>
               <div className="space-y-6">
-                {reviews.reviews.map((review: any) => (
+                {reviews.reviews.slice(0, 3).map((review: any) => (
                   <div key={review.id} className="border-b border-gray-100 last:border-b-0 pb-6 last:pb-0">
                     <div className="flex items-start gap-4">
                       <img
