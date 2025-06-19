@@ -1,46 +1,82 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ShoppingCart, Scale, Flame, Leaf, Check } from 'lucide-react';
-import { menuItems } from '../data/menuItems';
-import { restaurants } from '../data/restaurants';
-import { useCart, CartContextType } from '../context/CartContext';
+import { ArrowLeft, Star, MapPin, Clock, Phone, ExternalLink, Loader2 } from 'lucide-react';
+import { yelpBusinessDetails, yelpBusinessReviews } from '../utils/yelpApi';
 
 const ItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
-  const [quantity, setQuantity] = React.useState(1);
-  const [removedIngredients, setRemovedIngredients] = React.useState<string[]>([]);
-  const [specialInstructions, setSpecialInstructions] = React.useState('');
-  const [showAddedToCart, setShowAddedToCart] = React.useState(false);
-  const { addItem, totalItems } = useCart() as CartContextType;
+  const [business, setBusiness] = React.useState<any>(null);
+  const [reviews, setReviews] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
   const navigate = useNavigate();
 
-  const item = menuItems.find(item => item.id === itemId);
-  const restaurant = item ? restaurants.find(r => r.id === item.restaurantId) : null;
+  React.useEffect(() => {
+    const fetchBusinessData = async () => {
+      if (!itemId) return;
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const [businessData, reviewsData] = await Promise.all([
+          yelpBusinessDetails(itemId),
+          yelpBusinessReviews(itemId)
+        ]);
+        
+        setBusiness(businessData);
+        setReviews(reviewsData);
+      } catch (err) {
+        console.error('Error fetching business data:', err);
+        setError('Failed to load restaurant details. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleAddToCart = () => {
-    addItem(item!, removedIngredients, quantity, specialInstructions.trim() || undefined);
-    setShowAddedToCart(true);
-    setTimeout(() => {
-      setShowAddedToCart(false);
-      navigate(-1);
-    }, 1500);
+    fetchBusinessData();
+  }, [itemId]);
+
+  const formatPhoneNumber = (phone: string) => {
+    const cleaned = phone.replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return `(${match[1]}) ${match[2]}-${match[3]}`;
+    }
+    return phone;
   };
 
-  const toggleIngredient = (option: string) => {
-    setRemovedIngredients(current =>
-      current.includes(option)
-        ? current.filter(o => o !== option)
-        : [...current, option]
+  const getOpenStatus = () => {
+    if (!business?.hours || business.hours.length === 0) {
+      return { text: 'Hours not available', isOpen: null };
+    }
+    
+    const todayHours = business.hours[0];
+    if (todayHours.is_open_now) {
+      return { text: 'Open now', isOpen: true };
+    } else {
+      return { text: 'Closed', isOpen: false };
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex items-center gap-3 text-gray-600">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <span>Loading restaurant details...</span>
+        </div>
+      </div>
     );
-  };
+  }
 
-  const totalPrice = parseFloat(item?.price.replace('$', '') || '0') * quantity;
-
-  if (!item || !restaurant) {
+  if (error || !business) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">Item not found</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+            {error || 'Restaurant not found'}
+          </h2>
           <button
             onClick={() => navigate(-1)}
             className="text-emerald-600 hover:text-emerald-700 font-medium"
@@ -52,160 +88,216 @@ const ItemDetailPage: React.FC = () => {
     );
   }
 
-  const nutritionMetrics = [
-    { 
-      icon: <Scale className="text-emerald-600" size={24} />, 
-      label: 'Protein', 
-      value: item.nutrition.protein,
-      unit: 'g',
-      details: [
-        { label: 'Essential Amino Acids', value: Math.round(item.nutrition.protein * 0.4) },
-        { label: 'Branch Chain Amino Acids', value: Math.round(item.nutrition.protein * 0.2) },
-        { label: 'Other Proteins', value: Math.round(item.nutrition.protein * 0.4) }
-      ]
-    },
-    { 
-      icon: <Flame className="text-orange-600\" size={24} />, 
-      label: 'Carbs', 
-      value: item.nutrition.carbs,
-      unit: 'g',
-      details: [
-        { label: 'Dietary Fiber', value: item.nutrition.fiber },
-        { label: 'Sugars', value: item.nutrition.sugars },
-        { label: 'Net Carbs', value: item.nutrition.carbs - item.nutrition.fiber }
-      ]
-    },
-    { 
-      icon: <Leaf className="text-yellow-600\" size={24} />, 
-      label: 'Fat', 
-      value: item.nutrition.totalFat,
-      unit: 'g',
-      details: [
-        { label: 'Saturated Fat', value: item.nutrition.saturatedFat },
-        { label: 'Unsaturated Fat', value: item.nutrition.totalFat - item.nutrition.saturatedFat },
-        { label: 'Trans Fat', value: 0 }
-      ]
-    }
-  ];
+  const openStatus = getOpenStatus();
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-[#f9fbfa] justify-between">
-      {/* Custom Header */}
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
       <div>
-        <div className="flex items-center bg-[#f9fbfa] p-4 pb-2 justify-between">
+        <div className="flex items-center bg-white p-4 pb-2 justify-between border-b">
           <button
             onClick={() => navigate(-1)}
-            className="text-[#101913] flex size-12 shrink-0 items-center"
+            className="text-gray-800 size-12 flex items-center justify-center"
           >
             <ArrowLeft size={24} />
           </button>
+          <h2 className="text-gray-800 text-lg font-bold flex-1 text-center pr-12">
+            Restaurant Details
+          </h2>
         </div>
 
-        {/* Hero Image */}
-        <div className="@container">
-          <div className="@[480px]:px-4 @[480px]:py-3">
-            <div
-              className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden bg-[#f9fbfa] @[480px]:rounded-xl min-h-[218px]"
-              style={{ backgroundImage: `url(${item.image})` }}
-            />
-          </div>
-        </div>
-
-        <h1 className="text-[#101913] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 text-left pb-3 pt-5">
-          {item.name}
-        </h1>
-        <p className="text-[#101913] text-base font-normal leading-normal pb-3 pt-1 px-4">
-          {item.description}
-        </p>
-
-        <h3 className="text-[#101913] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">
-          Customize
-        </h3>
-
-        {/* Ingredients Selection */}
-        {item.ingredients?.map((ingredient) => (
-          <div key={ingredient} className="flex items-center gap-4 bg-[#f9fbfa] px-4 min-h-[72px] py-2 justify-between">
-            <div className="flex flex-col justify-center">
-              <p className="text-[#101913] text-base font-medium line-clamp-1">{ingredient}</p>
-              <p className="text-[#5b8b6c] text-sm font-normal line-clamp-2">
-                {removedIngredients.includes(ingredient) ? 'Removed' : 'Included'}
-              </p>
-            </div>
-            <button
-              onClick={() => toggleIngredient(ingredient)}
-              className={`shrink-0 ${
-                removedIngredients.includes(ingredient)
-                  ? 'text-red-600'
-                  : 'text-[#101913]'
-              }`}
-            >
-              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                removedIngredients.includes(ingredient)
-                  ? 'border-red-600'
-                  : 'border-[#101913]'
-              }`}>
-                {removedIngredients.includes(ingredient) && (
-                  <Check size={14} />
-                )}
-              </div>
-            </button>
-          </div>
-        ))}
-
-        {/* Special Instructions */}
-        <div className="px-4 py-4">
-          <h3 className="text-[#101913] text-lg font-bold leading-tight tracking-[-0.015em] mb-2">
-            Special Instructions
-          </h3>
-          <textarea
-            value={specialInstructions}
-            onChange={(e) => setSpecialInstructions(e.target.value)}
-            placeholder="Add any special requests or notes..."
-            className="w-full h-32 px-4 py-3 rounded-xl border border-[#d4e3d9] focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none bg-white text-[#101913]"
+        {/* Hero Section */}
+        <div className="relative h-64">
+          <img
+            src={business.image_url || 'https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg'}
+            alt={business.name}
+            className="w-full h-full object-cover"
           />
-        </div>
-
-        <h3 className="text-[#101913] text-lg font-bold leading-tight tracking-[-0.015em] px-4 pb-2 pt-4">
-          Nutritional Information
-        </h3>
-        <div className="p-4 grid grid-cols-[20%_1fr] gap-x-6">
-          <div className="col-span-2 grid grid-cols-subgrid border-t border-t-[#d4e3d9] py-5">
-            <p className="text-[#5b8b6c] text-sm font-normal leading-normal">Calories</p>
-            <p className="text-[#101913] text-sm font-normal leading-normal">{item.calories}</p>
-          </div>
-          <div className="col-span-2 grid grid-cols-subgrid border-t border-t-[#d4e3d9] py-5">
-            <p className="text-[#5b8b6c] text-sm font-normal leading-normal">Protein</p>
-            <p className="text-[#101913] text-sm font-normal leading-normal">{item.nutrition.protein}g</p>
-          </div>
-          <div className="col-span-2 grid grid-cols-subgrid border-t border-t-[#d4e3d9] py-5">
-            <p className="text-[#5b8b6c] text-sm font-normal leading-normal">Carbs</p>
-            <p className="text-[#101913] text-sm font-normal leading-normal">{item.nutrition.carbs}g</p>
-          </div>
-          <div className="col-span-2 grid grid-cols-subgrid border-t border-t-[#d4e3d9] py-5">
-            <p className="text-[#5b8b6c] text-sm font-normal leading-normal">Fat</p>
-            <p className="text-[#101913] text-sm font-normal leading-normal">{item.nutrition.totalFat}g</p>
+          <div className="absolute inset-0 bg-black bg-opacity-30" />
+          <div className="absolute bottom-4 left-4 right-4">
+            <h1 className="text-white text-2xl font-bold mb-2">{business.name}</h1>
+            <div className="flex items-center gap-4 text-white">
+              <div className="flex items-center gap-1">
+                <Star className="w-4 h-4 fill-current text-yellow-400" />
+                <span>{business.rating}</span>
+                <span className="text-gray-300">({business.review_count} reviews)</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <span>{business.price || '$'}</span>
+              </div>
+              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                openStatus.isOpen === true ? 'bg-green-600' : 
+                openStatus.isOpen === false ? 'bg-red-600' : 'bg-gray-600'
+              }`}>
+                {openStatus.text}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Fixed Bottom Bar */}
-      <div>
-        <div className="flex px-4 py-3">
-          {showAddedToCart ? (
-            <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#2c8b4f] text-[#f9fbfa] text-base font-bold">
-              <Check size={20} className="mr-2" />
-              Added to Cart!
-            </button>
-          ) : (
-            <button
-              onClick={handleAddToCart}
-              className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 bg-[#2c8b4f] text-[#f9fbfa] text-base font-bold"
-            >
-              <span className="truncate">Add to Cart • ${totalPrice.toFixed(2)}</span>
-            </button>
+        {/* Content */}
+        <div className="container mx-auto px-4 py-6 max-w-4xl">
+          {/* Basic Info */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Categories */}
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-3">Categories</h3>
+                <div className="flex flex-wrap gap-2">
+                  {business.categories?.map((category: any, index: number) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium"
+                    >
+                      {category.title}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contact Info */}
+              <div>
+                <h3 className="font-semibold text-gray-800 mb-3">Contact</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <MapPin size={16} />
+                    <span className="text-sm">{business.location?.display_address?.join(', ')}</span>
+                  </div>
+                  {business.display_phone && (
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Phone size={16} />
+                      <a 
+                        href={`tel:${business.phone}`}
+                        className="text-sm hover:text-emerald-600 transition-colors"
+                      >
+                        {formatPhoneNumber(business.display_phone)}
+                      </a>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <ExternalLink size={16} />
+                    <a 
+                      href={business.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm hover:text-emerald-600 transition-colors"
+                    >
+                      View on Yelp
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Hours */}
+          {business.hours && business.hours.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+              <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <Clock size={20} />
+                Hours
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {business.hours[0]?.open?.map((hours: any, index: number) => {
+                  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                  const startTime = hours.start ? `${hours.start.slice(0, 2)}:${hours.start.slice(2)}` : '';
+                  const endTime = hours.end ? `${hours.end.slice(0, 2)}:${hours.end.slice(2)}` : '';
+                  
+                  return (
+                    <div key={index} className="flex justify-between">
+                      <span className="text-gray-600">{days[hours.day]}</span>
+                      <span className="text-gray-800">{startTime} - {endTime}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Photos */}
+          {business.photos && business.photos.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+              <h3 className="font-semibold text-gray-800 mb-4">Photos</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {business.photos.slice(0, 6).map((photo: string, index: number) => (
+                  <div key={index} className="aspect-square rounded-lg overflow-hidden">
+                    <img
+                      src={photo}
+                      alt={`${business.name} photo ${index + 1}`}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Reviews */}
+          {reviews && reviews.reviews && reviews.reviews.length > 0 && (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <h3 className="font-semibold text-gray-800 mb-4">Recent Reviews</h3>
+              <div className="space-y-6">
+                {reviews.reviews.map((review: any) => (
+                  <div key={review.id} className="border-b border-gray-100 last:border-b-0 pb-6 last:pb-0">
+                    <div className="flex items-start gap-4">
+                      <img
+                        src={review.user.image_url || 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'}
+                        alt={review.user.name}
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="font-medium text-gray-800">{review.user.name}</span>
+                          <div className="flex items-center">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                size={14}
+                                className={`${
+                                  i < review.rating
+                                    ? 'text-yellow-400 fill-current'
+                                    : 'text-gray-300'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-sm text-gray-500">
+                            {new Date(review.time_created).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="text-gray-700 leading-relaxed">{review.text}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
-        <div className="h-5 bg-[#f9fbfa]"></div>
+
+        {/* Bottom Action */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4">
+          <div className="container mx-auto max-w-4xl">
+            <div className="flex gap-3">
+              {business.phone && (
+                <a
+                  href={`tel:${business.phone}`}
+                  className="flex-1 py-3 bg-emerald-600 text-white rounded-xl font-medium hover:bg-emerald-700 transition-colors text-center"
+                >
+                  Call Restaurant
+                </a>
+              )}
+              <a
+                href={business.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 py-3 bg-gray-100 text-gray-800 rounded-xl font-medium hover:bg-gray-200 transition-colors text-center"
+              >
+                View on Yelp
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

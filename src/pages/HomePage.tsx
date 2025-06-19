@@ -1,301 +1,252 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Header from '../components/Header';
-import FilterBar from '../components/FilterBar';
 import RestaurantGrid from '../components/RestaurantGrid';
-import MenuList from '../components/MenuList';
-import RecommendationList from '../components/RecommendationList';
-import MoodSelector from '../components/MoodSelector';
-import MoodResults from '../components/MoodResults';
-import FilterPanel from '../components/FilterPanel';
-import TrendingSection from '../components/TrendingSection';
-import NearbyPickupSection from '../components/NearbyPickupSection';
-import { fetchRestaurants, getFallbackRestaurants, RestaurantData } from '../utils/yelpApi';
-import { menuItems } from '../data/menuItems';
-import { userPreferences } from '../data/userPreferences';
-import { filterMenuItems, filterMenuItemsBySearch } from '../utils/filterItems';
-import { getSmartRecommendations, getMoodBasedRecommendations } from '../utils/recommendationEngine';
-import { savePreferences } from '../utils/storage';
-import { Mood, FilterState } from '../types';
-import { Brain, MapPin, Gauge, TrendingUp, ArrowLeft, Loader2, AlertCircle } from 'lucide-react';
+import YelpSearchBar from '../components/YelpSearchBar';
+import YelpFilterPanel from '../components/YelpFilterPanel';
+import { yelpBusinessSearch, getFallbackRestaurants, type RestaurantData } from '../utils/yelpApi';
+import type { YelpSearchFilters } from '../types';
+import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 
 interface HomePageProps {
   onCartClick: () => void;
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [activeRestaurantId, setActiveRestaurantId] = useState<string | null>(null);
   const [restaurants, setRestaurants] = useState<RestaurantData[]>([]);
   const [restaurantsLoading, setRestaurantsLoading] = useState(true);
   const [restaurantsError, setRestaurantsError] = useState<string | null>(null);
-  const [recommendations, setRecommendations] = useState<MenuItem[]>([]);
-  const [showMoodSelector, setShowMoodSelector] = useState(false);
-  const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
-  const [showUnder500, setShowUnder500] = useState(false);
-  const [showTrending, setShowTrending] = useState(false);
-  const [showNearbyPickup, setShowNearbyPickup] = useState(false);
-  const [filters, setFilters] = useState<FilterState>({
-    mealType: [],
-    healthGoal: '',
-    dietTypes: [],
-    macroTags: [],
-    moodTags: [],
-    cuisineType: [],
-    prepTime: '',
-    specialTags: []
+  const [hasSearched, setHasSearched] = useState(false);
+  const [filters, setFilters] = useState<YelpSearchFilters>({
+    term: 'healthy',
+    categories: '',
+    price: '',
+    sortBy: 'best_match',
+    openNow: false
   });
 
-  // Get current hour to determine greeting
-  const currentHour = new Date().getHours();
-  const greeting = currentHour < 12 
-    ? 'Good morning'
-    : currentHour < 17 
-    ? 'Good afternoon'
-    : 'Good evening';
+  // Handle search from YelpSearchBar
+  const handleSearch = async (
+    term: string,
+    location?: string,
+    coordinates?: { lat: number; lng: number }
+  ) => {
+    setRestaurantsLoading(true);
+    setRestaurantsError(null);
+    setHasSearched(true);
 
-  useEffect(() => {
-    const smartRecommendations = getSmartRecommendations(menuItems, userPreferences);
-    setRecommendations(smartRecommendations);
-    savePreferences(userPreferences);
-
-    // Fetch restaurants from Yelp API
-    const loadRestaurants = async () => {
-      try {
-        setRestaurantsLoading(true);
-        setRestaurantsError(null);
-        const restaurantData = await fetchRestaurants('Gainesville, FL');
-        setRestaurants(restaurantData);
-      } catch (error) {
-        console.error('Failed to fetch restaurants:', error);
-        setRestaurantsError('Failed to load restaurants. Using fallback data.');
-        // Use fallback data if API fails
-        setRestaurants(getFallbackRestaurants());
-      } finally {
-        setRestaurantsLoading(false);
-      }
-    };
-
-    loadRestaurants();
-  }, []);
-
-  const filteredItems = useMemo(() => {
-    let items = filterMenuItems(menuItems, filters);
-    
-    // Limit to 10 items
-    items = items.slice(0, 10);
-    
-    if (activeRestaurantId) {
-      items = items.filter(item => item.restaurantId === activeRestaurantId);
+    try {
+      const searchFilters = {
+        ...filters,
+        term,
+        location,
+        latitude: coordinates?.lat,
+        longitude: coordinates?.lng
+      };
+      
+      const results = await yelpBusinessSearch(
+        searchFilters.term,
+        searchFilters.latitude,
+        searchFilters.longitude,
+        searchFilters.location,
+        searchFilters.categories,
+        searchFilters.price,
+        searchFilters.sortBy,
+        searchFilters.openNow
+      );
+      
+      setRestaurants(results);
+      setFilters(searchFilters);
+    } catch (error) {
+      console.error('Search failed:', error);
+      setRestaurantsError('Failed to search restaurants. Please try again.');
+      setRestaurants(getFallbackRestaurants());
+    } finally {
+      setRestaurantsLoading(false);
     }
-    
-    if (showUnder500) {
-      items = items.filter(item => item.calories <= 500);
-    }
-    
-    return filterMenuItemsBySearch(items, searchTerm);
-  }, [filters, activeRestaurantId, searchTerm, showUnder500]);
+  };
 
-  const restaurantNames = useMemo(() => {
-    return restaurants.map(r => ({ id: r.id, name: r.name }));
-  }, []);
+  // Handle filter changes and re-search
+  const handleFiltersChange = (newFilters: YelpSearchFilters) => {
+    setFilters(newFilters);
+  };
+
+  const handleFilterSearch = async () => {
+    if (!hasSearched) return;
+    
+    setRestaurantsLoading(true);
+    setRestaurantsError(null);
+
+    try {
+      const results = await yelpBusinessSearch(
+        filters.term,
+        filters.latitude,
+        filters.longitude,
+        filters.location,
+        filters.categories,
+        filters.price,
+        filters.sortBy,
+        filters.openNow
+      );
+      
+      setRestaurants(results);
+    } catch (error) {
+      console.error('Filter search failed:', error);
+      setRestaurantsError('Failed to apply filters. Please try again.');
+    } finally {
+      setRestaurantsLoading(false);
+    }
+  };
 
   const handleSelectRestaurant = (id: string) => {
-    setActiveRestaurantId(id);
-    setShowMoodSelector(false);
-    setSelectedMood(null);
-    setShowTrending(false);
-  };
-
-  const handleMoodSelect = (mood: Mood) => {
-    setSelectedMood(mood);
-    const moodBasedItems = getMoodBasedRecommendations(menuItems, mood, userPreferences);
-    setRecommendations(moodBasedItems);
-  };
-
-  const resetMood = () => {
-    setSelectedMood(null);
-    setShowMoodSelector(false);
-    setShowTrending(false);
-    const smartRecommendations = getSmartRecommendations(menuItems, userPreferences);
-    setRecommendations(smartRecommendations);
-  };
-
-  const resetView = () => {
-    setShowTrending(false);
-    setShowMoodSelector(false);
-    setSelectedMood(null);
-    setShowNearbyPickup(false);
-    setActiveRestaurantId(null);
+    // Navigate to restaurant detail page
+    window.location.href = `/item/${id}`;
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
+        searchTerm=""
+        setSearchTerm={() => {}}
         onCartClick={onCartClick}
+        showSearch={false}
       />
       
       <main className="container mx-auto px-4 py-8">
-        {(showTrending || showMoodSelector || selectedMood || activeRestaurantId || showNearbyPickup) && (
-          <button
-            onClick={resetView}
-            className="mb-6 flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
-          >
-            <ArrowLeft size={20} />
-            <span>Back to Home</span>
-          </button>
-        )}
-
         {/* Welcome Section */}
-        {!activeRestaurantId && !showMoodSelector && !selectedMood && !showTrending && !showNearbyPickup && (
-          <div className="mb-8 bg-gradient-to-r from-emerald-50/50 to-transparent rounded-2xl p-6">
-            <div className="relative">
-              <div className="w-1 h-8 bg-emerald-500 absolute -left-6 top-1/2 -translate-y-1/2 rounded-r-full" />
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                {greeting}, Angie!
-              </h2>
-              <p className="text-gray-600 italic">Match Me with a Clean Meal</p>
-            </div>
+        <div className="mb-8 bg-gradient-to-r from-emerald-50/50 to-transparent rounded-2xl p-6">
+          <div className="relative">
+            <div className="w-1 h-8 bg-emerald-500 absolute -left-6 top-1/2 -translate-y-1/2 rounded-r-full" />
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              Find Healthy Restaurants Near You
+            </h2>
+            <p className="text-gray-600">Discover the best healthy dining options powered by Yelp</p>
           </div>
-        )}
+        </div>
 
-        {/* Quick Filters */}
-        {!activeRestaurantId && !showMoodSelector && !selectedMood && !showTrending && !showNearbyPickup && (
-          <div className="mb-8">
-            <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-              <button 
-                onClick={() => {
-                  setShowNearbyPickup(!showNearbyPickup);
-                  setShowTrending(false);
-                  setShowMoodSelector(false);
-                  setSelectedMood(null);
-                }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap border ${
-                  showNearbyPickup
-                    ? 'bg-emerald-600 text-white border-emerald-600'
-                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                <MapPin size={16} />
-                <span>Nearby Pickup</span>
-              </button>
-              <button 
-                onClick={() => setShowUnder500(!showUnder500)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap border ${
-                  showUnder500 
-                    ? 'bg-emerald-600 text-white border-emerald-600' 
-                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                <Gauge size={16} />
-                <span>Under 500 Cals</span>
-              </button>
-              <button
-                onClick={() => {
-                  setShowTrending(!showTrending);
-                  setShowMoodSelector(false);
-                  setSelectedMood(null);
-                  setShowNearbyPickup(false);
-                }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap border ${
-                  showTrending 
-                    ? 'bg-emerald-600 text-white border-emerald-600' 
-                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                <TrendingUp size={16} />
-                <span>Trending</span>
-              </button>
-              <button
-                onClick={() => {
-                  setShowMoodSelector(true);
-                  setShowTrending(false);
-                  setShowNearbyPickup(false);
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-full whitespace-nowrap border border-gray-200 hover:bg-gray-50"
-              >
-                <Brain size={16} />
-                <span>Mood Match</span>
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Search Bar */}
+        <div className="mb-8">
+          <YelpSearchBar onSearch={handleSearch} />
+        </div>
 
         {/* Filters Panel */}
-        {!showMoodSelector && !selectedMood && !showTrending && !showNearbyPickup && (
+        {hasSearched && (
           <div className="mb-8">
-            <FilterPanel filters={filters} onFilterChange={setFilters} />
+            <YelpFilterPanel 
+              filters={filters} 
+              onFiltersChange={handleFiltersChange}
+              onSearch={handleFilterSearch}
+            />
           </div>
         )}
 
-        {showNearbyPickup ? (
-          <NearbyPickupSection onSelectRestaurant={setActiveRestaurantId} />
-        ) : showTrending ? (
-          <TrendingSection />
-        ) : showMoodSelector && !selectedMood ? (
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-800 text-center mb-8">
-              How are you feeling today?
-            </h2>
-            <MoodSelector onMoodSelect={handleMoodSelect} />
-          </div>
-        ) : selectedMood ? (
-          <MoodResults
-            mood={selectedMood}
-            items={recommendations}
-            onBack={resetMood}
-          />
-        ) : !activeRestaurantId ? (
+        {/* Results Section */}
+        {hasSearched && (
           <>
-            {recommendations.length > 0 && (
-              <div className="mb-12">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Fresh finds for you</h2>
-                <RecommendationList items={recommendations} />
+            {/* Results Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {restaurantsLoading ? 'Searching...' : `Found ${restaurants.length} restaurants`}
+                </h2>
+                {filters.location && (
+                  <p className="text-gray-600 mt-1">Near {filters.location}</p>
+                )}
               </div>
-            )}
-            
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">Popular Restaurants</h2>
-            
+              {!restaurantsLoading && restaurants.length > 0 && (
+                <button
+                  onClick={handleFilterSearch}
+                  className="flex items-center gap-2 px-4 py-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                >
+                  <RefreshCw size={18} />
+                  Refresh
+                </button>
+              )}
+            </div>
+
+            {/* Error State */}
             {restaurantsError && (
-              <div className="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg flex items-center gap-2">
+              <div className="mb-6 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg flex items-center gap-2">
                 <AlertCircle size={20} />
                 <span>{restaurantsError}</span>
               </div>
             )}
-            
-            {restaurantsLoading ? (
+
+            {/* Loading State */}
+            {restaurantsLoading && (
               <div className="flex items-center justify-center py-12">
                 <div className="flex items-center gap-3 text-gray-600">
                   <Loader2 className="w-6 h-6 animate-spin" />
-                  <span>Loading restaurants from Yelp...</span>
+                  <span>Searching restaurants on Yelp...</span>
                 </div>
               </div>
-            ) : (
-            <RestaurantGrid 
-              restaurants={restaurants} 
-              onSelectRestaurant={handleSelectRestaurant} 
-            />
+            )}
+
+            {/* Results Grid */}
+            {!restaurantsLoading && restaurants.length > 0 && (
+              <RestaurantGrid 
+                restaurants={restaurants} 
+                onSelectRestaurant={handleSelectRestaurant} 
+              />
+            )}
+
+            {/* No Results */}
+            {!restaurantsLoading && restaurants.length === 0 && !restaurantsError && (
+              <div className="text-center py-12">
+                <div className="text-gray-500 mb-4">
+                  <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-medium text-gray-800 mb-2">No restaurants found</h3>
+                <p className="text-gray-600 mb-4">Try adjusting your search terms or filters</p>
+                <button
+                  onClick={() => handleSearch('healthy')}
+                  className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                >
+                  Search for "healthy" restaurants
+                </button>
+              </div>
             )}
           </>
-        ) : (
-          <>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {restaurants.find(r => r.id === activeRestaurantId)?.name}
-                </h2>
-                <p className="text-gray-600 mt-1">Healthy options under 500 calories</p>
-              </div>
-              <button 
-                onClick={() => setActiveRestaurantId(null)}
-                className="text-emerald-600 hover:text-emerald-700 font-medium"
+        )}
+
+        {/* Initial State */}
+        {!hasSearched && (
+          <div className="text-center py-16">
+            <div className="text-gray-400 mb-6">
+              <svg className="w-20 h-20 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-medium text-gray-800 mb-2">Start your healthy food journey</h3>
+            <p className="text-gray-600 mb-6">Search for restaurants, cuisines, or specific dishes above</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                onClick={() => handleSearch('salad')}
+                className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full hover:bg-emerald-200 transition-colors"
               >
-                Back to Restaurants
+                🥗 Salads
+              </button>
+              <button
+                onClick={() => handleSearch('juice bar')}
+                className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full hover:bg-emerald-200 transition-colors"
+              >
+                🧃 Juice Bars
+              </button>
+              <button
+                onClick={() => handleSearch('vegan')}
+                className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full hover:bg-emerald-200 transition-colors"
+              >
+                🌱 Vegan
+              </button>
+              <button
+                onClick={() => handleSearch('mediterranean')}
+                className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full hover:bg-emerald-200 transition-colors"
+              >
+                🫒 Mediterranean
               </button>
             </div>
-            <MenuList items={filteredItems} />
-          </>
+          </div>
         )}
       </main>
     </div>

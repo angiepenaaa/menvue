@@ -1,5 +1,5 @@
 import React from 'react';
-import { RestaurantData } from '../utils/yelpApi';
+import type { RestaurantData } from '../utils/yelpApi';
 import { Star, Clock, MapPin, Award } from 'lucide-react';
 
 interface RestaurantCardProps {
@@ -13,6 +13,11 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onClick }) 
   const hasHalfStar = restaurant.rating % 1 >= 0.5;
   const isTopRated = restaurant.rating >= 4.7;
 
+  // Price level display
+  const getPriceDisplay = (priceLevel?: string) => {
+    if (!priceLevel) return '$';
+    return priceLevel;
+  };
   return (
     <div 
       onClick={onClick}
@@ -27,6 +32,9 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onClick }) 
         <div className="absolute top-3 right-3 bg-white px-2 py-1 rounded-full text-xs font-medium flex items-center">
           <MapPin size={12} className="mr-1 text-emerald-600" />
           {restaurant.distance}
+        </div>
+        <div className="absolute top-3 left-3 bg-white px-2 py-1 rounded-full text-xs font-medium">
+          {getPriceDisplay(restaurant.priceLevel)}
         </div>
         {isTopRated && (
           <div className="absolute top-3 left-3 bg-yellow-400 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
@@ -46,6 +54,26 @@ const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onClick }) 
         <h3 className="text-lg font-semibold text-gray-800 mb-1">{restaurant.name}</h3>
         <p className="text-gray-500 text-sm mb-2">{restaurant.cuisine}</p>
         <p className="text-gray-400 text-xs mb-2 line-clamp-1">{restaurant.location}</p>
+        
+        {/* Tags */}
+        {restaurant.tags && restaurant.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {restaurant.tags.slice(0, 3).map((tag, index) => (
+              <span
+                key={index}
+                className="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-full"
+              >
+                {tag}
+              </span>
+            ))}
+            {restaurant.tags.length > 3 && (
+              <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
+                +{restaurant.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+        
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <div className="flex items-center">

@@ -15,8 +15,20 @@ export interface Restaurant {
   isOpen: boolean;
   reviewCount: number;
   actualDistance?: number;
-  isLocked?: boolean;
-  specialInstructions?: string;
+  priceLevel?: string;
+  tags?: string[];
+}
+
+export interface YelpSearchFilters {
+  term: string;
+  location?: string;
+  latitude?: number;
+  longitude?: number;
+  categories?: string;
+  price?: string;
+  sortBy: string;
+  openNow: boolean;
+  radius?: number;
 }
 
 export interface Mood {
