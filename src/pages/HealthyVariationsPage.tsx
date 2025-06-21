@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Leaf, Search, Filter, TrendingUp, Loader2, Sparkles, Brain, MessageSquare, ChevronRight } from 'lucide-react';
 import Header from '../components/Header';
-import { getNutritionInfo } from '../lib/pica';
+import { openaiService } from '../lib/openai';
 import VariationCard from '../components/VariationCard';
 import { healthyVariations } from '../data/healthyVariations';
 
@@ -22,11 +22,13 @@ const HealthyVariationsPage: React.FC = () => {
   const handleGenerateVariation = useCallback(async (itemName: string) => {
     setIsGenerating(true);
     try {
-      const prompt = `Given the menu item "${itemName}", provide a lower-calorie, high-protein version while preserving flavor. Include specific ingredient swaps and explain the nutritional benefits.`;
-      const response = await getNutritionInfo(prompt);
-      setAiSuggestion(response.choices[0].text);
+      const response = await openaiService.getNutritionAdvice(
+        `Given the menu item "${itemName}", provide a lower-calorie, high-protein version while preserving flavor. Include specific ingredient swaps and explain the nutritional benefits.`
+      );
+      setAiSuggestion(response.choices[0].message.content);
     } catch (error) {
       console.error('Error:', error);
+      setAiSuggestion('Sorry, I encountered an error generating the variation. Please try again.');
     } finally {
       setIsGenerating(false);
     }
@@ -38,8 +40,8 @@ const HealthyVariationsPage: React.FC = () => {
     setIsAdvisorLoading(true);
     
     try {
-      const response = await getNutritionInfo(userQuery);
-      setAiResponse(response.choices[0].text);
+      const response = await openaiService.getNutritionAdvice(userQuery);
+      setAiResponse(response.choices[0].message.content);
     } catch (error) {
       console.error('Error:', error);
       setAiResponse("I apologize, but I encountered an error while processing your request. Please try again with a different query.");

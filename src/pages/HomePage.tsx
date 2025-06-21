@@ -4,19 +4,23 @@ import RestaurantGrid from '../components/RestaurantGrid';
 import YelpSearchBar from '../components/YelpSearchBar';
 import YelpFilterPanel from '../components/YelpFilterPanel';
 import FreshFindsSection from '../components/FreshFindsSection';
+import NutritionChatBot from '../components/NutritionChatBot';
 import { yelpBusinessSearch, getFallbackRestaurants, type RestaurantData } from '../utils/yelpApi';
 import type { YelpSearchFilters } from '../types';
-import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { Loader2, AlertCircle, RefreshCw, MessageSquare } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface HomePageProps {
   onCartClick: () => void;
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
+  const { user } = useAuth();
   const [restaurants, setRestaurants] = useState<RestaurantData[]>([]);
   const [restaurantsLoading, setRestaurantsLoading] = useState(true);
   const [restaurantsError, setRestaurantsError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const [filters, setFilters] = useState<YelpSearchFilters>({
     term: 'healthy',
     categories: '',
@@ -267,6 +271,21 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
           </div>
         )}
       </main>
+
+      {/* Floating Chat Button */}
+      <button
+        onClick={() => setIsChatOpen(true)}
+        className="fixed bottom-24 right-6 w-14 h-14 bg-emerald-600 text-white rounded-full shadow-lg hover:bg-emerald-700 transition-all duration-200 flex items-center justify-center hover:scale-105 z-40"
+      >
+        <MessageSquare size={24} />
+      </button>
+
+      {/* Nutrition Chat Bot */}
+      <NutritionChatBot
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        userPreferences={user ? { userId: user.id } : undefined}
+      />
     </div>
   );
 };
