@@ -48,6 +48,9 @@ This project is configured for easy deployment on Vercel:
    VITE_PUSHER_KEY=your_pusher_key
    VITE_PUSHER_CLUSTER=your_pusher_cluster
    VITE_PUSHER_INSTANCE_ID=your_pusher_instance_id
+   OPENAI_API_KEY=your_openai_api_key
+   PICA_SECRET_KEY=your_pica_secret_key
+   PICA_OPENAI_CONNECTION_KEY=your_pica_openai_connection_key
    VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
    ```
 4. **Deploy!** Vercel will automatically build and deploy your app
