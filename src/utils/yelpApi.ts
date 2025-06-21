@@ -1,5 +1,5 @@
 // Yelp Fusion API integration via Netlify Functions
-const NETLIFY_FUNCTION_URL = '/api/get-yelp';
+const NETLIFY_FUNCTION_URL = '/.netlify/functions/get-yelp';
 
 interface YelpBusiness {
   id: string;
