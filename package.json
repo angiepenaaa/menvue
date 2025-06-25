@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npx vite",
+    "dev": "netlify dev",
     "build": "npx vite build",
     "lint": "eslint .",
     "preview": "npx vite preview"
