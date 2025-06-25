@@ -95,7 +95,7 @@ function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Uncomment this line to test the ChatBox component
-  // return <TestChatApp />;
+  return <TestChatApp />;
 
   return (
     <AuthProvider>
