@@ -35,6 +35,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
     location?: string,
     coordinates?: { lat: number; lng: number }
   ) => {
+    console.log('🔍 Starting search with:', { term, location, coordinates });
     setRestaurantsLoading(true);
     setRestaurantsError(null);
     setHasSearched(true);
@@ -48,6 +49,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         longitude: coordinates?.lng
       };
       
+      console.log('🔍 Search filters:', searchFilters);
       const results = await yelpBusinessSearch(
         searchFilters.term,
         searchFilters.latitude,
@@ -59,11 +61,13 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         searchFilters.openNow
       );
       
+      console.log('✅ Search results:', results.length, 'restaurants found');
       setRestaurants(results);
       setFilters(searchFilters);
     } catch (error) {
-      console.error('Search failed:', error);
-      setRestaurantsError('Failed to search restaurants. Please try again.');
+      console.error('❌ Search failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to search restaurants. Please try again.';
+      setRestaurantsError(errorMessage);
       setRestaurants(getFallbackRestaurants());
     } finally {
       setRestaurantsLoading(false);
