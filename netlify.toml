@@ -6,6 +6,8 @@
 
 [functions]
   node_bundler = "esbuild"
+  # Increase timeout for API calls
+  timeout = 30
 
   ## Redirects for Single Page Applications
   ## Functions should not be redirected to index.html

@@ -35,7 +35,12 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
     location?: string,
     coordinates?: { lat: number; lng: number }
   ) => {
-    console.log('🔍 Starting search with:', { term, location, coordinates });
+    console.log('🔍 Starting restaurant search:', { 
+      term, 
+      location, 
+      coordinates: coordinates ? `${coordinates.lat}, ${coordinates.lng}` : 'none'
+    });
+    
     setRestaurantsLoading(true);
     setRestaurantsError(null);
     setHasSearched(true);
@@ -49,7 +54,16 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         longitude: coordinates?.lng
       };
       
-      console.log('🔍 Search filters:', searchFilters);
+      console.log('🔍 Applying search filters:', {
+        term: searchFilters.term,
+        hasLocation: !!searchFilters.location,
+        hasCoordinates: !!(searchFilters.latitude && searchFilters.longitude),
+        categories: searchFilters.categories || 'none',
+        price: searchFilters.price || 'any',
+        sortBy: searchFilters.sortBy,
+        openNow: searchFilters.openNow
+      });
+      
       const results = await yelpBusinessSearch(
         searchFilters.term,
         searchFilters.latitude,
@@ -61,13 +75,39 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         searchFilters.openNow
       );
       
-      console.log('✅ Search results:', results.length, 'restaurants found');
+      console.log('✅ Search completed successfully:', {
+        restaurantCount: results.length,
+        searchTerm: searchFilters.term,
+        hasResults: results.length > 0
+      });
+      
       setRestaurants(results);
       setFilters(searchFilters);
     } catch (error) {
-      console.error('❌ Search failed:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to search restaurants. Please try again.';
+      console.error('❌ Restaurant search failed:', {
+        error: error.message,
+        searchTerm: filters.term,
+        hasLocation: !!(location || (coordinates?.lat && coordinates?.lng))
+      });
+      
+      // Provide user-friendly error messages
+      let errorMessage = 'Failed to search restaurants. Please try again.';
+      if (error instanceof Error) {
+        if (error.message.includes('HTML instead of JSON')) {
+          errorMessage = 'Restaurant search service is temporarily unavailable. Please try again in a moment.';
+        } else if (error.message.includes('CORS')) {
+          errorMessage = 'Connection issue with restaurant search. Please check your internet connection.';
+        } else if (error.message.includes('Netlify function')) {
+          errorMessage = 'Restaurant search service is experiencing issues. Please try again later.';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       setRestaurantsError(errorMessage);
+      
+      // Always provide fallback restaurants so the app doesn't break
+      console.log('🔄 Loading fallback restaurants due to search failure');
       setRestaurants(getFallbackRestaurants());
     } finally {
       setRestaurantsLoading(false);

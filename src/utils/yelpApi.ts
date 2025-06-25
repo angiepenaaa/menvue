@@ -135,57 +135,103 @@ const cache = new YelpCache();
 async function makeNetlifyRequest(params: URLSearchParams): Promise<YelpBusiness[]> {
   try {
     const url = `${NETLIFY_FUNCTION_URL}?${params.toString()}`;
-    console.log('🔍 Making request to:', url);
+    console.log('🔍 Making Netlify request to:', url);
     
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest',
       },
     });
 
-    console.log('📡 Response status:', response.status, response.statusText);
-    console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+    console.log('📡 Netlify function response:', {
+      status: response.status,
+      statusText: response.statusText,
+      contentType: response.headers.get('content-type'),
+      ok: response.ok
+    });
 
     if (!response.ok) {
       const responseText = await response.text();
-      console.error('❌ Non-OK response:', responseText);
+      console.error('❌ Non-OK response from Netlify function:', {
+        status: response.status,
+        statusText: response.statusText,
+        responseText: responseText.substring(0, 500) + (responseText.length > 500 ? '...' : '')
+      });
       
       let errorData;
       try {
         errorData = JSON.parse(responseText);
       } catch {
         // If response is not JSON, it might be an HTML error page
-        if (responseText.includes('<!doctype') || responseText.includes('<html')) {
-          throw new Error(`Netlify function returned HTML instead of JSON. This usually means the function failed to deploy or there's a routing issue. Status: ${response.status}`);
+        if (responseText.toLowerCase().includes('<!doctype') || responseText.toLowerCase().includes('<html')) {
+          throw new Error(`Netlify function returned HTML instead of JSON. This usually means:\n1. Function failed to deploy properly\n2. Routing issue with function path\n3. Function crashed during execution\n\nStatus: ${response.status} ${response.statusText}`);
         }
-        errorData = { error: responseText };
+        errorData = { 
+          error: 'Non-JSON response from Netlify function',
+          responseText: responseText.substring(0, 200),
+          status: response.status
+        };
       }
       
-      throw new Error(`Netlify function error: ${response.status} ${response.statusText} - ${errorData.error || 'Unknown error'}`);
+      const errorMessage = errorData.error || errorData.message || 'Unknown error';
+      throw new Error(`Netlify function error (${response.status}): ${errorMessage}`);
     }
 
     const responseText = await response.text();
-    console.log('📄 Raw response:', responseText.substring(0, 200) + '...');
+    console.log('📄 Netlify function response preview:', {
+      length: responseText.length,
+      preview: responseText.substring(0, 100) + (responseText.length > 100 ? '...' : ''),
+      isArray: responseText.trim().startsWith('['),
+      isObject: responseText.trim().startsWith('{')
+    });
     
     let businesses;
     try {
       businesses = JSON.parse(responseText);
     } catch (parseError) {
-      console.error('❌ JSON Parse Error:', parseError);
-      console.error('❌ Response text that failed to parse:', responseText);
+      console.error('❌ JSON Parse Error:', {
+        error: parseError.message,
+        responseLength: responseText.length,
+        responseStart: responseText.substring(0, 100),
+        responseEnd: responseText.substring(Math.max(0, responseText.length - 100))
+      });
       
-      if (responseText.includes('<!doctype') || responseText.includes('<html')) {
-        throw new Error('Received HTML response instead of JSON. This usually indicates a CORS issue or the Netlify function is not working properly.');
+      if (responseText.toLowerCase().includes('<!doctype') || responseText.toLowerCase().includes('<html')) {
+        throw new Error('Received HTML response instead of JSON from Netlify function. This usually indicates:\n1. CORS issue\n2. Function deployment problem\n3. Function runtime error\n\nCheck Netlify function logs for details.');
       }
       
-      throw new Error(`Failed to parse JSON response: ${parseError.message}`);
+      throw new Error(`Failed to parse JSON response from Netlify function: ${parseError.message}\nResponse preview: ${responseText.substring(0, 100)}...`);
     }
+    
+    // Validate that we got an array
+    if (!Array.isArray(businesses)) {
+      console.warn('⚠️ Expected array from Netlify function, got:', typeof businesses);
+      // Try to extract businesses array if it's wrapped in an object
+      if (businesses && typeof businesses === 'object' && businesses.businesses) {
+        businesses = businesses.businesses;
+      } else {
+        businesses = [];
+      }
+    }
+    
+    console.log('✅ Successfully parsed Netlify response:', {
+      businessCount: businesses.length,
+      sampleBusiness: businesses[0] ? {
+        id: businesses[0].id,
+        name: businesses[0].name,
+        hasCoordinates: !!businesses[0].coordinates
+      } : null
+    });
     
     return Array.isArray(businesses) ? businesses : [];
   } catch (error) {
-    console.error('Netlify function request failed:', error);
+    console.error('❌ Netlify function request failed:', {
+      message: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 }
