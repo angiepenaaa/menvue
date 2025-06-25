@@ -9,7 +9,13 @@ const openai = new OpenAI({
 export async function askOpenAI(prompt: string): Promise<string> {
   const response = await openai.chat.completions.create({
     model: "gpt-4", // or "gpt-3.5-turbo"
-    messages: [{ role: "user", content: prompt }],
+    messages: [
+      {
+        role: "system",
+        content: "You are a personal wellness and food assistant named VueBot, here to help users find the healthiest, most compatible meals for their fitness journey.",
+      },
+      { role: "user", content: prompt }
+    ],
   });
 
   return response.choices[0]?.message?.content || "No response.";
