@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import { Send, Loader2, MessageSquare, Sparkles } from 'lucide-react';
 import { askOpenAI } from '../utils/openai';
