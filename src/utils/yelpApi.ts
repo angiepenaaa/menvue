@@ -1,6 +1,10 @@
 // Yelp Fusion API integration via Netlify Functions
 const NETLIFY_FUNCTION_URL = '/.netlify/functions/get-yelp';
 
+// Note: This implementation uses Yelp Fusion API (simple API key auth)
+// NOT the OAuth-based Yelp Developers API - this is the correct approach
+// for restaurant search functionality like menVue
+
 interface YelpBusiness {
   id: string;
   name: string;
