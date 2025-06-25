@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Home, User, CalendarRange, ShoppingCart, Leaf, MessageSquare } from 'lucide-react';
+import ChatBox from './components/ChatBox';
 import HomePage from './pages/HomePage';
 import AccountPage from './pages/AccountPage';
 import AccountSettingsPage from './pages/AccountSettingsPage';
@@ -18,6 +19,19 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 console.log("🧪 Vercel Yelp API Key:", import.meta.env.VITE_YELP_API_KEY);
+
+// Simple test component to verify OpenAI integration
+function TestChatApp() {
+  return (
+    <main className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full">
+        <h1 className="text-2xl font-bold text-center mb-6">OpenAI Test</h1>
+        <ChatBox />
+      </div>
+    </main>
+  );
+}
+
 function BottomNav() {
   const location = useLocation();
   const isActive = (path: string) => location.pathname === path;
@@ -79,6 +93,9 @@ function BottomNav() {
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Uncomment this line to test the ChatBox component
+  // return <TestChatApp />;
 
   return (
     <AuthProvider>
