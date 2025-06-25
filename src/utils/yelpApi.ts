@@ -135,7 +135,11 @@ const cache = new YelpCache();
 async function makeNetlifyRequest(params: URLSearchParams): Promise<YelpBusiness[]> {
   try {
     const url = `${NETLIFY_FUNCTION_URL}?${params.toString()}`;
-    console.log('🔍 Making Netlify request to:', url);
+    console.log('🔍 Initiating restaurant search:', {
+      endpoint: NETLIFY_FUNCTION_URL,
+      params: Object.fromEntries(params.entries()),
+      timestamp: new Date().toISOString()
+    });
     
     const response = await fetch(url, {
       method: 'GET',
@@ -143,22 +147,26 @@ async function makeNetlifyRequest(params: URLSearchParams): Promise<YelpBusiness
         'Accept': 'application/json',
         'Content-Type': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',
+        'Cache-Control': 'no-cache'
       },
     });
 
-    console.log('📡 Netlify function response:', {
+    console.log('📡 Restaurant search response:', {
       status: response.status,
       statusText: response.statusText,
       contentType: response.headers.get('content-type'),
-      ok: response.ok
+      ok: response.ok,
+      size: response.headers.get('content-length') || 'unknown'
     });
 
     if (!response.ok) {
       const responseText = await response.text();
-      console.error('❌ Non-OK response from Netlify function:', {
+      console.error('❌ Restaurant search failed:', {
         status: response.status,
         statusText: response.statusText,
-        responseText: responseText.substring(0, 500) + (responseText.length > 500 ? '...' : '')
+        responsePreview: responseText.substring(0, 300) + (responseText.length > 300 ? '...' : ''),
+        isHTML: responseText.toLowerCase().includes('<!doctype') || responseText.toLowerCase().includes('<html'),
+        isJSON: responseText.trim().startsWith('{') || responseText.trim().startsWith('[')
       });
       
       let errorData;
@@ -167,25 +175,41 @@ async function makeNetlifyRequest(params: URLSearchParams): Promise<YelpBusiness
       } catch {
         // If response is not JSON, it might be an HTML error page
         if (responseText.toLowerCase().includes('<!doctype') || responseText.toLowerCase().includes('<html')) {
-          throw new Error(`Netlify function returned HTML instead of JSON. This usually means:\n1. Function failed to deploy properly\n2. Routing issue with function path\n3. Function crashed during execution\n\nStatus: ${response.status} ${response.statusText}`);
+          const errorMessage = response.status === 404 
+            ? 'Restaurant search function not found. Please check deployment.'
+            : response.status >= 500
+            ? 'Restaurant search service is temporarily down. Please try again later.'
+            : 'Restaurant search service configuration error.';
+          
+          throw new Error(`${errorMessage}\n\nTechnical details: Received HTML response (${response.status}) instead of JSON data.`);
         }
+        
         errorData = { 
-          error: 'Non-JSON response from Netlify function',
-          responseText: responseText.substring(0, 200),
-          status: response.status
+          error: 'Invalid response format from restaurant search service',
+          details: responseText.substring(0, 100),
+          status: response.status,
+          type: 'parse_error'
         };
       }
       
-      const errorMessage = errorData.error || errorData.message || 'Unknown error';
-      throw new Error(`Netlify function error (${response.status}): ${errorMessage}`);
+      // Provide user-friendly error messages based on error type
+      const errorMessage = errorData.error || errorData.message || 'Restaurant search failed';
+      const isRetryable = errorData.retryable || response.status >= 500 || response.status === 429;
+      
+      const error = new Error(`${errorMessage}${isRetryable ? ' (retryable)' : ''}`);
+      error.name = 'RestaurantSearchError';
+      error.status = response.status;
+      error.retryable = isRetryable;
+      throw error;
     }
 
     const responseText = await response.text();
-    console.log('📄 Netlify function response preview:', {
+    console.log('📄 Restaurant search data preview:', {
       length: responseText.length,
-      preview: responseText.substring(0, 100) + (responseText.length > 100 ? '...' : ''),
+      preview: responseText.substring(0, 150) + (responseText.length > 150 ? '...' : ''),
       isArray: responseText.trim().startsWith('['),
-      isObject: responseText.trim().startsWith('{')
+      isObject: responseText.trim().startsWith('{'),
+      isEmpty: responseText.trim() === '[]'
     });
     
     let businesses;
@@ -195,43 +219,92 @@ async function makeNetlifyRequest(params: URLSearchParams): Promise<YelpBusiness
       console.error('❌ JSON Parse Error:', {
         error: parseError.message,
         responseLength: responseText.length,
-        responseStart: responseText.substring(0, 100),
-        responseEnd: responseText.substring(Math.max(0, responseText.length - 100))
+        responseStart: responseText.substring(0, 150),
+        responseEnd: responseText.substring(Math.max(0, responseText.length - 150)),
+        parseErrorType: parseError.constructor.name
       });
       
       if (responseText.toLowerCase().includes('<!doctype') || responseText.toLowerCase().includes('<html')) {
-        throw new Error('Received HTML response instead of JSON from Netlify function. This usually indicates:\n1. CORS issue\n2. Function deployment problem\n3. Function runtime error\n\nCheck Netlify function logs for details.');
+        throw new Error('Restaurant search service returned an error page instead of data. This may be a temporary service issue. Please try again in a few moments.');
       }
       
-      throw new Error(`Failed to parse JSON response from Netlify function: ${parseError.message}\nResponse preview: ${responseText.substring(0, 100)}...`);
+      const error = new Error(`Restaurant search service returned invalid data format. Please try again.`);
+      error.name = 'DataFormatError';
+      error.originalError = parseError.message;
+      throw error;
     }
     
-    // Validate that we got an array
+    // Enhanced response validation and normalization
     if (!Array.isArray(businesses)) {
-      console.warn('⚠️ Expected array from Netlify function, got:', typeof businesses);
+      console.warn('⚠️ Expected array from restaurant search, got:', {
+        type: typeof businesses,
+        isObject: typeof businesses === 'object',
+        keys: typeof businesses === 'object' ? Object.keys(businesses) : [],
+        hasBusinessesProperty: businesses && typeof businesses === 'object' && 'businesses' in businesses
+      });
+      
       // Try to extract businesses array if it's wrapped in an object
       if (businesses && typeof businesses === 'object' && businesses.businesses) {
+        console.log('🔧 Extracting businesses from wrapped response');
         businesses = businesses.businesses;
+      } else if (businesses && typeof businesses === 'object' && businesses.data) {
+        console.log('🔧 Extracting businesses from data property');
+        businesses = businesses.data;
       } else {
+        console.warn('⚠️ Could not extract businesses array, returning empty array');
         businesses = [];
       }
     }
     
-    console.log('✅ Successfully parsed Netlify response:', {
+    // Final validation of business objects
+    const validBusinesses = businesses.filter((business, index) => {
+      const isValid = business && 
+                     typeof business === 'object' && 
+                     business.id && 
+                     business.name && 
+                     business.coordinates;
+      
+      if (!isValid) {
+        console.warn(`⚠️ Filtering invalid business at index ${index}:`, {
+          hasId: !!business?.id,
+          hasName: !!business?.name,
+          hasCoordinates: !!business?.coordinates,
+          businessPreview: business ? Object.keys(business).slice(0, 5) : 'null/undefined'
+        });
+      }
+      
+      return isValid;
+    });
+    
+    console.log('✅ Restaurant search completed successfully:', {
       businessCount: businesses.length,
+      validBusinessCount: validBusinesses.length,
+      filteredOut: businesses.length - validBusinesses.length,
       sampleBusiness: businesses[0] ? {
         id: businesses[0].id,
         name: businesses[0].name,
-        hasCoordinates: !!businesses[0].coordinates
+        hasCoordinates: !!businesses[0].coordinates,
+        rating: businesses[0].rating,
+        distance: businesses[0].distance
       } : null
     });
     
-    return Array.isArray(businesses) ? businesses : [];
+    return validBusinesses;
   } catch (error) {
-    console.error('❌ Netlify function request failed:', {
+    console.error('❌ Restaurant search request failed:', {
       message: error.message,
-      stack: error.stack
+      name: error.name,
+      status: error.status,
+      retryable: error.retryable,
+      type: error.constructor.name
     });
+    
+    // Re-throw with enhanced error information
+    const enhancedError = new Error(error.message);
+    enhancedError.name = error.name || 'RestaurantSearchError';
+    enhancedError.status = error.status;
+    enhancedError.retryable = error.retryable;
+    enhancedError.originalError = error;
     throw error;
   }
 }

@@ -86,28 +86,42 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
     } catch (error) {
       console.error('❌ Restaurant search failed:', {
         error: error.message,
+        errorName: error.name,
+        status: error.status,
+        retryable: error.retryable,
         searchTerm: filters.term,
         hasLocation: !!(location || (coordinates?.lat && coordinates?.lng))
       });
       
-      // Provide user-friendly error messages
+      // Enhanced user-friendly error messages with actionable guidance
       let errorMessage = 'Failed to search restaurants. Please try again.';
       if (error instanceof Error) {
-        if (error.message.includes('HTML instead of JSON')) {
-          errorMessage = 'Restaurant search service is temporarily unavailable. Please try again in a moment.';
-        } else if (error.message.includes('CORS')) {
-          errorMessage = 'Connection issue with restaurant search. Please check your internet connection.';
-        } else if (error.message.includes('Netlify function')) {
-          errorMessage = 'Restaurant search service is experiencing issues. Please try again later.';
-        } else {
+        if (error.name === 'RestaurantSearchError' || error.name === 'DataFormatError') {
           errorMessage = error.message;
+        } else if (error.message.includes('HTML instead of JSON') || error.message.includes('configuration error')) {
+          errorMessage = 'Restaurant search service is temporarily unavailable. Please try again in a few minutes.';
+        } else if (error.message.includes('Network') || error.message.includes('fetch')) {
+          errorMessage = 'Unable to connect to restaurant search service. Please check your internet connection and try again.';
+        } else if (error.message.includes('timeout')) {
+          errorMessage = 'Restaurant search is taking longer than expected. Please try again.';
+        } else if (error.status === 429) {
+          errorMessage = 'Too many search requests. Please wait a moment and try again.';
+        } else if (error.status >= 500) {
+          errorMessage = 'Restaurant search service is experiencing technical difficulties. Please try again later.';
+        } else {
+          // Use the original error message if it's user-friendly, otherwise use generic message
+          errorMessage = error.message.length < 100 ? error.message : 'Restaurant search encountered an issue. Please try again.';
         }
       }
       
       setRestaurantsError(errorMessage);
       
-      // Always provide fallback restaurants so the app doesn't break
-      console.log('🔄 Loading fallback restaurants due to search failure');
+      // Always provide fallback restaurants with user notification
+      console.log('🔄 Loading fallback restaurants due to search failure:', {
+        errorType: error.name,
+        willRetry: error.retryable,
+        fallbackCount: getFallbackRestaurants().length
+      });
       setRestaurants(getFallbackRestaurants());
     } finally {
       setRestaurantsLoading(false);
