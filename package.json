@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "pnpm dlx netlify-cli dev",
+    "dev": "npx netlify dev",
     "build": "pnpm dlx vite build",
     "lint": "eslint .",
     "preview": "pnpm dlx vite preview"
