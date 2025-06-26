@@ -54,7 +54,7 @@ function BottomNav() {
             }`}
           >
             <MessageSquare size={24} />
-            <span className="text-xs mt-1">AI Chat</span>
+            <span className="text-xs mt-1">VuePal</span>
           </Link>
           <Link
             to="/account"
