@@ -10,6 +10,7 @@ import MealPlanBuilder from './pages/MealPlanBuilder';
 import OrderPage from './pages/OrderPage';
 import OrderStatusPage from './pages/OrderStatusPage';
 import ItemDetailPage from './pages/ItemDetailPage';
+import RestaurantSearchPage from './pages/RestaurantSearchPage';
 import HealthyVariationsPage from './pages/HealthyVariationsPage';
 import ChatPage from './pages/ChatPage';
 import CartDrawer from './components/CartDrawer';
@@ -168,6 +169,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <OrderStatusPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/search"
+              element={
+                <ProtectedRoute>
+                  <RestaurantSearchPage />
                 </ProtectedRoute>
               }
             />

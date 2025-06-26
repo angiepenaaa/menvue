@@ -117,7 +117,10 @@ const FreshFindsSection: React.FC<FreshFindsSectionProps> = ({ onSelectRestauran
 
         {/* View All Button */}
         <div className="mt-6 text-center">
-          <button className="px-6 py-2 text-emerald-600 hover:text-emerald-700 font-medium hover:bg-emerald-50 rounded-lg transition-colors flex items-center gap-2 mx-auto">
+          <button 
+            onClick={() => window.location.href = '/search'}
+            className="px-6 py-2 text-emerald-600 hover:text-emerald-700 font-medium hover:bg-emerald-50 rounded-lg transition-colors flex items-center gap-2 mx-auto"
+          >
             View all restaurants
             <ChevronRight size={16} />
           </button>
