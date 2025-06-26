@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "npx netlify dev",
-    "build": "npx vite build",
+    "dev": "pnpm dlx netlify-cli dev",
+    "build": "pnpm dlx vite build",
     "lint": "eslint .",
-    "preview": "npx vite preview"
+    "preview": "pnpm dlx vite preview"
   },
   "dependencies": {
     "@ai-sdk/react": "^1.2.12",
