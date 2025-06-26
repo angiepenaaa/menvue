@@ -7,7 +7,7 @@
     "dev": "npx netlify dev",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "pnpm dlx vite preview"
+    "preview":"vite preview"
   },
   "dependencies": {
     "@ai-sdk/react": "^1.2.12",
