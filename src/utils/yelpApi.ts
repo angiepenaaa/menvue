@@ -107,6 +107,45 @@ export async function yelpBusinessDetails(businessId: string): Promise<YelpBusin
   return await response.json();
 }
 
+export interface YelpReview {
+  id: string;
+  rating: number;
+  user: {
+    id: string;
+    profile_url: string;
+    image_url?: string;
+    name: string;
+  };
+  text: string;
+  time_created: string;
+  url: string;
+}
+
+export interface YelpReviewsResponse {
+  reviews: YelpReview[];
+  total: number;
+  possible_languages: string[];
+}
+
+export async function yelpBusinessReviews(businessId: string): Promise<YelpReviewsResponse> {
+  if (!YELP_API_KEY) throw new Error('Yelp API key is not configured.');
+
+  const url = `${YELP_API_BASE_URL}/businesses/${businessId}/reviews`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${YELP_API_KEY}`,
+      'Accept': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch business reviews: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
 // ------------------ Helper Functions ------------------
 
 export function convertYelpToRestaurant(business: YelpBusiness) {
