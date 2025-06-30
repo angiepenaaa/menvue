@@ -56,7 +56,6 @@ export class OpenAIService {
           model,
           temperature,
           max_completion_tokens: maxTokens,
-          stream
         }
       });
 
@@ -65,7 +64,8 @@ export class OpenAIService {
         throw new Error(`OpenAI request failed: ${error.message}`);
       }
 
-      return data;
+      // Return just the reply text for simple usage
+      return data.reply;
     } catch (error) {
       console.error('Error calling OpenAI chat completion:', error);
       throw error;
