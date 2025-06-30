@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Star, MapPin, Clock, Phone, ExternalLink, Loader2, AlertCircle, Camera, Heart, Share2 } from 'lucide-react';
+import { ArrowLeft, Star, MapPin, Clock, Phone, ExternalLink, Loader2, AlertCircle, Camera, Heart, Share2, ShoppingBag } from 'lucide-react';
 import { yelpBusinessDetails, yelpBusinessReviews, convertYelpToRestaurant, getFallbackRestaurants } from '../utils/yelpApi';
 import { menuItems } from '../data/menuItems';
 
@@ -120,6 +120,14 @@ const ItemDetailPage: React.FC = () => {
     }
   };
 
+  // Helper function to create order links
+  const createOrderLinks = (itemName: string) => {
+    const encodedName = encodeURIComponent(itemName);
+    return {
+      doordash: `https://www.doordash.com/search/store/${encodedName}`,
+      grubhub: `https://www.grubhub.com/search/${encodedName}`
+    };
+  };
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -306,12 +314,46 @@ const ItemDetailPage: React.FC = () => {
         {/* Bottom Action */}
         <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4">
           <div className="container mx-auto max-w-4xl">
-            <button
-              onClick={() => navigate(-1)}
-              className="btn-primary w-full"
-            >
-              Back to Menu
-            </button>
+            <div className="space-y-3">
+              {/* Order Now Buttons */}
+              {localMenuItem && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ShoppingBag size={20} className="text-emerald-600" />
+                    <span className="font-medium text-gray-800">Order this item:</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <a
+                      href={createOrderLinks(localMenuItem.name).doordash}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                    >
+                      <ExternalLink size={18} />
+                      Order on DoorDash
+                    </a>
+                    
+                    <a
+                      href={createOrderLinks(localMenuItem.name).grubhub}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
+                    >
+                      <ExternalLink size={18} />
+                      Order on Grubhub
+                    </a>
+                  </div>
+                </div>
+              )}
+              
+              <button
+                onClick={() => navigate(-1)}
+                className="btn-secondary w-full"
+              >
+                Back to Menu
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -419,19 +461,51 @@ const ItemDetailPage: React.FC = () => {
         {/* Bottom Action */}
         <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4">
           <div className="container mx-auto max-w-4xl">
-            <div className="flex gap-3">
-              <button
-                onClick={() => navigate(-1)}
-                className="btn-secondary flex-1 text-center"
-              >
-                Back
-              </button>
-              <button
-                onClick={() => window.open(`https://www.yelp.com/biz/${restaurant.id}`, '_blank')}
-                className="btn-primary flex-1 text-center"
-              >
-                View on Yelp
-              </button>
+            <div className="space-y-3">
+              {/* Order Now Buttons for Restaurant */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <ShoppingBag size={20} className="text-emerald-600" />
+                  <span className="font-medium text-gray-800">Order from {restaurant.name}:</span>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <a
+                    href={createOrderLinks(restaurant.name).doordash}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                  >
+                    <ExternalLink size={18} />
+                    Order on DoorDash
+                  </a>
+                  
+                  <a
+                    href={createOrderLinks(restaurant.name).grubhub}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
+                  >
+                    <ExternalLink size={18} />
+                    Order on Grubhub
+                  </a>
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => navigate(-1)}
+                  className="btn-secondary flex-1 text-center"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={() => window.open(`https://www.yelp.com/biz/${restaurant.id}`, '_blank')}
+                  className="btn-primary flex-1 text-center"
+                >
+                  View on Yelp
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -591,12 +665,46 @@ const ItemDetailPage: React.FC = () => {
       {/* Bottom Action */}
       <div className="sticky bottom-0 bg-white border-t border-gray-100 p-4">
         <div className="container mx-auto max-w-4xl">
-          <button
-            onClick={() => navigate(-1)}
-            className="btn-primary w-full"
-          >
-            Back to Menu
-          </button>
+          <div className="space-y-3">
+            {/* Order Now Buttons */}
+            {localMenuItem && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <ShoppingBag size={20} className="text-emerald-600" />
+                  <span className="font-medium text-gray-800">Order this item:</span>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <a
+                    href={createOrderLinks(localMenuItem.name).doordash}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                  >
+                    <ExternalLink size={18} />
+                    Order on DoorDash
+                  </a>
+                  
+                  <a
+                    href={createOrderLinks(localMenuItem.name).grubhub}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
+                  >
+                    <ExternalLink size={18} />
+                    Order on Grubhub
+                  </a>
+                </div>
+              </div>
+            )}
+            
+            <button
+              onClick={() => navigate(-1)}
+              className="btn-secondary w-full"
+            >
+              Back to Menu
+            </button>
+          </div>
         </div>
       </div>
     </div>
