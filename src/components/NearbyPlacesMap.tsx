@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MapPin, Loader2, AlertCircle, Navigation, Star, Clock } from 'lucide-react';
+import { useGoogleMaps } from '../hooks/useGoogleMaps';
 
 interface Restaurant {
   id: string;
@@ -13,18 +14,25 @@ interface Restaurant {
 
 const NearbyPlacesMap: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null);
+  const { isLoaded: isGoogleMapsLoaded, loadError: googleMapsError, isLoading: isGoogleMapsLoading } = useGoogleMaps();
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [userLocation, setUserLocation] = useState<google.maps.LatLng | null>(null);
 
   useEffect(() => {
-    // Check if Google Maps API is loaded
-    if (typeof google === 'undefined') {
-      setError('Google Maps API is not loaded. Please check your API key configuration.');
-      setLoading(false);
+    // Wait for Google Maps to load before initializing
+    if (!isGoogleMapsLoaded) {
       return;
     }
+
+    if (googleMapsError) {
+      setError(googleMapsError);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
 
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser.");
@@ -170,7 +178,7 @@ const NearbyPlacesMap: React.FC = () => {
         maximumAge: 300000 // 5 minutes
       }
     );
-  }, []);
+  }, [isGoogleMapsLoaded, googleMapsError]);
 
   const getPriceDisplay = (priceLevel?: number) => {
     if (!priceLevel) return '';
@@ -198,21 +206,23 @@ const NearbyPlacesMap: React.FC = () => {
 
       {/* Map Container */}
       <div className="relative">
-        {loading && (
+        {(loading || isGoogleMapsLoading) && (
           <div className="absolute inset-0 bg-gray-50 flex items-center justify-center z-10">
             <div className="flex items-center gap-3 text-gray-600">
               <Loader2 className="w-6 h-6 animate-spin" />
-              <span>Loading map and nearby restaurants...</span>
+              <span>
+                {isGoogleMapsLoading ? 'Loading Google Maps...' : 'Loading map and nearby restaurants...'}
+              </span>
             </div>
           </div>
         )}
 
-        {error && (
+        {(error || googleMapsError) && (
           <div className="p-6 bg-red-50 border border-red-200 text-red-600 flex items-center gap-3">
             <AlertCircle size={20} />
             <div>
               <p className="font-medium">Unable to load map</p>
-              <p className="text-sm">{error}</p>
+              <p className="text-sm">{error || googleMapsError}</p>
             </div>
           </div>
         )}
