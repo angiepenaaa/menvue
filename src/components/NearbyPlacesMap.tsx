@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MapPin, Loader2, AlertCircle, Navigation, Star, Clock } from 'lucide-react';
-import { useGoogleMaps } from '../hooks/useGoogleMaps';
+import { MapPin, Loader2, AlertCircle, Star } from 'lucide-react';
 
 interface Restaurant {
   id: string;
@@ -14,25 +13,18 @@ interface Restaurant {
 
 const NearbyPlacesMap: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null);
-  const { isLoaded: isGoogleMapsLoaded, loadError: googleMapsError, isLoading: isGoogleMapsLoading } = useGoogleMaps();
+  const googleMapRef = useRef<google.maps.Map | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [userLocation, setUserLocation] = useState<google.maps.LatLng | null>(null);
 
   useEffect(() => {
-    // Wait for Google Maps to load before initializing
-    if (!isGoogleMapsLoaded) {
+    if (typeof google === 'undefined' || !window.google.maps) {
+      setError('Google Maps API is not loaded. Please check your API key configuration.');
+      setLoading(false);
       return;
     }
-
-    if (googleMapsError) {
-      setError(googleMapsError);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
 
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser.");
@@ -48,54 +40,47 @@ const NearbyPlacesMap: React.FC = () => {
         );
         setUserLocation(center);
 
-        // Initialize the map
         const map = new google.maps.Map(mapRef.current as HTMLDivElement, {
           center: center,
           zoom: 14,
-          styles: [
-            {
-              featureType: 'poi',
-              elementType: 'labels',
-              stylers: [{ visibility: 'off' }]
-            }
-          ],
+          styles: [{ featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }],
           mapTypeControl: false,
           streetViewControl: false,
           fullscreenControl: false,
         });
+        googleMapRef.current = map;
 
-        // Add user location marker
         new google.maps.Marker({
           position: center,
           map: map,
           title: 'Your Location',
           icon: {
-            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="8" fill="#10B981" stroke="#ffffff" stroke-width="2"/>
-                <circle cx="12" cy="12" r="3" fill="#ffffff"/>
-              </svg>
-            `),
+            url:
+              'data:image/svg+xml;charset=UTF-8,' +
+              encodeURIComponent(`
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="8" fill="#10B981" stroke="#ffffff" stroke-width="2"/>
+                  <circle cx="12" cy="12" r="3" fill="#ffffff"/>
+                </svg>
+              `),
             scaledSize: new google.maps.Size(24, 24),
-            anchor: new google.maps.Point(12, 12)
-          }
+            anchor: new google.maps.Point(12, 12),
+          },
         });
 
-        // Search for nearby restaurants
         const service = new google.maps.places.PlacesService(map);
         const request: google.maps.places.PlaceSearchRequest = {
           location: center,
-          radius: 1500, // 1.5km radius
+          radius: 1500,
           type: 'restaurant',
-          keyword: 'healthy food salad vegetarian'
+          keyword: 'healthy food salad vegetarian',
         };
 
         service.nearbySearch(request, (results, status) => {
           setLoading(false);
-          
           if (status === google.maps.places.PlacesServiceStatus.OK && results) {
             const restaurantData: Restaurant[] = [];
-            
+
             results.slice(0, 10).forEach((place, index) => {
               if (place.geometry?.location && place.name) {
                 const restaurant: Restaurant = {
@@ -105,42 +90,56 @@ const NearbyPlacesMap: React.FC = () => {
                   priceLevel: place.price_level,
                   vicinity: place.vicinity || '',
                   isOpen: place.opening_hours?.isOpen?.(),
-                  position: place.geometry.location
+                  position: place.geometry.location,
                 };
 
                 restaurantData.push(restaurant);
 
-                // Create marker for restaurant
                 const marker = new google.maps.Marker({
                   position: place.geometry.location,
                   map: map,
                   title: place.name,
                   icon: {
-                    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="16" cy="16" r="12" fill="#EF4444" stroke="#ffffff" stroke-width="2"/>
-                        <path d="M16 8L18 14H22L18.5 17L20 23L16 19L12 23L13.5 17L10 14H14L16 8Z" fill="#ffffff"/>
-                      </svg>
-                    `),
+                    url:
+                      'data:image/svg+xml;charset=UTF-8,' +
+                      encodeURIComponent(`
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="16" cy="16" r="12" fill="#EF4444" stroke="#ffffff" stroke-width="2"/>
+                          <path d="M16 8L18 14H22L18.5 17L20 23L16 19L12 23L13.5 17L10 14H14L16 8Z" fill="#ffffff"/>
+                        </svg>
+                      `),
                     scaledSize: new google.maps.Size(32, 32),
-                    anchor: new google.maps.Point(16, 16)
-                  }
+                    anchor: new google.maps.Point(16, 16),
+                  },
                 });
 
-                // Add info window
                 const infoWindow = new google.maps.InfoWindow({
                   content: `
                     <div style="padding: 8px; max-width: 200px;">
                       <h3 style="margin: 0 0 4px 0; font-weight: bold; color: #1f2937;">${place.name}</h3>
-                      ${place.rating ? `<div style="color: #6b7280; font-size: 14px;">⭐ ${place.rating}/5</div>` : ''}
-                      ${place.vicinity ? `<div style="color: #6b7280; font-size: 12px; margin-top: 4px;">${place.vicinity}</div>` : ''}
-                      ${place.opening_hours?.isOpen?.() !== undefined ? 
-                        `<div style="color: ${place.opening_hours.isOpen() ? '#10b981' : '#ef4444'}; font-size: 12px; margin-top: 4px;">
+                      ${
+                        place.rating
+                          ? `<div style="color: #6b7280; font-size: 14px;">⭐ ${place.rating}/5</div>`
+                          : ''
+                      }
+                      ${
+                        place.vicinity
+                          ? `<div style="color: #6b7280; font-size: 12px; margin-top: 4px;">${place.vicinity}</div>`
+                          : ''
+                      }
+                      ${
+                        place.opening_hours?.isOpen?.() !== undefined
+                          ? `<div style="color: ${
+                              place.opening_hours.isOpen()
+                                ? '#10b981'
+                                : '#ef4444'
+                            }; font-size: 12px; margin-top: 4px;">
                           ${place.opening_hours.isOpen() ? 'Open now' : 'Closed'}
-                        </div>` : ''
+                        </div>`
+                          : ''
                       }
                     </div>
-                  `
+                  `,
                 });
 
                 marker.addListener('click', () => {
@@ -175,10 +174,10 @@ const NearbyPlacesMap: React.FC = () => {
       {
         enableHighAccuracy: true,
         timeout: 10000,
-        maximumAge: 300000 // 5 minutes
+        maximumAge: 300000,
       }
     );
-  }, [isGoogleMapsLoaded, googleMapsError]);
+  }, []);
 
   const getPriceDisplay = (priceLevel?: number) => {
     if (!priceLevel) return '';
@@ -187,7 +186,6 @@ const NearbyPlacesMap: React.FC = () => {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-      {/* Header */}
       <div className="p-6 pb-4">
         <div className="flex items-center gap-3 mb-4">
           <div className="p-2 bg-emerald-100 rounded-lg">
@@ -196,33 +194,32 @@ const NearbyPlacesMap: React.FC = () => {
           <div>
             <h2 className="text-xl font-bold text-gray-800">Restaurants Near You</h2>
             <p className="text-gray-600 text-sm">
-              {loading ? 'Finding nearby restaurants...' : 
-               error ? 'Unable to load map' :
-               `Found ${restaurants.length} restaurants within 1.5km`}
+              {loading
+                ? 'Finding nearby restaurants...'
+                : error
+                ? 'Unable to load map'
+                : `Found ${restaurants.length} restaurants within 1.5km`}
             </p>
           </div>
         </div>
       </div>
 
-      {/* Map Container */}
       <div className="relative">
-        {(loading || isGoogleMapsLoading) && (
+        {loading && (
           <div className="absolute inset-0 bg-gray-50 flex items-center justify-center z-10">
             <div className="flex items-center gap-3 text-gray-600">
               <Loader2 className="w-6 h-6 animate-spin" />
-              <span>
-                {isGoogleMapsLoading ? 'Loading Google Maps...' : 'Loading map and nearby restaurants...'}
-              </span>
+              <span>Loading map and nearby restaurants...</span>
             </div>
           </div>
         )}
 
-        {(error || googleMapsError) && (
+        {error && (
           <div className="p-6 bg-red-50 border border-red-200 text-red-600 flex items-center gap-3">
             <AlertCircle size={20} />
             <div>
               <p className="font-medium">Unable to load map</p>
-              <p className="text-sm">{error || googleMapsError}</p>
+              <p className="text-sm">{error}</p>
             </div>
           </div>
         )}
@@ -234,7 +231,6 @@ const NearbyPlacesMap: React.FC = () => {
         />
       </div>
 
-      {/* Restaurant List */}
       {restaurants.length > 0 && (
         <div className="p-6 pt-4">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Nearby Restaurants</h3>
@@ -244,12 +240,9 @@ const NearbyPlacesMap: React.FC = () => {
                 key={restaurant.id}
                 className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
                 onClick={() => {
-                  // Center map on restaurant when clicked
-                  if (mapRef.current) {
-                    const map = new google.maps.Map(mapRef.current, {
-                      center: restaurant.position,
-                      zoom: 16,
-                    });
+                  if (googleMapRef.current) {
+                    googleMapRef.current.panTo(restaurant.position);
+                    googleMapRef.current.setZoom(16);
                   }
                 }}
               >
@@ -262,9 +255,7 @@ const NearbyPlacesMap: React.FC = () => {
                     </div>
                   )}
                 </div>
-                
                 <p className="text-sm text-gray-600 mb-2 line-clamp-1">{restaurant.vicinity}</p>
-                
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {restaurant.priceLevel && (
@@ -273,11 +264,13 @@ const NearbyPlacesMap: React.FC = () => {
                       </span>
                     )}
                     {restaurant.isOpen !== undefined && (
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        restaurant.isOpen 
-                          ? 'bg-green-100 text-green-700' 
-                          : 'bg-red-100 text-red-700'
-                      }`}>
+                      <span
+                        className={`text-xs px-2 py-1 rounded-full ${
+                          restaurant.isOpen
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-red-100 text-red-700'
+                        }`}
+                      >
                         {restaurant.isOpen ? 'Open' : 'Closed'}
                       </span>
                     )}
@@ -289,7 +282,6 @@ const NearbyPlacesMap: React.FC = () => {
               </div>
             ))}
           </div>
-          
           {restaurants.length > 6 && (
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-500">
