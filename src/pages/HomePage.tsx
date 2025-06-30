@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
 import FreshFindsSection from '../components/FreshFindsSection';
+import NearbyPlacesMap from '../components/NearbyPlacesMap'; // ✅ NEW LINE
 import NutritionChatBot from '../components/NutritionChatBot';
 import { MessageSquare } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -14,7 +15,6 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   const handleSelectRestaurant = (id: string) => {
-    // Navigate to restaurant detail page
     window.location.href = `/item/${id}`;
   };
 
@@ -26,7 +26,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         onCartClick={onCartClick}
         showSearch={false}
       />
-      
+
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8 bg-gradient-to-r from-emerald-50/50 to-transparent rounded-2xl p-6">
@@ -44,6 +44,11 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
           <FreshFindsSection onSelectRestaurant={handleSelectRestaurant} />
         </div>
 
+        {/* ✅ Google Map Section */}
+        <div className="mb-8">
+          <NearbyPlacesMap />
+        </div>
+
         {/* Welcome Message */}
         <div className="text-center py-16">
           <div className="text-gray-400 mb-6">
@@ -54,18 +59,10 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
           <h3 className="text-xl font-medium text-gray-800 mb-2">Welcome to menVue</h3>
           <p className="text-gray-600 mb-6">Your healthy eating companion for finding nutritious meals</p>
           <div className="flex flex-wrap justify-center gap-3">
-            <div className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full">
-              🥗 Healthy Options
-            </div>
-            <div className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full">
-              📊 Nutrition Tracking
-            </div>
-            <div className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full">
-              🎯 Meal Planning
-            </div>
-            <div className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full">
-              🤖 AI Assistant
-            </div>
+            <div className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full">🥗 Healthy Options</div>
+            <div className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full">📊 Nutrition Tracking</div>
+            <div className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full">🎯 Meal Planning</div>
+            <div className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full">🤖 AI Assistant</div>
           </div>
         </div>
       </main>
