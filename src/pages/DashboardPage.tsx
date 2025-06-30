@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, LogOut } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
 
 const mockUsers = [
   { id: 1, name: 'Sarah', avatar: 'https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg' },
@@ -41,6 +44,8 @@ type Metric = 'calories' | 'carbs' | 'protein' | 'fat';
 const DashboardPage: React.FC = () => {
   const [timeRange, setTimeRange] = useState<TimeRange>('day');
   const [selectedMetric, setSelectedMetric] = useState<Metric>('calories');
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const metrics = {
     calories: { label: 'Calories', color: '#F97316' },
@@ -53,8 +58,40 @@ const DashboardPage: React.FC = () => {
   const today = format(new Date(), 'EEEE');
   const todayIndex = data.findIndex(d => d.day === today[0]);
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
   return (
-    <div className="min-h-screen bg-gray-50 p-4 space-y-6">
+    <div className="min-h-screen bg-gray-50">
+      <Header showSearch={false} />
+      
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        {/* Welcome Header */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">
+                Welcome back, {user?.user_metadata?.full_name || user?.email || 'User'}!
+              </h1>
+              <p className="text-gray-600 mt-1">
+                Here's your nutrition dashboard for today.
+              </p>
+            </div>
+            <button
+              onClick={handleSignOut}
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <LogOut size={18} />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+
       {/* User Avatars */}
       <div className="overflow-x-auto pb-4 -mx-4 px-4">
         <div className="flex gap-4">
@@ -154,6 +191,7 @@ const DashboardPage: React.FC = () => {
             </BarChart>
           </ResponsiveContainer>
         </div>
+      </div>
       </div>
     </div>
   );

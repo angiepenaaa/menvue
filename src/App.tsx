@@ -11,6 +11,7 @@ import OrderPage from './pages/OrderPage';
 import OrderStatusPage from './pages/OrderStatusPage';
 import ItemDetailPage from './pages/ItemDetailPage';
 import RestaurantSearchPage from './pages/RestaurantSearchPage';
+import DashboardPage from './pages/DashboardPage';
 import HealthyVariationsPage from './pages/HealthyVariationsPage';
 import ChatPage from './pages/ChatPage';
 import CartDrawer from './components/CartDrawer';
@@ -81,6 +82,17 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <div className="pb-20">
+                    <DashboardPage />
+                    <BottomNav />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/"
               element={

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import Header from '../components/Header';
 import FreshFindsSection from '../components/FreshFindsSection';
-import NearbyPlacesMap from '../components/NearbyPlacesMap'; // ✅ NEW LINE
+import NearbyPlacesMap from '../components/NearbyPlacesMap';
+import GoogleLogin from '../components/GoogleLogin';
 import NutritionChatBot from '../components/NutritionChatBot';
 import { MessageSquare } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +18,26 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
   const handleSelectRestaurant = (id: string) => {
     window.location.href = `/item/${id}`;
   };
+
+  // Show login if user is not authenticated
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header
+          searchTerm=""
+          setSearchTerm={() => {}}
+          onCartClick={onCartClick}
+          showSearch={false}
+        />
+        
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-md mx-auto">
+            <GoogleLogin redirectTo="/" showWelcome={true} />
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -44,7 +65,7 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
           <FreshFindsSection onSelectRestaurant={handleSelectRestaurant} />
         </div>
 
-        {/* ✅ Google Map Section */}
+        {/* Google Map Section */}
         <div className="mb-8">
           <NearbyPlacesMap />
         </div>
