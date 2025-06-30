@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { Send, Loader2, MessageSquare, Sparkles } from 'lucide-react';
-import { askOpenAI } from '../utils/openai';
+import { openaiService } from '../utils/openai';
 
 export default function ChatBox() {
   const [prompt, setPrompt] = useState('');
