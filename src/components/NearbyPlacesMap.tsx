@@ -104,7 +104,7 @@ const NearbyPlacesMap: React.FC = () => {
                   rating: place.rating,
                   priceLevel: place.price_level,
                   vicinity: place.vicinity || '',
-                  isOpen: place.opening_hours?.open_now,
+                  isOpen: place.opening_hours?.isOpen?.(),
                   position: place.geometry.location
                 };
 
@@ -134,9 +134,9 @@ const NearbyPlacesMap: React.FC = () => {
                       <h3 style="margin: 0 0 4px 0; font-weight: bold; color: #1f2937;">${place.name}</h3>
                       ${place.rating ? `<div style="color: #6b7280; font-size: 14px;">⭐ ${place.rating}/5</div>` : ''}
                       ${place.vicinity ? `<div style="color: #6b7280; font-size: 12px; margin-top: 4px;">${place.vicinity}</div>` : ''}
-                      ${place.opening_hours?.open_now !== undefined ? 
-                        `<div style="color: ${place.opening_hours.open_now ? '#10b981' : '#ef4444'}; font-size: 12px; margin-top: 4px;">
-                          ${place.opening_hours.open_now ? 'Open now' : 'Closed'}
+                      ${place.opening_hours?.isOpen?.() !== undefined ? 
+                        `<div style="color: ${place.opening_hours.isOpen() ? '#10b981' : '#ef4444'}; font-size: 12px; margin-top: 4px;">
+                          ${place.opening_hours.isOpen() ? 'Open now' : 'Closed'}
                         </div>` : ''
                       }
                     </div>
