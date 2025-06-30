@@ -20,8 +20,29 @@ export default function ChatBox() {
   }, []);
 
   const handleAsk = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!prompt.trim() || loading) return;
+  e.preventDefault();
+  if (!prompt.trim() || loading) return;
+
+  setLoading(true);
+  const userMessage = prompt;
+  setPrompt('');
+
+  // Add user message to chat
+  setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+
+  try {
+    const reply = await openaiService.chatLikeGPT(userMessage);
+    
+    // Add assistant response to chat
+    setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+  } catch (error) {
+    setMessages(prev => [...prev, { role: 'assistant', content: 'Something went wrong. Please try again.' }]);
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
+
     
     setLoading(true);
     const userMessage = prompt;
