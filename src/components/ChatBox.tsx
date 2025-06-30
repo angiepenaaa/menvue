@@ -1,62 +1,43 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, Loader2, MessageSquare, Sparkles } from 'lucide-react';
 import { openaiService } from '../utils/openai';
 
 export default function ChatBox() {
   const [prompt, setPrompt] = useState('');
-  const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
-  const [messages, setMessages] = useState<Array<{role: 'user' | 'assistant', content: string}>>([]);
+  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([]);
 
-  // Listen for suggested question events
-  React.useEffect(() => {
+  // Allow external components to autofill a question
+  useEffect(() => {
     const handleFillQuestion = (event: CustomEvent) => {
       setPrompt(event.detail);
     };
-    
+
     window.addEventListener('fillQuestion', handleFillQuestion as EventListener);
     return () => window.removeEventListener('fillQuestion', handleFillQuestion as EventListener);
   }, []);
 
   const handleAsk = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!prompt.trim() || loading) return;
+    e.preventDefault();
+    if (!prompt.trim() || loading) return;
 
-  setLoading(true);
-  const userMessage = prompt;
-  setPrompt('');
-
-  // Add user message to chat
-  setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
-
-  try {
-    const reply = await openaiService.chatLikeGPT(userMessage);
-    
-    // Add assistant response to chat
-    setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
-  } catch (error) {
-    setMessages(prev => [...prev, { role: 'assistant', content: 'Something went wrong. Please try again.' }]);
-    console.error(error);
-  } finally {
-    setLoading(false);
-  }
-};
-
-    
     setLoading(true);
     const userMessage = prompt;
     setPrompt('');
-    
+
     // Add user message to chat
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
-    
+    setMessages((prev) => [...prev, { role: 'user', content: userMessage }]);
+
     try {
-      const reply = await askOpenAI(userMessage);
+      const reply = await openaiService.chatLikeGPT(userMessage);
+
       // Add assistant response to chat
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+      setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Something went wrong. Please try again.' }]);
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: 'Something went wrong. Please try again.' },
+      ]);
       console.error(error);
     } finally {
       setLoading(false);
@@ -78,7 +59,7 @@ export default function ChatBox() {
                   <Sparkles size={16} className="text-emerald-600" />
                 </div>
               )}
-              
+
               <div
                 className={`max-w-[80%] p-3 rounded-2xl ${
                   message.role === 'user'
@@ -86,9 +67,7 @@ export default function ChatBox() {
                     : 'bg-gray-100 text-gray-800 rounded-bl-md'
                 }`}
               >
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                  {message.content}
-                </p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
               </div>
 
               {message.role === 'user' && (
@@ -98,7 +77,7 @@ export default function ChatBox() {
               )}
             </div>
           ))}
-          
+
           {loading && (
             <div className="flex gap-3 justify-start">
               <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
@@ -114,7 +93,7 @@ export default function ChatBox() {
           )}
         </div>
       )}
-      
+
       {/* Input Form */}
       <form onSubmit={handleAsk} className="flex gap-2">
         <input
@@ -130,14 +109,10 @@ export default function ChatBox() {
           disabled={loading || !prompt.trim()}
           className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
         >
-          {loading ? (
-            <Loader2 size={18} className="animate-spin" />
-          ) : (
-            <Send size={18} />
-          )}
+          {loading ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
         </button>
       </form>
-      
+
       {/* Help Text */}
       <div className="text-center">
         <p className="text-xs text-gray-500">
