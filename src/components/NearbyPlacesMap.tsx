@@ -1,85 +1,65 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-const apiKey = import.meta.env.VITE_GOOGLE_MAPS_KEY;
-
-export default function NearbyPlacesMap() {
+const NearbyPlacesMap: React.FC = () => {
   const mapRef = useRef<HTMLDivElement>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser.");
+      return;
+    }
 
-    // Load Google Maps script
-    const loadGoogleMaps = () => {
-      return new Promise<void>((resolve, reject) => {
-        if (window.google) {
-          resolve();
-          return;
-        }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const center = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
 
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-        script.async = true;
-        script.defer = true;
-        script.onload = () => resolve();
-        script.onerror = () => reject('Google Maps failed to load');
-        document.head.appendChild(script);
-      });
-    };
+        const map = new google.maps.Map(mapRef.current as HTMLDivElement, {
+          center,
+          zoom: 14,
+        });
 
-    const initMap = async () => {
-      try {
-        await loadGoogleMaps();
-
-        navigator.geolocation.getCurrentPosition((position) => {
-          const userLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-
-          const map = new window.google.maps.Map(mapRef.current!, {
-            center: userLocation,
-            zoom: 15,
-          });
-
-          new window.google.maps.Marker({
-            position: userLocation,
-            map,
-            title: 'You are here',
-          });
-
-          const service = new window.google.maps.places.PlacesService(map);
-          const request = {
-            location: userLocation,
-            radius: 1000,
-            type: ['restaurant'],
-          };
-
-          service.nearbySearch(request, (results, status) => {
-            if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
+        const service = new google.maps.places.PlacesService(map);
+        service.nearbySearch(
+          {
+            location: center,
+            radius: 1500,
+            type: 'restaurant',
+          },
+          (results, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK && results) {
               results.forEach((place) => {
-                if (place.geometry && place.geometry.location) {
-                  new window.google.maps.Marker({
-                    position: place.geometry.location,
+                if (place.geometry?.location) {
+                  new google.maps.Marker({
                     map,
+                    position: place.geometry.location,
                     title: place.name,
                   });
                 }
               });
+            } else {
+              setError('No restaurants found nearby.');
             }
-          });
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    initMap();
+          }
+        );
+      },
+      () => setError('Unable to retrieve your location.')
+    );
   }, []);
 
   return (
-    <div className="space-y-2">
-      <h2 className="text-lg font-semibold text-gray-800">Restaurants Near You</h2>
-      <div ref={mapRef} className="w-full h-[400px] rounded-xl shadow" />
+    <div>
+      <h2 className="text-xl font-bold text-gray-800 mb-2">🍽️ Restaurants Near You</h2>
+      {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+      <div
+        ref={mapRef}
+        className="w-full h-96 rounded-xl border border-gray-300 shadow-sm"
+      />
     </div>
   );
-}
+};
+
+export default NearbyPlacesMap;
