@@ -51,9 +51,9 @@ const NearbyPlacesMap: React.FC = () => {
       const service = new google.maps.places.PlacesService(map);
       const request: google.maps.places.PlaceSearchRequest = {
         location: center,
-        radius: 1500,
+        radius: 5000, // Increased from 1.5km to 5km
         type: 'restaurant',
-        keyword: 'healthy food salad vegetarian',
+        // Removed restrictive keyword to get more results
       };
 
       service.nearbySearch(request, (results, status) => {
@@ -61,7 +61,7 @@ const NearbyPlacesMap: React.FC = () => {
         if (status === google.maps.places.PlacesServiceStatus.OK && results) {
           const restaurantData: Restaurant[] = [];
 
-          results.slice(0, 10).forEach((place, index) => {
+          results.slice(0, 20).forEach((place, index) => {
             if (place.geometry?.location && place.name) {
               const restaurant: Restaurant = {
                 id: place.place_id || `restaurant-${index}`,
@@ -81,13 +81,13 @@ const NearbyPlacesMap: React.FC = () => {
                 title: place.name,
                 icon: {
                   url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="16" cy="16" r="12" fill="#EF4444" stroke="#ffffff" stroke-width="2"/>
-                      <path d="M16 8L18 14H22L18.5 17L20 23L16 19L12 23L13.5 17L10 14H14L16 8Z" fill="#ffffff"/>
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="14" cy="14" r="10" fill="#F97316" stroke="#ffffff" stroke-width="2"/>
+                      <path d="M14 6L16 12H20L16.5 15L18 21L14 17L10 21L11.5 15L8 12H12L14 6Z" fill="#ffffff"/>
                     </svg>
                   `),
-                  scaledSize: new google.maps.Size(32, 32),
-                  anchor: new google.maps.Point(16, 16),
+                  scaledSize: new google.maps.Size(28, 28),
+                  anchor: new google.maps.Point(14, 14),
                 },
               });
 
@@ -115,7 +115,16 @@ const NearbyPlacesMap: React.FC = () => {
 
           setRestaurants(restaurantData);
         } else {
-          setError('No restaurants found nearby. Try expanding your search area.');
+          console.log('Places API Status:', status);
+          if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+            setError('No restaurants found in this area. Try a different location.');
+          } else if (status === google.maps.places.PlacesServiceStatus.OVER_QUERY_LIMIT) {
+            setError('Too many requests. Please try again later.');
+          } else if (status === google.maps.places.PlacesServiceStatus.REQUEST_DENIED) {
+            setError('Places API request denied. Check your API key permissions.');
+          } else {
+            setError(`Places API error: ${status}. Try refreshing the page.`);
+          }
         }
       });
     };
