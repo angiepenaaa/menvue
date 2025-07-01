@@ -39,22 +39,125 @@ const NearbyPlacesMap: React.FC = () => {
       return;
     }
 
-    // Improved check for Google Maps availability
-    if (typeof window !== 'undefined' && typeof window.google === 'undefined') {
-      setError('Google Maps API is not loaded. Please check your API key configuration.');
-      setLoading(false);
-      return;
-    }
-
     if (!mapsLoaded || !window.google?.maps) {
       setError('Google Maps API is not loaded. Please check your API key configuration.');
       setLoading(false);
       return;
     }
 
+    const fallbackLocation = new google.maps.LatLng(27.9333, -82.3248); // Brandon, FL
+
+    const searchNearbyRestaurants = (center: google.maps.LatLng, map: google.maps.Map) => {
+      const service = new google.maps.places.PlacesService(map);
+      const request: google.maps.places.PlaceSearchRequest = {
+        location: center,
+        radius: 1500,
+        type: 'restaurant',
+        keyword: 'healthy food salad vegetarian',
+      };
+
+      service.nearbySearch(request, (results, status) => {
+        setLoading(false);
+        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+          const restaurantData: Restaurant[] = [];
+
+          results.slice(0, 10).forEach((place, index) => {
+            if (place.geometry?.location && place.name) {
+              const restaurant: Restaurant = {
+                id: place.place_id || `restaurant-${index}`,
+                name: place.name,
+                rating: place.rating,
+                priceLevel: place.price_level,
+                vicinity: place.vicinity || '',
+                isOpen: place.opening_hours?.isOpen?.(),
+                position: place.geometry.location,
+              };
+
+              restaurantData.push(restaurant);
+
+              const marker = new google.maps.Marker({
+                position: place.geometry.location,
+                map,
+                title: place.name,
+                icon: {
+                  url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="16" cy="16" r="12" fill="#EF4444" stroke="#ffffff" stroke-width="2"/>
+                      <path d="M16 8L18 14H22L18.5 17L20 23L16 19L12 23L13.5 17L10 14H14L16 8Z" fill="#ffffff"/>
+                    </svg>
+                  `),
+                  scaledSize: new google.maps.Size(32, 32),
+                  anchor: new google.maps.Point(16, 16),
+                },
+              });
+
+              const infoWindow = new google.maps.InfoWindow({
+                content: `
+                  <div style="padding: 8px; max-width: 200px;">
+                    <h3 style="margin: 0 0 4px 0; font-weight: bold; color: #1f2937;">${place.name}</h3>
+                    ${place.rating ? `<div style="color: #6b7280; font-size: 14px;">⭐ ${place.rating}/5</div>` : ''}
+                    ${place.vicinity ? `<div style="color: #6b7280; font-size: 12px; margin-top: 4px;">${place.vicinity}</div>` : ''}
+                    ${place.opening_hours?.isOpen?.() !== undefined
+                      ? `<div style="color: ${place.opening_hours.isOpen() ? '#10b981' : '#ef4444'}; font-size: 12px; margin-top: 4px;">
+                          ${place.opening_hours.isOpen() ? 'Open now' : 'Closed'}
+                        </div>`
+                      : ''
+                    }
+                  </div>
+                `,
+              });
+
+              marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+              });
+            }
+          });
+
+          setRestaurants(restaurantData);
+        } else {
+          setError('No restaurants found nearby. Try expanding your search area.');
+        }
+      });
+    };
+
+    const initializeMap = (center: google.maps.LatLng) => {
+      setUserLocation(center);
+
+      const map = new google.maps.Map(mapRef.current as HTMLDivElement, {
+        center: center,
+        zoom: 14,
+        styles: [{ featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }],
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+      });
+      googleMapRef.current = map;
+
+      new google.maps.Marker({
+        position: center,
+        map: map,
+        title: 'Your Location',
+        icon: {
+          url:
+            'data:image/svg+xml;charset=UTF-8,' +
+            encodeURIComponent(`
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="8" fill="#10B981" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="12" cy="12" r="3" fill="#ffffff"/>
+              </svg>
+            `),
+          scaledSize: new google.maps.Size(24, 24),
+          anchor: new google.maps.Point(12, 12),
+        },
+      });
+
+      // Search for nearby restaurants
+      searchNearbyRestaurants(center, map);
+    };
+
     if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser.");
-      setLoading(false);
+      setError('Geolocation is not supported by your browser. Using fallback location.');
+      initializeMap(fallbackLocation);
       return;
     }
 
@@ -64,138 +167,12 @@ const NearbyPlacesMap: React.FC = () => {
           position.coords.latitude,
           position.coords.longitude
         );
-        setUserLocation(center);
-
-        const map = new google.maps.Map(mapRef.current as HTMLDivElement, {
-          center: center,
-          zoom: 14,
-          styles: [{ featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }],
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: false,
-        });
-        googleMapRef.current = map;
-
-        new google.maps.Marker({
-          position: center,
-          map: map,
-          title: 'Your Location',
-          icon: {
-            url:
-              'data:image/svg+xml;charset=UTF-8,' +
-              encodeURIComponent(`
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="8" fill="#10B981" stroke="#ffffff" stroke-width="2"/>
-                  <circle cx="12" cy="12" r="3" fill="#ffffff"/>
-                </svg>
-              `),
-            scaledSize: new google.maps.Size(24, 24),
-            anchor: new google.maps.Point(12, 12),
-          },
-        });
-
-        const service = new google.maps.places.PlacesService(map);
-        const request: google.maps.places.PlaceSearchRequest = {
-          location: center,
-          radius: 1500,
-          type: 'restaurant',
-          keyword: 'healthy food salad vegetarian',
-        };
-
-        service.nearbySearch(request, (results, status) => {
-          setLoading(false);
-          if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-            const restaurantData: Restaurant[] = [];
-
-            results.slice(0, 10).forEach((place, index) => {
-              if (place.geometry?.location && place.name) {
-                const restaurant: Restaurant = {
-                  id: place.place_id || `restaurant-${index}`,
-                  name: place.name,
-                  rating: place.rating,
-                  priceLevel: place.price_level,
-                  vicinity: place.vicinity || '',
-                  isOpen: place.opening_hours?.isOpen?.(),
-                  position: place.geometry.location,
-                };
-
-                restaurantData.push(restaurant);
-
-                const marker = new google.maps.Marker({
-                  position: place.geometry.location,
-                  map: map,
-                  title: place.name,
-                  icon: {
-                    url:
-                      'data:image/svg+xml;charset=UTF-8,' +
-                      encodeURIComponent(`
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <circle cx="16" cy="16" r="12" fill="#EF4444" stroke="#ffffff" stroke-width="2"/>
-                          <path d="M16 8L18 14H22L18.5 17L20 23L16 19L12 23L13.5 17L10 14H14L16 8Z" fill="#ffffff"/>
-                        </svg>
-                      `),
-                    scaledSize: new google.maps.Size(32, 32),
-                    anchor: new google.maps.Point(16, 16),
-                  },
-                });
-
-                const infoWindow = new google.maps.InfoWindow({
-                  content: `
-                    <div style="padding: 8px; max-width: 200px;">
-                      <h3 style="margin: 0 0 4px 0; font-weight: bold; color: #1f2937;">${place.name}</h3>
-                      ${
-                        place.rating
-                          ? `<div style="color: #6b7280; font-size: 14px;">⭐ ${place.rating}/5</div>`
-                          : ''
-                      }
-                      ${
-                        place.vicinity
-                          ? `<div style="color: #6b7280; font-size: 12px; margin-top: 4px;">${place.vicinity}</div>`
-                          : ''
-                      }
-                      ${
-                        place.opening_hours?.isOpen?.() !== undefined
-                          ? `<div style="color: ${
-                              place.opening_hours.isOpen()
-                                ? '#10b981'
-                                : '#ef4444'
-                            }; font-size: 12px; margin-top: 4px;">
-                          ${place.opening_hours.isOpen() ? 'Open now' : 'Closed'}
-                        </div>`
-                          : ''
-                      }
-                    </div>
-                  `,
-                });
-
-                marker.addListener('click', () => {
-                  infoWindow.open(map, marker);
-                });
-              }
-            });
-
-            setRestaurants(restaurantData);
-          } else {
-            setError('No restaurants found nearby. Try expanding your search area.');
-          }
-        });
+        initializeMap(center);
       },
       (error) => {
-        setLoading(false);
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            setError('Location access denied. Please enable location services and refresh the page.');
-            break;
-          case error.POSITION_UNAVAILABLE:
-            setError('Location information is unavailable.');
-            break;
-          case error.TIMEOUT:
-            setError('Location request timed out.');
-            break;
-          default:
-            setError('An unknown error occurred while retrieving location.');
-            break;
-        }
+        console.warn('Geolocation failed, using fallback location.', error);
+        setError('Using fallback location (Brandon, FL) — live location unavailable.');
+        initializeMap(fallbackLocation);
       },
       {
         enableHighAccuracy: true,
