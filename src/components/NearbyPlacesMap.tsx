@@ -19,6 +19,7 @@ const NearbyPlacesMap: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [userLocation, setUserLocation] = useState<google.maps.LatLng | null>(null);
+  const [locationStatus, setLocationStatus] = useState<'loading' | 'success' | 'fallback' | 'error'>('loading');
   
   // Use the Google Maps hook to load the API
   const { isLoaded: mapsLoaded, loadError: mapsError, isLoading: mapsLoading } = useGoogleMaps();
@@ -130,6 +131,7 @@ const NearbyPlacesMap: React.FC = () => {
 
     const initializeMap = (center: google.maps.LatLng) => {
       setUserLocation(center);
+      setLocationStatus('success');
 
       const map = new google.maps.Map(mapRef.current as HTMLDivElement, {
         center: center,
@@ -163,14 +165,51 @@ const NearbyPlacesMap: React.FC = () => {
       searchNearbyRestaurants(center, map);
     };
 
+    const initializeMapWithFallback = (center: google.maps.LatLng) => {
+      setUserLocation(center);
+      setLocationStatus('fallback');
+
+      const map = new google.maps.Map(mapRef.current as HTMLDivElement, {
+        center: center,
+        zoom: 13,
+        styles: [{ featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] }],
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+      });
+      googleMapRef.current = map;
+
+      new google.maps.Marker({
+        position: center,
+        map: map,
+        title: 'Brandon, FL (Default Location)',
+        icon: {
+          url:
+            'data:image/svg+xml;charset=UTF-8,' +
+            encodeURIComponent(`
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="8" fill="#6B7280" stroke="#ffffff" stroke-width="2"/>
+                <circle cx="12" cy="12" r="3" fill="#ffffff"/>
+              </svg>
+            `),
+          scaledSize: new google.maps.Size(24, 24),
+          anchor: new google.maps.Point(12, 12),
+        },
+      });
+
+      // Search for nearby restaurants
+      searchNearbyRestaurants(center, map);
+    };
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser. Using fallback location.');
-      initializeMap(fallbackLocation);
+      console.log('Geolocation not supported, using fallback location');
+      initializeMapWithFallback(fallbackLocation);
       return;
     }
 
+    // Try to get user's location with more permissive settings
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        console.log('Geolocation success:', position.coords);
         const center = new google.maps.LatLng(
           position.coords.latitude,
           position.coords.longitude
@@ -178,14 +217,13 @@ const NearbyPlacesMap: React.FC = () => {
         initializeMap(center);
       },
       (error) => {
-        console.warn('Geolocation failed, using fallback location.', error);
-        setError('Using fallback location (Brandon, FL) — live location unavailable.');
-        initializeMap(fallbackLocation);
+        console.log('Geolocation failed:', error.message, 'Using fallback location');
+        initializeMapWithFallback(fallbackLocation);
       },
       {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 300000,
+        enableHighAccuracy: false, // Less strict for better compatibility
+        timeout: 5000, // Shorter timeout
+        maximumAge: 600000, // 10 minutes cache
       }
     );
   }, [mapsLoaded, mapsError, mapsLoading]); // Add dependencies
@@ -205,11 +243,15 @@ const NearbyPlacesMap: React.FC = () => {
           <div>
             <h2 className="text-xl font-bold text-gray-800">Restaurants Near You</h2>
             <p className="text-gray-600 text-sm">
-              {loading || mapsLoading
-                ? 'Finding nearby restaurants...'
-                : error
-                ? 'Unable to load map'
-                : `Found ${restaurants.length} restaurants within 5km`}
+              {loading || mapsLoading ? (
+                'Finding nearby restaurants...'
+              ) : error ? (
+                'Unable to load map'
+              ) : locationStatus === 'fallback' ? (
+                `Showing ${restaurants.length} restaurants in Brandon, FL area`
+              ) : (
+                `Found ${restaurants.length} restaurants within 5km of your location`
+              )}
             </p>
           </div>
         </div>
@@ -240,6 +282,16 @@ const NearbyPlacesMap: React.FC = () => {
           </div>
         )}
 
+        {/* Location Status Info */}
+        {locationStatus === 'fallback' && !error && (
+          <div className="p-4 bg-blue-50 border border-blue-200 text-blue-700 flex items-center gap-3">
+            <MapPin size={20} />
+            <div>
+              <p className="font-medium">Using default location</p>
+              <p className="text-sm">Enable location services to see restaurants near you</p>
+            </div>
+          </div>
+        )}
         <div
           ref={mapRef}
           className="w-full h-96 bg-gray-100"
