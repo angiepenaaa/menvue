@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MapPin, Loader2, AlertCircle, Star } from 'lucide-react';
+import { useGoogleMaps } from '../hooks/useGoogleMaps';
 
 interface Restaurant {
   id: string;
@@ -18,9 +19,34 @@ const NearbyPlacesMap: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [userLocation, setUserLocation] = useState<google.maps.LatLng | null>(null);
+  
+  // Use the Google Maps hook to load the API
+  const { isLoaded: mapsLoaded, loadError: mapsError, isLoading: mapsLoading } = useGoogleMaps();
 
   useEffect(() => {
-    if (typeof google === 'undefined' || !window.google.maps) {
+    // Add console log to verify API key
+    console.log("MAPS KEY:", import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
+    
+    // Don't proceed if Maps API is still loading or failed to load
+    if (mapsLoading) {
+      setLoading(true);
+      return;
+    }
+
+    if (mapsError) {
+      setError(`Google Maps API Error: ${mapsError}`);
+      setLoading(false);
+      return;
+    }
+
+    // Improved check for Google Maps availability
+    if (typeof window !== 'undefined' && typeof window.google === 'undefined') {
+      setError('Google Maps API is not loaded. Please check your API key configuration.');
+      setLoading(false);
+      return;
+    }
+
+    if (!mapsLoaded || !window.google?.maps) {
       setError('Google Maps API is not loaded. Please check your API key configuration.');
       setLoading(false);
       return;
@@ -177,7 +203,7 @@ const NearbyPlacesMap: React.FC = () => {
         maximumAge: 300000,
       }
     );
-  }, []);
+  }, [mapsLoaded, mapsError, mapsLoading]); // Add dependencies
 
   const getPriceDisplay = (priceLevel?: number) => {
     if (!priceLevel) return '';
@@ -194,7 +220,7 @@ const NearbyPlacesMap: React.FC = () => {
           <div>
             <h2 className="text-xl font-bold text-gray-800">Restaurants Near You</h2>
             <p className="text-gray-600 text-sm">
-              {loading
+              {loading || mapsLoading
                 ? 'Finding nearby restaurants...'
                 : error
                 ? 'Unable to load map'
@@ -205,11 +231,16 @@ const NearbyPlacesMap: React.FC = () => {
       </div>
 
       <div className="relative">
-        {loading && (
+        {(loading || mapsLoading) && (
           <div className="absolute inset-0 bg-gray-50 flex items-center justify-center z-10">
             <div className="flex items-center gap-3 text-gray-600">
               <Loader2 className="w-6 h-6 animate-spin" />
-              <span>Loading map and nearby restaurants...</span>
+              <span>
+                {mapsLoading 
+                  ? 'Loading Google Maps API...' 
+                  : 'Loading map and nearby restaurants...'
+                }
+              </span>
             </div>
           </div>
         )}
