@@ -51,9 +51,8 @@ const NearbyPlacesMap: React.FC = () => {
       const service = new google.maps.places.PlacesService(map);
       const request: google.maps.places.PlaceSearchRequest = {
         location: center,
-        radius: 5000, // Increased from 1.5km to 5km
+        radius: 5000, // 5km radius
         type: 'restaurant',
-        // Removed restrictive keyword to get more results
       };
 
       service.nearbySearch(request, (results, status) => {
@@ -210,7 +209,7 @@ const NearbyPlacesMap: React.FC = () => {
                 ? 'Finding nearby restaurants...'
                 : error
                 ? 'Unable to load map'
-                : `Found ${restaurants.length} restaurants within 1.5km`}
+                : `Found ${restaurants.length} restaurants within 5km`}
             </p>
           </div>
         </div>
