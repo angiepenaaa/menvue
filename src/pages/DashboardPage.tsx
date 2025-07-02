@@ -55,8 +55,21 @@ const DashboardPage: React.FC = () => {
   };
 
   const data = mockData[timeRange];
-  const today = format(new Date(), 'EEEE');
-  const todayIndex = data.findIndex(d => d.day === today[0]);
+  
+  // Calculate the correct data index based on time range
+  const getDisplayDataIndex = () => {
+    if (timeRange === 'day') {
+      // For daily view, get current day of week (0 = Sunday, 1 = Monday, etc.)
+      const dayOfWeek = new Date().getDay();
+      // Convert to Monday = 0, Tuesday = 1, etc. to match our data array
+      return dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    } else {
+      // For week and month views, show the most recent period (last item)
+      return data.length - 1;
+    }
+  };
+  
+  const displayDataIndex = getDisplayDataIndex();
 
   const handleSignOut = async () => {
     try {
@@ -149,7 +162,7 @@ const DashboardPage: React.FC = () => {
             >
               <div className="text-sm text-gray-600">{label}</div>
               <div className="text-2xl font-bold mt-1" style={{ color }}>
-                {data[todayIndex][key]}
+                {data[displayDataIndex][key]}
               </div>
             </button>
           )
