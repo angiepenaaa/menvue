@@ -11,14 +11,12 @@
 },
   "dependencies": {
     "@ai-sdk/react": "^1.2.12",
-    "@headlessui/react": "^1.7.17",
     "@pusher/push-notifications-web": "^1.1.0",
     "@supabase/supabase-js": "^2.39.7",
     "@tanstack/react-query": "^5.24.1",
     "ai": "^4.3.16",
     "date-fns": "^3.3.1",
     "dotenv": "^16.5.0",
-    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.344.0",
     "openai": "^4.67.3",
     "pusher-js": "^8.4.0-rc2",
@@ -31,7 +29,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
-    "@types/jsonwebtoken": "^9.0.5",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
