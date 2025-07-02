@@ -10,6 +10,7 @@ const TestOrderPage: React.FC = () => {
   const navigate = useNavigate();
   const { items, addItem, clearCart, subtotal, totalItems } = useCart();
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [testResults, setTestResults] = useState<string[]>([]);
 
   const testRestaurant = {
     name: "Healthy Eats Cafe",
@@ -42,6 +43,36 @@ const TestOrderPage: React.FC = () => {
     }
   }, []);
 
+  const testDoorDashConnection = async () => {
+    setTestResults(['🧪 Testing DoorDash connection...']);
+    
+    try {
+      // Test the edge function directly
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/createDelivery`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'getDeliveryQuote',
+          storeId: 'test_store_123',
+          pickupAddress: testRestaurant.address,
+          dropoffAddress: '456 Customer Ave, Brandon, FL 33511'
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setTestResults(prev => [...prev, '✅ DoorDash connection successful!', `📦 Quote ID: ${data.external_delivery_id}`]);
+      } else {
+        setTestResults(prev => [...prev, `❌ DoorDash error: ${data.error}`]);
+      }
+    } catch (error) {
+      setTestResults(prev => [...prev, `❌ Connection failed: ${error.message}`]);
+    }
+  };
   const calculateTotal = () => {
     const deliveryFee = 2.99;
     const tax = subtotal * 0.08; // 8% tax
@@ -76,14 +107,36 @@ const TestOrderPage: React.FC = () => {
                 }
               </p>
             </div>
-            <button
-              onClick={loadSampleItems}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              <Plus size={16} />
-              Load Sample Order
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={testDoorDashConnection}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                🧪 Test DoorDash
+              </button>
+              <button
+                onClick={loadSampleItems}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <Plus size={16} />
+                Load Sample Order
+              </button>
+            </div>
           </div>
+          
+          {/* Test Results */}
+          {testResults.length > 0 && (
+            <div className="mt-4 p-3 bg-white rounded-lg border">
+              <h4 className="font-medium text-gray-800 mb-2">Test Results:</h4>
+              <div className="space-y-1">
+                {testResults.map((result, index) => (
+                  <div key={index} className="text-sm font-mono text-gray-700">
+                    {result}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Test Order Card */}
@@ -233,15 +286,26 @@ const TestOrderPage: React.FC = () => {
         </div>
 
         {/* Instructions */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
           <h3 className="font-medium text-yellow-800 mb-2">🧪 Test Mode Instructions</h3>
           <ul className="text-sm text-yellow-700 space-y-1">
+            <li>• Click "Test DoorDash" to verify your environment variables are working</li>
             <li>• This page uses real cart state from the global context</li>
             <li>• Sample items are auto-loaded for fast testing</li>
             <li>• DoorDash orders use sandbox environment (no real delivery)</li>
             <li>• Check browser console for detailed API logs</li>
             <li>• Cart state persists across page navigation</li>
           </ul>
+        </div>
+        
+        {/* Environment Status */}
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <h3 className="font-medium text-green-800 mb-2">✅ Environment Status</h3>
+          <div className="text-sm text-green-700 space-y-1">
+            <div>Supabase URL: {import.meta.env.VITE_SUPABASE_URL ? '✅ Configured' : '❌ Missing'}</div>
+            <div>Supabase Anon Key: {import.meta.env.VITE_SUPABASE_ANON_KEY ? '✅ Configured' : '❌ Missing'}</div>
+            <div>DoorDash Environment: sandbox (configured in Supabase)</div>
+          </div>
         </div>
       </div>
     </div>
