@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Star, MapPin, Clock, Phone, ExternalLink, Loader2, AlertCircle, Camera, Heart, Share2, ShoppingBag } from 'lucide-react';
 import { yelpBusinessDetails, yelpBusinessReviews, convertYelpToRestaurant, getFallbackRestaurants } from '../utils/yelpApi';
 import { menuItems } from '../data/menuItems';
+import DoorDashOrderButton from '../components/DoorDashOrderButton';
 
 const ItemDetailPage: React.FC = () => {
   const { itemId } = useParams<{ itemId: string }>();
@@ -323,22 +324,27 @@ const ItemDetailPage: React.FC = () => {
                     <span className="font-medium text-gray-800">Order this item:</span>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <DoorDashOrderButton
+                      restaurantName="Sample Restaurant"
+                      restaurantAddress="123 Main St, Brandon, FL 33511"
+                      className="w-full"
+                    />
                     <a
                       href={createOrderLinks(localMenuItem.name).doordash}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                      className="flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
                     >
                       <ExternalLink size={18} />
-                      Order on DoorDash
+                      DoorDash Website
                     </a>
                     
                     <a
                       href={createOrderLinks(localMenuItem.name).grubhub}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
+                      className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                     >
                       <ExternalLink size={18} />
                       Order on Grubhub
@@ -469,22 +475,27 @@ const ItemDetailPage: React.FC = () => {
                   <span className="font-medium text-gray-800">Order from {restaurant.name}:</span>
                 </div>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <DoorDashOrderButton
+                    restaurantName={restaurant.name}
+                    restaurantAddress={restaurant.location}
+                    className="w-full"
+                  />
                   <a
                     href={createOrderLinks(restaurant.name).doordash}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
                   >
                     <ExternalLink size={18} />
-                    Order on DoorDash
+                    DoorDash Website
                   </a>
                   
                   <a
                     href={createOrderLinks(restaurant.name).grubhub}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 px-4 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                   >
                     <ExternalLink size={18} />
                     Order on Grubhub
