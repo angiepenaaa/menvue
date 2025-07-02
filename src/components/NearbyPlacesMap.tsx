@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { MapPin, Loader2, AlertCircle, Star, RefreshCw } from 'lucide-react';
+import { MapPin, Loader2, AlertCircle, Star } from 'lucide-react';
 import { useGoogleMaps } from '../hooks/useGoogleMaps';
 
 interface Restaurant {
@@ -24,20 +24,9 @@ const NearbyPlacesMap: React.FC = () => {
   // Use the Google Maps hook to load the API
   const { isLoaded: mapsLoaded, loadError: mapsError, isLoading: mapsLoading } = useGoogleMaps();
 
-  const retryMapLoad = () => {
-    setError(null);
-    setLoading(true);
-    window.location.reload(); // Simple retry by reloading
-  };
-
   useEffect(() => {
-    // Check if API key exists
-    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-    if (!apiKey) {
-      setError('Google Maps API key is not configured. Please add VITE_GOOGLE_MAPS_API_KEY to your environment variables.');
-      setLoading(false);
-      return;
-    }
+    // Add console log to verify API key
+    console.log("MAPS KEY:", import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
     
     // Don't proceed if Maps API is still loading or failed to load
     if (mapsLoading) {
@@ -46,13 +35,13 @@ const NearbyPlacesMap: React.FC = () => {
     }
 
     if (mapsError) {
-      setError('Failed to load Google Maps. This might be due to API key restrictions or network issues.');
+      setError(`Google Maps API Error: ${mapsError}`);
       setLoading(false);
       return;
     }
 
     if (!mapsLoaded || !window.google?.maps) {
-      setError('Google Maps is not available. Please check your internet connection and API configuration.');
+      setError('Google Maps API is not loaded. Please check your API key configuration.');
       setLoading(false);
       return;
     }
@@ -284,45 +273,30 @@ const NearbyPlacesMap: React.FC = () => {
         )}
 
         {error && (
-          <div className="p-6 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg">
+          <div className="p-6 bg-red-50 border border-red-200 text-red-600 flex items-center gap-3">
             <AlertCircle size={20} />
             <div>
-              <p className="font-medium">Map temporarily unavailable</p>
+              <p className="font-medium">Unable to load map</p>
               <p className="text-sm">{error}</p>
-              <button
-                onClick={retryMapLoad}
-                className="mt-2 flex items-center gap-2 text-sm bg-yellow-100 hover:bg-yellow-200 px-3 py-1 rounded transition-colors"
-              >
-                <RefreshCw size={14} />
-                Try again
-              </button>
             </div>
           </div>
         )}
 
+        {/* Location Status Info */}
+        {locationStatus === 'fallback' && !error && (
+          <div className="p-4 bg-blue-50 border border-blue-200 text-blue-700 flex items-center gap-3">
+            <MapPin size={20} />
+            <div>
+              <p className="font-medium">Using default location</p>
+              <p className="text-sm">Enable location services to see restaurants near you</p>
+            </div>
+          </div>
+        )}
         <div
           ref={mapRef}
-          className={`w-full h-96 ${error ? 'hidden' : 'bg-gray-100'}`}
+          className="w-full h-96 bg-gray-100"
           style={{ minHeight: '384px' }}
         />
-
-        {/* Fallback content when map fails */}
-        {error && (
-          <div className="w-full h-96 bg-gray-50 flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300">
-            <div className="text-center">
-              <MapPin size={48} className="text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-700 mb-2">Map View Unavailable</h3>
-              <p className="text-gray-500 mb-4">We're working on getting the map back online</p>
-              <button
-                onClick={retryMapLoad}
-                className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2 mx-auto"
-              >
-                <RefreshCw size={16} />
-                Retry
-              </button>
-            </div>
-          </div>
-        )}
       </div>
 
       {restaurants.length > 0 && (

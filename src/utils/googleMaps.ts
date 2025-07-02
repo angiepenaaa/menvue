@@ -34,7 +34,7 @@ export const loadGoogleMapsAPI = (): Promise<void> => {
     const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
     
     if (!apiKey) {
-      const error = new Error('Google Maps API key not configured');
+      const error = new Error('Google Maps API key not found. Please set VITE_GOOGLE_MAPS_API_KEY in your .env file');
       console.error(error.message);
       isLoading = false;
       reject(error);
@@ -50,7 +50,7 @@ export const loadGoogleMapsAPI = (): Promise<void> => {
     }
 
     // Create callback function name
-    const callbackName = `initGoogleMaps_${Date.now()}`;
+    const callbackName = 'initGoogleMaps';
     
     // Set up global callback
     (window as any)[callbackName] = () => {
@@ -62,14 +62,14 @@ export const loadGoogleMapsAPI = (): Promise<void> => {
 
     // Create and append script
     const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=${callbackName}&loading=async`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=${callbackName}`;
     script.async = true;
     script.defer = true;
     
     script.onerror = () => {
       isLoading = false;
       delete (window as any)[callbackName];
-      const error = new Error('Failed to load Google Maps API. Please check your internet connection and API key.');
+      const error = new Error('Failed to load Google Maps API');
       console.error(error.message);
       reject(error);
     };
