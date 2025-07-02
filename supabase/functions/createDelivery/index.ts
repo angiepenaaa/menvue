@@ -111,10 +111,23 @@ class DoorDashService {
   private jwtGenerator: DoorDashJWTGenerator
 
   constructor() {
+    // Get environment variables with fallbacks for development
+    const developerId = Deno.env.get('DOORDASH_DEVELOPER_ID')
+    const keyId = Deno.env.get('DOORDASH_KEY_ID') 
+    const signingSecret = Deno.env.get('DOORDASH_SIGNING_SECRET')
+    
+    // Log available environment variables for debugging (without exposing secrets)
+    console.log('DoorDash Environment Check:', {
+      developerId: developerId ? 'SET' : 'MISSING',
+      keyId: keyId ? 'SET' : 'MISSING', 
+      signingSecret: signingSecret ? 'SET' : 'MISSING',
+      environment: Deno.env.get('DOORDASH_ENVIRONMENT') || 'sandbox'
+    })
+    
     this.credentials = {
-      developer_id: Deno.env.get('DOORDASH_DEVELOPER_ID') || '416969ad-68be-44d4-a944-81c477988a73',
-      key_id: Deno.env.get('DOORDASH_KEY_ID') || '6c423cd4-64f0-4cf6-ab37-d12b79da6867',
-      signing_secret: Deno.env.get('DOORDASH_SIGNING_SECRET') || 'r96Qe1HVaKOdsIYnOtC9lrXviofIVkIMHZAD8fkbuVY'
+      developer_id: developerId || '',
+      key_id: keyId || '',
+      signing_secret: signingSecret || ''
     }
     
     const envType = (Deno.env.get('DOORDASH_ENVIRONMENT') || 'sandbox') as 'sandbox' | 'production'

@@ -118,7 +118,51 @@ VITE_OPENWEATHER_API_KEY=your_openweather_api_key
 VITE_PUSHER_KEY=your_pusher_key
 VITE_PUSHER_CLUSTER=your_pusher_cluster
 VITE_PUSHER_INSTANCE_ID=your_pusher_instance_id
+
+# DoorDash Drive API (for delivery integration)
+DOORDASH_DEVELOPER_ID=your_doordash_developer_id
+DOORDASH_KEY_ID=your_doordash_key_id
+DOORDASH_SIGNING_SECRET=your_doordash_signing_secret
+DOORDASH_ENVIRONMENT=sandbox
 ```
+
+### Supabase Edge Functions Environment Variables
+
+**IMPORTANT**: The DoorDash integration requires environment variables to be set in your Supabase project, not just in your local `.env` file.
+
+#### Setting Environment Variables in Supabase:
+
+1. **Via Supabase Dashboard:**
+   - Go to your Supabase project dashboard
+   - Navigate to "Edge Functions" in the sidebar
+   - Click on "Environment Variables"
+   - Add the following variables:
+     ```
+     DOORDASH_DEVELOPER_ID=your_doordash_developer_id
+     DOORDASH_KEY_ID=your_doordash_key_id
+     DOORDASH_SIGNING_SECRET=your_doordash_signing_secret
+     DOORDASH_ENVIRONMENT=sandbox
+     ```
+
+2. **Via Supabase CLI:**
+   ```bash
+   supabase secrets set DOORDASH_DEVELOPER_ID=your_doordash_developer_id
+   supabase secrets set DOORDASH_KEY_ID=your_doordash_key_id
+   supabase secrets set DOORDASH_SIGNING_SECRET=your_doordash_signing_secret
+   supabase secrets set DOORDASH_ENVIRONMENT=sandbox
+   ```
+
+#### Getting DoorDash Credentials:
+
+1. Sign up for DoorDash Drive API access at [DoorDash Developer Portal](https://developer.doordash.com/)
+2. Create a new app in your developer dashboard
+3. Get your credentials:
+   - **Developer ID**: Found in your app settings
+   - **Key ID**: Generated when you create API keys
+   - **Signing Secret**: Generated when you create API keys
+4. Set `DOORDASH_ENVIRONMENT=sandbox` for testing, `production` for live orders
+
+**Note**: Without these environment variables properly configured in Supabase, the DoorDash delivery features will not work.
 
 ### Available Scripts
 
