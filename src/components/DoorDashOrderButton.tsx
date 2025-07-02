@@ -39,7 +39,7 @@ const DoorDashOrderButton: React.FC<DoorDashOrderButtonProps> = ({
 
       // Get delivery quote
       const quote = await doorDashService.getDeliveryQuote(
-        'store_123', // This would be the actual store ID
+        `store_${Date.now()}`, // Generate unique store ID for demo
         restaurantAddress,
         deliveryAddress
       );
@@ -50,12 +50,12 @@ const DoorDashOrderButton: React.FC<DoorDashOrderButtonProps> = ({
         restaurant_name: restaurantName,
         restaurant_phone: restaurantPhone,
         dropoff_address: deliveryAddress,
-        customer_phone: "+1234567890", // User's phone
+        customer_phone: "+1234567890", // In real app, get from user profile
         delivery_instructions: "Please deliver to the front door",
         order_value: Math.round(subtotal * 100), // Convert to cents
         items: items.map(item => ({
           name: item.name,
-          description: item.description || '',
+          description: item.description || 'Menu item',
           quantity: item.quantity,
           external_id: item.id,
         })),
@@ -64,12 +64,12 @@ const DoorDashOrderButton: React.FC<DoorDashOrderButtonProps> = ({
 
       // Create delivery
       const delivery = await doorDashService.createDelivery(
-        quote.external_delivery_id,
+        quote.quote_id || quote.external_delivery_id,
         orderDetails
       );
 
       setStatus('success');
-      setMessage(`Delivery created! Estimated delivery: ${quote.estimated_dropoff_time}`);
+      setMessage(`✅ DoorDash delivery created! Track your order for updates.`);
       
       // You might want to redirect to an order tracking page here
       console.log('Delivery created:', delivery);
@@ -77,7 +77,7 @@ const DoorDashOrderButton: React.FC<DoorDashOrderButtonProps> = ({
     } catch (error) {
       console.error('DoorDash order error:', error);
       setStatus('error');
-      setMessage(error instanceof Error ? error.message : 'Failed to create delivery');
+      setMessage(error instanceof Error ? `❌ ${error.message}` : '❌ Failed to create delivery');
     } finally {
       setLoading(false);
     }

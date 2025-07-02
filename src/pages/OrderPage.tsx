@@ -1,8 +1,9 @@
 import React, { useMemo } from 'react';
-import { ArrowLeft, MapPin, ChevronRight } from 'lucide-react';
+import { ArrowLeft, MapPin, ChevronRight, Truck } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import { useCart } from '../context/CartContext';
+import DoorDashOrderButton from '../components/DoorDashOrderButton';
 
 const OrderPage: React.FC = () => {
   const navigate = useNavigate();
@@ -92,6 +93,46 @@ const OrderPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Delivery Options */}
+        <div className="px-4 pt-4">
+          <h3 className="text-gray-800 text-lg font-bold pb-2">Delivery Options</h3>
+          <div className="space-y-3">
+            {/* DoorDash Drive Option */}
+            <div className="bg-white rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <Truck className="text-red-600" size={24} />
+                <div>
+                  <h4 className="font-semibold text-gray-800">DoorDash Delivery</h4>
+                  <p className="text-sm text-gray-600">Professional delivery service</p>
+                </div>
+              </div>
+              <DoorDashOrderButton
+                restaurantName="Sample Restaurant"
+                restaurantAddress="123 Main St, Brandon, FL 33511"
+                className="w-full"
+              />
+            </div>
+            
+            {/* Standard Delivery Option */}
+            <div className="bg-white rounded-xl p-4">
+              <div className="flex items-center gap-3 mb-3">
+                <MapPin className="text-emerald-600" size={24} />
+                <div>
+                  <h4 className="font-semibold text-gray-800">Standard Delivery</h4>
+                  <p className="text-sm text-gray-600">Regular delivery service</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  navigate('/order/status');
+                }}
+                className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition-colors"
+              >
+                Place Standard Order
+              </button>
+            </div>
+          </div>
+        </div>
         {/* Discounts Section */}
         <div className="px-4 pt-4">
           <h3 className="text-gray-800 text-lg font-bold pb-2">Discounts & Rewards</h3>
@@ -131,16 +172,11 @@ const OrderPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Place Order Button */}
+      {/* Order Summary Footer */}
       <div className="p-4 bg-white border-t mt-8">
-        <button
-          onClick={() => {
-            navigate('/order/status');
-          }}
-          className="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2"
-        >
-          Place Order
-        </button>
+        <div className="text-center text-sm text-gray-600 mb-4">
+          Choose your preferred delivery method above to complete your order
+        </div>
       </div>
     </div>
   );
