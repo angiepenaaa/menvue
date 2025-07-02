@@ -14,6 +14,7 @@ import RestaurantSearchPage from './pages/RestaurantSearchPage';
 import DashboardPage from './pages/DashboardPage';
 import HealthyVariationsPage from './pages/HealthyVariationsPage';
 import ChatPage from './pages/ChatPage';
+import TestOrderPage from './pages/TestOrderPage';
 import CartDrawer from './components/CartDrawer';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
@@ -188,6 +189,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ChatPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/test-order"
+              element={
+                <ProtectedRoute>
+                  <TestOrderPage />
                 </ProtectedRoute>
               }
             />
