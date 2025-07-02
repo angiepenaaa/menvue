@@ -23,6 +23,7 @@ A React-based web application for discovering healthy menu options under 500 cal
 - **AI**: OpenAI GPT-4, Pica AI integration
 - **Icons**: Lucide React
 - **Build Tool**: Vite
+- **Delivery**: DoorDash Drive API
 - **Deployment**: Netlify
 
 ## 🚀 Deployment
@@ -52,6 +53,10 @@ This project is configured for easy deployment on Vercel:
    PICA_SECRET_KEY=your_pica_secret_key
    PICA_OPENAI_CONNECTION_KEY=your_pica_openai_connection_key
    VITE_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
+   DOORDASH_DEVELOPER_ID=your_doordash_developer_id
+   DOORDASH_KEY_ID=your_doordash_key_id
+   DOORDASH_SIGNING_SECRET=your_doordash_signing_secret
+   DOORDASH_ENVIRONMENT=sandbox
    ```
 4. **Deploy!** Vercel will automatically build and deploy your app
 
@@ -79,6 +84,12 @@ npm install
 3. Set up environment variables:
    - Copy `.env.example` to `.env`
    - Fill in your Supabase project URL and anon key
+
+# DoorDash Drive API (for delivery integration)
+DOORDASH_DEVELOPER_ID=your_doordash_developer_id
+DOORDASH_KEY_ID=your_doordash_key_id
+DOORDASH_SIGNING_SECRET=your_doordash_signing_secret
+DOORDASH_ENVIRONMENT=sandbox
    - Add other required API keys
 
 4. Start the development server:
@@ -151,6 +162,23 @@ The app uses Supabase with the following main tables:
 - `user_preferences` - Nutrition and dietary preferences
 - `stripe_customers` - Payment integration
 - `repository_syncs` - Development sync tracking
+
+### DoorDash Drive Integration
+
+The app integrates with DoorDash Drive API for delivery services:
+
+- **JWT Authentication**: Secure token-based authentication
+- **Delivery Quotes**: Get pricing and timing estimates
+- **Delivery Creation**: Create actual delivery orders
+- **Status Tracking**: Real-time delivery status updates
+- **Sandbox Mode**: Test integration without real deliveries
+
+#### DoorDash Setup
+
+1. Sign up for DoorDash Drive API access
+2. Get your credentials from the DoorDash Developer Portal
+3. Add credentials to your `.env` file
+4. Set `DOORDASH_ENVIRONMENT=sandbox` for testing
 
 ### Contributing
 
