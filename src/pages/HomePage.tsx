@@ -4,8 +4,10 @@ import FreshFindsSection from '../components/FreshFindsSection';
 import NearbyPlacesMap from '../components/NearbyPlacesMap';
 import GoogleLogin from '../components/GoogleLogin';
 import NutritionChatBot from '../components/NutritionChatBot';
+import AIMealModal from '../components/AIMealModal';
 import { MessageSquare } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 interface HomePageProps {
   onCartClick: () => void;
@@ -13,12 +15,32 @@ interface HomePageProps {
 
 const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
 
   const handleSelectRestaurant = (id: string) => {
     window.location.href = `/item/${id}`;
   };
 
+  const handleFeatureClick = (feature: string) => {
+    switch (feature) {
+      case 'healthy-options':
+        navigate('/search');
+        break;
+      case 'nutrition-tracking':
+        navigate('/dashboard');
+        break;
+      case 'meal-planning':
+        navigate('/meal-plan');
+        break;
+      case 'ai-assistant':
+        setIsAIModalOpen(true);
+        break;
+      default:
+        break;
+    }
+  };
   // Show login if user is not authenticated
   if (!user) {
     return (
@@ -80,10 +102,30 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
           <h3 className="text-xl font-medium text-gray-800 mb-2">Welcome to menVue</h3>
           <p className="text-gray-600 mb-6">Your healthy eating companion for finding nutritious meals</p>
           <div className="flex flex-wrap justify-center gap-3">
-            <div className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full">🥗 Healthy Options</div>
-            <div className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full">📊 Nutrition Tracking</div>
-            <div className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full">🎯 Meal Planning</div>
-            <div className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full">🤖 AI Assistant</div>
+            <button 
+              onClick={() => handleFeatureClick('healthy-options')}
+              className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full hover:bg-emerald-200 transition-colors cursor-pointer"
+            >
+              🥗 Healthy Options
+            </button>
+            <button 
+              onClick={() => handleFeatureClick('nutrition-tracking')}
+              className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full hover:bg-emerald-200 transition-colors cursor-pointer"
+            >
+              📊 Nutrition Tracking
+            </button>
+            <button 
+              onClick={() => handleFeatureClick('meal-planning')}
+              className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full hover:bg-emerald-200 transition-colors cursor-pointer"
+            >
+              🎯 Meal Planning
+            </button>
+            <button 
+              onClick={() => handleFeatureClick('ai-assistant')}
+              className="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full hover:bg-emerald-200 transition-colors cursor-pointer"
+            >
+              🤖 AI Assistant
+            </button>
           </div>
         </div>
       </main>
@@ -101,6 +143,12 @@ const HomePage: React.FC<HomePageProps> = ({ onCartClick }) => {
         isOpen={isChatOpen}
         onClose={() => setIsChatOpen(false)}
         userPreferences={user ? { userId: user.id } : undefined}
+      />
+
+      {/* AI Meal Modal */}
+      <AIMealModal
+        isOpen={isAIModalOpen}
+        onClose={() => setIsAIModalOpen(false)}
       />
     </div>
   );
