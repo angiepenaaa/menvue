@@ -31,7 +31,7 @@ class DoorDashService {
       throw new Error('User must be authenticated to use DoorDash services');
     }
 
-    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/doordash`, {
+    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/createDelivery`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${session.access_token}`,
