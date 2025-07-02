@@ -39,7 +39,7 @@ const DoorDashOrderButton: React.FC<DoorDashOrderButtonProps> = ({
 
       // Get delivery quote
       const quote = await doorDashService.getDeliveryQuote(
-        `store_${Date.now()}`, // Generate unique store ID for demo
+        `test_store_${Date.now()}`, // Generate unique store ID for demo
         restaurantAddress,
         deliveryAddress
       );
@@ -50,7 +50,7 @@ const DoorDashOrderButton: React.FC<DoorDashOrderButtonProps> = ({
         restaurant_name: restaurantName,
         restaurant_phone: restaurantPhone,
         dropoff_address: deliveryAddress,
-        customer_phone: "+1234567890", // In real app, get from user profile
+        customer_phone: "+15551234567", // Test phone number
         delivery_instructions: "Please deliver to the front door",
         order_value: Math.round(subtotal * 100), // Convert to cents
         items: items.map(item => ({
@@ -59,17 +59,17 @@ const DoorDashOrderButton: React.FC<DoorDashOrderButtonProps> = ({
           quantity: item.quantity,
           external_id: item.id,
         })),
-        pickup_time: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutes from now
+        pickup_time: new Date(Date.now() + 45 * 60 * 1000).toISOString(), // 45 minutes from now
       };
 
       // Create delivery
       const delivery = await doorDashService.createDelivery(
-        quote.quote_id || quote.external_delivery_id,
+        quote.external_delivery_id || `quote_${Date.now()}`,
         orderDetails
       );
 
       setStatus('success');
-      setMessage(`✅ DoorDash delivery created! Track your order for updates.`);
+      setMessage(`✅ DoorDash delivery created! Delivery ID: ${delivery.external_delivery_id}`);
       
       // You might want to redirect to an order tracking page here
       console.log('Delivery created:', delivery);

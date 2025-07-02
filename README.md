@@ -86,9 +86,9 @@ npm install
    - Fill in your Supabase project URL and anon key
 
 # DoorDash Drive API (for delivery integration)
-DOORDASH_DEVELOPER_ID=your_doordash_developer_id
-DOORDASH_KEY_ID=your_doordash_key_id
-DOORDASH_SIGNING_SECRET=your_doordash_signing_secret
+DOORDASH_DEVELOPER_ID=416969ad-68be-44d4-a944-81c477988a73
+DOORDASH_KEY_ID=6c423cd4-64f0-4cf6-ab37-d12b79da6867
+DOORDASH_SIGNING_SECRET=r96Qe1HVaKOdsIYnOtC9lrXviofIVkIMHZAD8fkbuVY
 DOORDASH_ENVIRONMENT=sandbox
    - Add other required API keys
 

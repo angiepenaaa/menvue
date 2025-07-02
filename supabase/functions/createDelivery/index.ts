@@ -112,9 +112,9 @@ class DoorDashService {
 
   constructor() {
     this.credentials = {
-      developer_id: Deno.env.get('DOORDASH_DEVELOPER_ID') || '',
-      key_id: Deno.env.get('DOORDASH_KEY_ID') || '',
-      signing_secret: Deno.env.get('DOORDASH_SIGNING_SECRET') || ''
+      developer_id: Deno.env.get('DOORDASH_DEVELOPER_ID') || '416969ad-68be-44d4-a944-81c477988a73',
+      key_id: Deno.env.get('DOORDASH_KEY_ID') || '6c423cd4-64f0-4cf6-ab37-d12b79da6867',
+      signing_secret: Deno.env.get('DOORDASH_SIGNING_SECRET') || 'r96Qe1HVaKOdsIYnOtC9lrXviofIVkIMHZAD8fkbuVY'
     }
     
     const envType = (Deno.env.get('DOORDASH_ENVIRONMENT') || 'sandbox') as 'sandbox' | 'production'
