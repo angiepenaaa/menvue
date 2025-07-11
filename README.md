@@ -67,6 +67,8 @@ This project is configured for easy deployment on Vercel:
 - Node.js 18+ 
 - npm or yarn
 - VS Code (recommended)
+- Google OAuth 2.0 credentials (for authentication)
+- Supabase project with Google OAuth enabled
 
 ### Installation
 
@@ -84,6 +86,7 @@ npm install
 3. Set up environment variables:
    - Copy `.env.example` to `.env`
    - Fill in your Supabase project URL and anon key
+   - Configure Google OAuth in your Supabase project
 
 # DoorDash Drive API (for delivery integration)
 DOORDASH_DEVELOPER_ID=416969ad-68be-44d4-a944-81c477988a73
@@ -91,6 +94,35 @@ DOORDASH_KEY_ID=6c423cd4-64f0-4cf6-ab37-d12b79da6867
 DOORDASH_SIGNING_SECRET=r96Qe1HVaKOdsIYnOtC9lrXviofIVkIMHZAD8fkbuVY
 DOORDASH_ENVIRONMENT=sandbox
    - Add other required API keys
+
+### Google OAuth Setup
+
+To enable Google Sign-In, you need to configure OAuth in your Supabase project:
+
+1. **Get Google OAuth Credentials:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select existing one
+   - Enable Google+ API
+   - Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client IDs"
+   - Set application type to "Web application"
+   - Add authorized redirect URIs:
+     ```
+     https://your-project-ref.supabase.co/auth/v1/callback
+     http://localhost:5173/auth/callback (for development)
+     ```
+   - Copy the Client ID and Client Secret
+
+2. **Configure Supabase:**
+   - Go to your Supabase project dashboard
+   - Navigate to "Authentication" → "Providers"
+   - Enable Google provider
+   - Add your Google Client ID and Client Secret
+   - Set redirect URL to: `https://your-project-ref.supabase.co/auth/v1/callback`
+
+3. **Update Site URL:**
+   - In Supabase Authentication settings
+   - Set Site URL to your domain (e.g., `http://localhost:5173` for development)
+   - Add additional redirect URLs if needed
 
 4. Start the development server:
 ```bash

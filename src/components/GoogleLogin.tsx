@@ -30,6 +30,12 @@ const GoogleLogin: React.FC<GoogleLoginProps> = ({
       setLoading(true);
       setError(null);
 
+      // Check if Supabase is properly configured
+      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+        setError('Supabase configuration is missing. Please check your environment variables.');
+        return;
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -38,12 +44,19 @@ const GoogleLogin: React.FC<GoogleLoginProps> = ({
             access_type: 'offline',
             prompt: 'consent',
           },
+          skipBrowserRedirect: false,
         },
       });
 
       if (error) {
         console.error('Google login error:', error);
-        setError(error.message);
+        if (error.message.includes('Invalid login credentials')) {
+          setError('Google Sign-In is not properly configured. Please check your Supabase Google OAuth settings.');
+        } else if (error.message.includes('redirect_uri_mismatch')) {
+          setError('Redirect URI mismatch. Please add your domain to Google OAuth settings.');
+        } else {
+          setError(`Google Sign-In failed: ${error.message}`);
+        }
       }
     } catch (err: any) {
       console.error('Unexpected error during Google login:', err);
