@@ -33,26 +33,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string, username: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          username,
+    try {
+      console.log('Attempting to sign up user:', email);
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            username,
+          },
         },
-      },
-    });
+      });
 
-    if (error) throw error;
+      if (error) {
+        console.error('Supabase signup error:', error);
+        throw error;
+      }
+      console.log('Signup successful');
+    } catch (error) {
+      console.error('Signup failed:', error);
+      if (error.message?.includes('fetch')) {
+        throw new Error('Unable to connect to authentication service. Please check your internet connection and try again.');
+      }
+      throw error;
+    }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      console.log('Attempting to sign in user:', email);
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) throw error;
+      if (error) {
+        console.error('Supabase signin error:', error);
+        throw error;
+      }
+      console.log('Signin successful');
+    } catch (error) {
+      console.error('Signin failed:', error);
+      if (error.message?.includes('fetch')) {
+        throw new Error('Unable to connect to authentication service. Please check your internet connection and try again.');
+      }
+      throw error;
+    }
   };
 
   const signOut = async () => {
