@@ -60,16 +60,29 @@ const LoginPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email || !password) {
+      setError('Please enter both email and password.');
+      return;
+    }
+    
     try {
       setError('');
       setLoading(true);
+      console.log('🔐 Starting sign-in process...');
       await signIn(email, password);
+      console.log('✅ Sign-in successful, redirecting...');
       navigate('/');
     } catch (err: any) {
+      console.error('❌ Sign-in error:', err);
       if (err?.message?.includes('Email not confirmed')) {
         setError('Please check your email for a confirmation link to activate your account.');
+      } else if (err?.message?.includes('Unable to connect')) {
+        setError('Cannot connect to authentication service. Please check your internet connection and Supabase configuration.');
+      } else if (err?.message?.includes('Invalid login credentials')) {
+        setError('Invalid email or password. Please check your credentials and try again.');
       } else {
-        setError('Failed to sign in. Please check your credentials.');
+        setError(err?.message || 'Failed to sign in. Please check your credentials and try again.');
       }
     } finally {
       setLoading(false);

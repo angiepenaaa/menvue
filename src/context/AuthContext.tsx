@@ -35,6 +35,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, username: string) => {
     try {
       console.log('Attempting to sign up user:', email);
+      
+      // Test Supabase connection before attempting signup
+      const { data: healthCheck } = await supabase.from('_health').select('*').limit(1);
+      console.log('Supabase health check passed');
+      
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -52,8 +57,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('Signup successful');
     } catch (error) {
       console.error('Signup failed:', error);
-      if (error.message?.includes('fetch')) {
+      if (error.message?.includes('fetch') || error.message?.includes('Failed to fetch')) {
         throw new Error('Unable to connect to authentication service. Please check your internet connection and try again.');
+      } else if (error.message?.includes('Invalid API key')) {
+        throw new Error('Authentication service configuration error. Please check your Supabase settings.');
+      } else if (error.message?.includes('CORS')) {
+        throw new Error('Cross-origin request blocked. Please check your Supabase project settings.');
       }
       throw error;
     }
@@ -62,6 +71,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string) => {
     try {
       console.log('Attempting to sign in user:', email);
+      
+      // Test Supabase connection before attempting signin
+      try {
+        const { data: healthCheck } = await supabase.from('_health').select('*').limit(1);
+        console.log('Supabase health check passed');
+      } catch (healthError) {
+        console.warn('Supabase health check failed, proceeding with auth attempt:', healthError);
+      }
+      
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -74,8 +92,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('Signin successful');
     } catch (error) {
       console.error('Signin failed:', error);
-      if (error.message?.includes('fetch')) {
+      if (error.message?.includes('fetch') || error.message?.includes('Failed to fetch')) {
         throw new Error('Unable to connect to authentication service. Please check your internet connection and try again.');
+      } else if (error.message?.includes('Invalid API key')) {
+        throw new Error('Authentication service configuration error. Please check your Supabase settings.');
+      } else if (error.message?.includes('CORS')) {
+        throw new Error('Cross-origin request blocked. Please check your Supabase project settings.');
       }
       throw error;
     }

@@ -14,13 +14,33 @@ const SignupPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!email || !password || !username) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+    
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+    
     try {
       setError('');
       setLoading(true);
+      console.log('🔐 Starting sign-up process...');
       await signUp(email, password, username);
+      console.log('✅ Sign-up successful, redirecting...');
       navigate('/');
     } catch (err) {
-      setError('Failed to create an account. Please try again.');
+      console.error('❌ Sign-up error:', err);
+      if (err?.message?.includes('Unable to connect')) {
+        setError('Cannot connect to authentication service. Please check your internet connection and Supabase configuration.');
+      } else if (err?.message?.includes('User already registered')) {
+        setError('An account with this email already exists. Please try signing in instead.');
+      } else {
+        setError(err?.message || 'Failed to create an account. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
